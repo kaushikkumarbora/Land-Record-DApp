@@ -1,0 +1,168 @@
+version: '2'
+
+networks:
+  landrecord:
+    name: fabric_landrecord
+
+services:
+  landrecord-ca:
+    container_name: landrecord-ca
+    extends:
+      file: ./base/ca-base.yaml
+      service: ca-base
+    image: landrecord-ca
+    ports:
+    - 7054:7054
+    networks:
+      - landrecord
+
+  bank-ca:
+    container_name: bank-ca
+    extends:
+      file: ./base/ca-base.yaml
+      service: ca-base
+    image: bank-ca
+    ports:
+    - 8054:7054
+    networks:
+      - landrecord
+
+  incometax-ca:
+    container_name: incometax-ca
+    extends:
+      file: ./base/ca-base.yaml
+      service: ca-base
+    image: incometax-ca
+    ports:
+    - 9054:7054
+    networks:
+      - landrecord
+
+  court-ca:
+    container_name: court-ca
+    extends:
+      file: ./base/ca-base.yaml
+      service: ca-base
+    image: court-ca
+    ports:
+    - 10054:7054
+    networks:
+      - landrecord
+
+  orderer0:
+    container_name: orderer0
+    image: orderer
+    environment:
+    - ORDERER_GENERAL_LOGLEVEL=debug
+    - ORDERER_GENERAL_LISTENADDRESS=0.0.0.0
+    - ORDERER_GENERAL_GENESISMETHOD=file
+    - ORDERER_GENERAL_GENESISFILE=/orderer/crypto/genesis.block
+    - ORDERER_GENERAL_LOCALMSPID=OrdererMSP
+    - ORDERER_GENERAL_LOCALMSPDIR=/orderer/crypto/msp
+    - ORDERER_GENERAL_TLS_ENABLED=true
+    - ORDERER_GENERAL_TLS_PRIVATEKEY=/orderer/crypto/tls/server.key
+    - ORDERER_GENERAL_TLS_CERTIFICATE=/orderer/crypto/tls/server.crt
+    - ORDERER_GENERAL_TLS_ROOTCAS=[/orderer/crypto/tls/ca.crt]
+    working_dir: /orderer
+    command: orderer
+    ports:
+    - 7050:7050
+    networks:
+      - landrecord
+
+  landrecord-peer:
+    container_name: landrecord-peer
+    extends:
+      file: ./base/peer-base.yaml
+      service: peer-base
+    image: landrecord-peer
+    environment:
+    - CORE_PEER_ID=landrecord-peer
+    - CORE_PEER_ADDRESS=landrecord-peer:7051
+    - CORE_PEER_GOSSIP_EXTERNALENDPOINT=landrecord-peer:7051
+    - CORE_PEER_LOCALMSPID=LandRecordOrgMSP
+    ports:
+    - 7051:7051
+    - 7053:7053
+    depends_on:
+    - orderer0
+    networks:
+      - landrecord
+
+  bank-peer:
+    container_name: bank-peer
+    extends:
+      file: ./base/peer-base.yaml
+      service: peer-base
+    image: bank-peer
+    environment:
+    - CORE_PEER_ID=bank-peer
+    - CORE_PEER_ADDRESS=bank-peer:7051
+    - CORE_PEER_GOSSIP_EXTERNALENDPOINT=bank-peer:7051
+    - CORE_PEER_LOCALMSPID=BankOrgMSP
+    ports:
+    - 8051:7051
+    - 8053:7053
+    depends_on:
+    - orderer0
+    - landrecord-peer
+    networks:
+      - landrecord
+
+  incometax-peer:
+    container_name: incometax-peer
+    extends:
+      file: ./base/peer-base.yaml
+      service: peer-base
+    image: incometax-peer
+    environment:
+    - CORE_PEER_ID=incometax-peer
+    - CORE_PEER_ADDRESS=incometax-peer:7051
+    - CORE_PEER_GOSSIP_EXTERNALENDPOINT=incometax-peer:7051
+    - CORE_PEER_LOCALMSPID=IncomeTaxOrgMSP
+    ports:
+    - 9051:7051
+    - 9053:7053
+    depends_on:
+    - orderer0
+    - landrecord-peer
+    - bank-peer
+    networks:
+      - landrecord
+
+  court-peer:
+    container_name: court-peer
+    extends:
+      file: ./base/peer-base.yaml
+      service: peer-base
+    image: court-peer
+    environment:
+    - CORE_PEER_ID=court-peer
+    - CORE_PEER_ADDRESS=court-peer:7051
+    - CORE_PEER_GOSSIP_EXTERNALENDPOINT=court-peer:7051
+    - CORE_PEER_LOCALMSPID=CourtOrgMSP
+    ports:
+    - 10051:7051
+    - 10053:7053
+    depends_on:
+    - orderer0
+    - landrecord-peer
+    - bank-peer
+    - incometax-peer
+    networks:
+      - landrecord
+
+  web:
+    container_name: web
+    image: web
+    # TODO
+    depends_on:
+    - orderer0
+    - landrecord-ca
+    - landrecord-peer
+    - bank-ca
+    - bank-peer
+    - incometax-ca
+    - incometax-peer
+    networks:
+      - landrecord
