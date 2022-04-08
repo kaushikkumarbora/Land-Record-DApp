@@ -152,17 +152,17 @@ services:
     networks:
       - landrecord
 
-  web:
-    container_name: web
-    image: web
-    # TODO
-    depends_on:
-    - orderer0
-    - landrecord-ca
-    - landrecord-peer
-    - bank-ca
-    - bank-peer
-    - incometax-ca
-    - incometax-peer
-    networks:
-      - landrecord
+  # web:
+  #   container_name: web
+  #   image: web
+  #   # TODO
+  #   depends_on:
+  #   - orderer0
+  #   - landrecord-ca
+  #   - landrecord-peer
+  #   - bank-ca
+  #   - bank-peer
+  #   - incometax-ca
+  #   - incometax-peer
+  #   networks:
+  #     - landrecord
