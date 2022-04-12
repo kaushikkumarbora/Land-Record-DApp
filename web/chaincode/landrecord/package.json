@@ -1,0 +1,19 @@
+{
+  "name": "landrecord",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "Kaushik Kumar Bora <kaushikkumarbora@gmail.com> (https://github.com/kaushikkumarbora)",
+  "license": "MIT",
+  "dependencies": {
+    "fabric-contract-api": "^2.2.2",
+    "fabric-shim": "^2.2.2"
+  }
+}
