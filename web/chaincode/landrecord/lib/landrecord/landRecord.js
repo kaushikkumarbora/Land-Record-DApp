@@ -523,51 +523,44 @@ class LandRecord extends Contract {
     return
   }
 
-  // /**
-  //  *
-  //  * queryAll
-  //  *
-  //  * queryRecords, Lending or Books gives all stored keys in the  database- ledger needs to be passed in
-  //  *
-  //  * @param {Context} ctx
-  //  * @returns
-  //  */
-  //  async queryAll(ctx) {
+  /**
+   *
+   * queryAll
+   *
+   * queryRecords, Lending or Books gives all stored keys in the  database- ledger needs to be passed in
+   *
+   * @param {Context} ctx
+   * @returns
+   */
+  async queryAll (ctx) {
+    // resultIterator is a StateQueryIteratorInterface
+    var resultsIterator = await ctx.stub.getStateByRange('', '')
+    resultsIterator.Close()
 
-  // 	// resultIterator is a StateQueryIteratorInterface
-  // 	var resultsIterator = await ctx.stub.getStateByRange("", "")
-  // 	resultsIterator.Close()
+    // allResults is a JSON array containing QueryResults
+    var allResults = []
 
-  // 	// buffer is a JSON array containing QueryResults
-  // 	var buffer = []
+    var queryResponse = await resultsIterator.next()
 
-  // 	var bArrayMemberAlreadyWritten = false
-  // 	while (resultsIterator.next()) {
-  // 		queryResponse, err := resultsIterator.Next()
-  // 		if err != nil {
-  // 			return shim.Error(err.Error())
-  // 		}
-  // 		// Add a comma before array members, suppress it for the first array member
-  // 		if bArrayMemberAlreadyWritten == true {
-  // 			buffer.WriteString("\n,")
-  // 		}
-  // 		buffer.WriteString("{\"Key\":")
-  // 		buffer.WriteString("\"")
-  // 		buffer.WriteString(queryResponse.Key)
-  // 		buffer.WriteString("\"")
+    while (!queryResponse.done()) {
+      const strValue = Buffer.from(
+        queryResponse.value.value.toString()
+      ).toString('utf8')
+      var record = {}
+      try {
+        record = JSON.parse(strValue)
+      } catch (err) {
+        console.log(err)
+        record = strValue
+      }
+      allResults.push({ Key: queryResponse.value.key, Record: record })
+      result = await iterator.next()
+    }
 
-  // 		buffer.WriteString(", \"Record\":")
-  // 		// Record is a JSON object, so we write as-is
-  // 		buffer.WriteString(string(queryResponse.Value))
-  // 		buffer.WriteString("}\n")
-  // 		bArrayMemberAlreadyWritten = true
-  // 	}
-  // 	buffer.WriteString("\n]")
+    console.log('- queryAll:\n%s\n', JSON.stringify(allResults))
 
-  // 	console.log("- queryAll:\n%s\n", buffer.String())
-
-  // 	return shim.Success(buffer.Bytes())
-  // }
+    return Buffer.from(JSON.stringify(allResults))
+  }
 
   /**
    *
