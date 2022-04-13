@@ -1,4 +1,4 @@
 module.exports.PrefixUser = "user";
-module.exports.PrefixRealEstate = "realEstate";
-module.exports.PrefixMortgage = "mortgage";
+module.exports.PrefixRecord = "record";
+module.exports.PrefixLending = "lending";
 module.exports.PrefixBook = "book";

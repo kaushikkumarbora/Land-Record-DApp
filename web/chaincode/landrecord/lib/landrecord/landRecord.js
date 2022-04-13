@@ -3,9 +3,9 @@
 const { Contract, Context } = require('fabric-contract-api')
 const {
   PrefixUser,
-  PrefixMortgage,
+  PrefixLending,
   PrefixBook,
-  PrefixRealEstate
+  PrefixRecord
 } = require('./prefix')
 const {
   CheckProducer,
@@ -156,23 +156,23 @@ class LandRecord extends Contract {
       var purchaseInfo = JSON.parse(purchaseJSON)
 
       // Create Key
-      var realEstateKey = ctx.stub.createCompositeKey(PrefixRealEstate, [
+      var recordsKey = ctx.stub.createCompositeKey(PrefixRecord, [
         purchaseInfo.RealEstateID
       ])
       // Look for the RealEstateID
-      var realEstateBytes = await ctx.stub.getState(realEstateKey)
-      if (!realEstateBytes || realEstateBytes.length === 0) {
-        throw new Error('RealEstateID ' + realEstateKey + ' not found ')
+      var recordsBytes = await ctx.stub.getState(recordsKey)
+      if (!recordsBytes || recordsBytes.length === 0) {
+        throw new Error('RealEstateID ' + recordsKey + ' not found ')
       }
 
       // Decode JSON data
-      var realEstate = RealEstate(JSON.parse(realEstateBytes.toString()))
+      var realEstate = RealEstate(JSON.parse(recordsBytes.toString()))
 
       //first we need to invoke chanincode on books channel to get results value New Owner
       var callArgs = new Array()
 
       callArgs[0] = Buffer.from(QueryBooksString)
-      callArgs[1] = Buffer.from(realEstateKey)
+      callArgs[1] = Buffer.from(recordsKey)
 
       var res = await ctx.stub.invokeChaincode(
         BooksChaincode,
@@ -228,14 +228,14 @@ class LandRecord extends Contract {
    * initiateMortgage
    *
    * @param {Context} ctx
-   * @param {string} mortgageJSON
+   * @param {string} lendingJSON
    * @returns
    */
-  async initiateMortgage (ctx, mortgageJSON) {
+  async initiateMortgage (ctx, lendingJSON) {
     if (CheckProducer(ctx)) {
-      var mortgageInfo = JSON.parse(mortgageJSON)
+      var lendingInfo = JSON.parse(lendingJSON)
 
-      var mrtg = Mortgage(mortgageInfo)
+      var mrtg = Mortgage(lendingInfo)
 
       WriteToLendingLedger(ctx, mrtg, 'initiateMortgage')
     } else {
@@ -253,24 +253,24 @@ class LandRecord extends Contract {
    * generates a score and updates the lending ledger
    *
    * @param {Context} ctx
-   * @param {string} mortgageJSON
+   * @param {string} lendingJSON
    * @returns
    */
-  async getFicoScores (ctx, mortgageJSON) {
-    var mortgageInfo = JSON.parse(mortgageJSON)
+  async getFicoScores (ctx, lendingJSON) {
+    var lendingInfo = JSON.parse(lendingJSON)
 
-    var mortgageKey = ctx.stub.createCompositeKey(PrefixMortgage, [
-      mortgageInfo.CustID
+    var lendingKey = ctx.stub.createCompositeKey(PrefixLending, [
+      lendingInfo.CustID
     ])
-    var mortgageBytes = await ctx.stub.getState(mortgageKey)
-    if (!mortgageBytes || mortgageBytes.length === 0) {
-      return shim.Error('CustomerID ' + mortgageInfo.CustID + ' not found ')
+    var lendingBytes = await ctx.stub.getState(lendingKey)
+    if (!lendingBytes || lendingBytes.length === 0) {
+      return shim.Error('CustomerID ' + lendingInfo.CustID + ' not found ')
     }
 
     // Get Information from Blockchain
     var mrtg
     // Decode JSON data
-    mrtg = JSON.parse(mortgageBytes.toString())
+    mrtg = JSON.parse(lendingBytes.toString())
 
     // update FIco  randomly generated betweenn 600-800
     mrtg.Fico = Random(FicoHigh, FicoLow)
@@ -354,25 +354,25 @@ class LandRecord extends Contract {
    * it will need access to customer details, fico and RealEstateID
    *
    * @param {Context} ctx
-   * @param {string} mortgageJSON
+   * @param {string} lendingJSON
    * @returns
    */
-  async getInsuranceQuote (ctx, mortgageJSON) {
-    var mortgageInfo = JSON.parse(mortgageJSON)
+  async getInsuranceQuote (ctx, lendingJSON) {
+    var lendingInfo = JSON.parse(lendingJSON)
 
     // Look for the customerID
-    var mortgageKey = ctx.stub.createCompositeKey(PrefixMortgage, [
-      mortgageInfo.CustID
+    var lendingKey = ctx.stub.createCompositeKey(PrefixLending, [
+      lendingInfo.CustID
     ])
-    var mortgageBytes = await ctx.stub.getState(mortgageKey)
-    if (!mortgageBytes || mortgageBytes.length === 0) {
-      return shim.Error('CustomerID ' + mortgageInfo.CustID + ' not found ')
+    var lendingBytes = await ctx.stub.getState(lendingKey)
+    if (!lendingBytes || lendingBytes.length === 0) {
+      return shim.Error('CustomerID ' + lendingInfo.CustID + ' not found ')
     }
 
     // Get Information from Blockchain
     var mrtg
     // Decode JSON data
-    mrtg = JSON.parse(mortgageBytes.toString())
+    mrtg = JSON.parse(lendingBytes.toString())
 
     // update insurance  randomly generated betweenn 2500-5000
     mrtg.Insurance = random(InsuranceHigh, InsuranceLow)
@@ -438,26 +438,26 @@ class LandRecord extends Contract {
    * updates the lending ledger
    *
    * @param {Context} ctx
-   * @param {string} mortgageJSON
+   * @param {string} lendingJSON
    * @returns
    */
-  async closeMortgage (ctx, mortgageJSON) {
+  async closeMortgage (ctx, lendingJSON) {
     if (CheckProducer(ctx)) {
-      var mortgageInfo = JSON.parse(mortgageJSON)
+      var lendingInfo = JSON.parse(lendingJSON)
 
       // Look for the serial number
-      var mortgageKey = ctx.stub.createCompositeKey(PrefixMortgage, [
-        mortgageInfo.CustID
+      var lendingKey = ctx.stub.createCompositeKey(PrefixLending, [
+        lendingInfo.CustID
       ])
-      var mortgageBytes = await ctx.stub.getState(mortgageKey)
-      if (!mortgageBytes || mortgageBytes.length === 0) {
-        return shim.Error('CustomerID ' + mortgageInfo.CustID + ' not found ')
+      var lendingBytes = await ctx.stub.getState(lendingKey)
+      if (!lendingBytes || lendingBytes.length === 0) {
+        return shim.Error('CustomerID ' + lendingInfo.CustID + ' not found ')
       }
 
       // Get Information from Blockchain
       var mrtg
       // Decode JSON data
-      mrtg = JSON.parse(mortgageBytes.toString())
+      mrtg = JSON.parse(lendingBytes.toString())
 
       //first we need to invoke chanincode on books channel to get appraisal and title search results value of the house provided by Appraiser and Title company
       var callArgs = new Array()
@@ -594,11 +594,11 @@ class LandRecord extends Contract {
       case PrefixBook:
         key = ctx.stub.createCompositeKey(PrefixBook, [queryInfo.ID])
         break
-      case PrefixMortgage:
-        key = ctx.stub.createCompositeKey(PrefixMortgage, [queryInfo.ID])
+      case PrefixLending:
+        key = ctx.stub.createCompositeKey(PrefixLending, [queryInfo.ID])
         break
-      case PrefixRealEstate:
-        key = ctx.stub.createCompositeKey(PrefixRealEstate, [queryInfo.ID])
+      case PrefixRecord:
+        key = ctx.stub.createCompositeKey(PrefixRecord, [queryInfo.ID])
         break
       default:
         throw new Error('Unknown Query type')
@@ -640,27 +640,27 @@ class LandRecord extends Contract {
    * queryLending
    *
    * @param {Context} ctx
-   * @param {string} mortgageJSON
+   * @param {string} lendingJSON
    * @returns
    */
-  async queryLending (ctx, mortgageJSON) {
-    var mortgageInfo = JSON.parse(mortgageJSON)
+  async queryLending (ctx, lendingJSON) {
+    var lendingInfo = JSON.parse(lendingJSON)
 
     // Look for the serial number
-    var mortgageKey = ctx.stub.createCompositeKey(PrefixMortgage, [
-      mortgageInfo.CustID
+    var lendingKey = ctx.stub.createCompositeKey(PrefixLending, [
+      lendingInfo.CustID
     ])
-    var mortgageBytes = await ctx.stub.getState(mortgageKey)
-    if (!mortgageBytes || mortgageBytes.length === 0) {
-      return shim.Error('CustomerID ' + mortgageInfo.CustID + ' not found ')
+    var lendingBytes = await ctx.stub.getState(lendingKey)
+    if (!lendingBytes || lendingBytes.length === 0) {
+      return shim.Error('CustomerID ' + lendingInfo.CustID + ' not found ')
     } else {
       // Get Information from Blockchain
       var mrtg
       // Decode JSON data
-      mrtg = JSON.parse(mortgageBytes.toString())
+      mrtg = JSON.parse(lendingBytes.toString())
 
       WriteToLendingLedger(ctx, mrtg, QueryLendingString) //log it for audit
-      return mortgageBytes
+      return lendingBytes
     }
   }
 }
