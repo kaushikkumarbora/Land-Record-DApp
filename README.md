@@ -20,22 +20,30 @@ Land Record System - Orgs
     - Records Channel - Read Only
     - Books Channel - Read Only
     - Lending Channel - Create & Update
+    - initiateMortgage
+    - closeMortgage
 - Credit Bureaus
     - Records Channel - Read Only
     - Books Channel - No Participation
     - Lending Channel - Update
+    - getFicoScores
 - Insurance Providers
     - Records Channel - Read Only
     - Books Channel - Read Only
     - Lending Channel - Update
+    - getInsuranceQuote
 - Appraisers
     - Records Channel - Read Only
     - Books Channel - Create & Update
     - Lending Channel - No Participation
+    - initiateBooks
+    - getAppraisal
+    - changeTitle
 - Title Companies
     - Records Channel - Read Only
     - Books Channel - Update
     - Lending Channel - Read Only
+    - getTitle
 
 Consensus Options:
 1) Raft (Only Crash Fault Tolerant)
