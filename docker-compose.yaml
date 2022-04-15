@@ -103,7 +103,7 @@ services:
     networks:
       - landrecord
 
-    appraiser-peer:
+  appraiser-peer:
     container_name: appraiser-peer
     extends:
       file: ./base/peer-base.yaml
