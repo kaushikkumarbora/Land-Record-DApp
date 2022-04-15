@@ -1,8 +1,8 @@
 FROM docker.io/hyperledger/fabric-ca:latest
 RUN mkdir /ca
 COPY fabric-ca-server-config.yaml /ca
-COPY artifacts/crypto-config/peerOrganizations/appraiser-org/tlsca /ca/tls
-COPY artifacts/crypto-config/peerOrganizations/appraiser-org/ca /ca/ca
+COPY tlsca /ca/tls
+COPY ca /ca/ca
 RUN ["mv", "/ca/ca/*_sk", "/ca/ca/key.pem"]
 RUN ["mv", "/ca/ca/*-cert.pem", "/ca/ca/cert.pem"]
 RUN ["mv", "/ca/tls/*_sk", "/ca/tls/key.pem"]
