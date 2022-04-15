@@ -1,43 +1,43 @@
 OrdererOrgs:
-- Name: OrdererOrg
-  Domain: orderer-org
-  CommonName: orderer-org
-  Specs:
-  - Hostname: orderer0
-    CommonName: "{{.Hostname}}"
+  - Name: OrdererOrg
+    Domain: orderer-org
+    CommonName: orderer-org
+    Specs:
+      - Hostname: orderer0
+        CommonName: '{{.Hostname}}'
 PeerOrgs:
-- Name: RegistryOrg
-  Domain: registry-org
-  Specs:
-  - Hostname: registry-peer
-    CommonName: "{{.Hostname}}"
-- Name: BankOrg
-  Domain: bank-org
-  Specs:
-  - Hostname: bank-peer
-    CommonName: "{{.Hostname}}"
-- Name: TitleOrg
-  Domain: title-org
-  Specs:
-  - Hostname: title-peer
-    CommonName: "{{.Hostname}}"
-- Name: AppraiserOrg
-  Domain: appraiser-org
-  Specs:
-  - Hostname: appraiser-peer
-    CommonName: "{{.Hostname}}"
-- Name: InsuranceOrg
-  Domain: insurance-org
-  Specs:
-  - Hostname: insurance-peer
-    CommonName: "{{.Hostname}}"
-- Name: AuditOrg
-  Domain: audit-org
-  Specs:
-  - Hostname: audit-peer
-    CommonName: "{{.Hostname}}"
-- Name: FicoOrg
-  Domain: fico-org
-  Specs:
-  - Hostname: fico-peer
-    CommonName: "{{.Hostname}}"
+  - Name: RegistryOrg
+    Domain: registry-org
+    Specs:
+      - Hostname: registry-peer
+        CommonName: '{{.Hostname}}'
+  - Name: BankOrg
+    Domain: bank-org
+    Specs:
+      - Hostname: bank-peer
+        CommonName: '{{.Hostname}}'
+  - Name: TitleOrg
+    Domain: title-org
+    Specs:
+      - Hostname: title-peer
+        CommonName: '{{.Hostname}}'
+  - Name: AppraiserOrg
+    Domain: appraiser-org
+    Specs:
+      - Hostname: appraiser-peer
+        CommonName: '{{.Hostname}}'
+  - Name: InsuranceOrg
+    Domain: insurance-org
+    Specs:
+      - Hostname: insurance-peer
+        CommonName: '{{.Hostname}}'
+  - Name: AuditOrg
+    Domain: audit-org
+    Specs:
+      - Hostname: audit-peer
+        CommonName: '{{.Hostname}}'
+  - Name: FicoOrg
+    Domain: fico-org
+    Specs:
+      - Hostname: fico-peer
+        CommonName: '{{.Hostname}}'
