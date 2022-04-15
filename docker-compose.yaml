@@ -113,7 +113,7 @@ services:
     - CORE_PEER_ID=appraiser-peer
     - CORE_PEER_ADDRESS=appraiser-peer:7051
     - CORE_PEER_GOSSIP_EXTERNALENDPOINT=appraiser-peer:7051
-    - CORE_PEER_LOCALMSPID=BankOrgMSP
+    - CORE_PEER_LOCALMSPID=AppraiserOrgMSP
     ports:
     - 7051:7051
     - 7053:7053
@@ -132,7 +132,7 @@ services:
     - CORE_PEER_ID=audit-peer
     - CORE_PEER_ADDRESS=audit-peer:7051
     - CORE_PEER_GOSSIP_EXTERNALENDPOINT=audit-peer:7051
-    - CORE_PEER_LOCALMSPID=BankOrgMSP
+    - CORE_PEER_LOCALMSPID=AuditOrgMSP
     ports:
     - 8051:7051
     - 8053:7053
@@ -173,7 +173,7 @@ services:
     - CORE_PEER_ID=fico-peer
     - CORE_PEER_ADDRESS=fico-peer:7051
     - CORE_PEER_GOSSIP_EXTERNALENDPOINT=fico-peer:7051
-    - CORE_PEER_LOCALMSPID=IncomeTaxOrgMSP
+    - CORE_PEER_LOCALMSPID=FicoOrgMSP
     ports:
     - 10051:7051
     - 10053:7053
@@ -195,7 +195,7 @@ services:
     - CORE_PEER_ID=insurance-peer
     - CORE_PEER_ADDRESS=insurance-peer:7051
     - CORE_PEER_GOSSIP_EXTERNALENDPOINT=insurance-peer:7051
-    - CORE_PEER_LOCALMSPID=CourtOrgMSP
+    - CORE_PEER_LOCALMSPID=InsuranceOrgMSP
     ports:
     - 11051:7051
     - 11053:7053
@@ -218,7 +218,7 @@ services:
     - CORE_PEER_ID=registry-peer
     - CORE_PEER_ADDRESS=registry-peer:7051
     - CORE_PEER_GOSSIP_EXTERNALENDPOINT=registry-peer:7051
-    - CORE_PEER_LOCALMSPID=BankOrgMSP
+    - CORE_PEER_LOCALMSPID=RegistryOrgMSP
     ports:
     - 12051:7051
     - 12053:7053
@@ -242,7 +242,7 @@ services:
     - CORE_PEER_ID=title-peer
     - CORE_PEER_ADDRESS=title-peer:7051
     - CORE_PEER_GOSSIP_EXTERNALENDPOINT=title-peer:7051
-    - CORE_PEER_LOCALMSPID=BankOrgMSP
+    - CORE_PEER_LOCALMSPID=TitleOrgMSP
     ports:
     - 13051:7051
     - 13053:7053
@@ -257,131 +257,131 @@ services:
     networks:
       - landrecord
   
-  # cli.Bank:
-  #   extends:
-  #     file: ./cli.yaml
-  #     service: cli
-  #   container_name: cli.Bank
-  #   environment:
-  #     - CORE_PEER_ID=cli.Bank.com
-  #     - CORE_PEER_ADDRESS=peer0.Bank.com:7051
-  #     - CORE_PEER_LOCALMSPID=BankMSP
-  #     - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@Bank.com/msp
-  #   volumes:
-  #     - ./crypto-config/peerOrganizations/Bank.com:/etc/hyperledger/msp
-  #   depends_on:
-  #     - orderer.mrtgexchg.com
-  #     - peer0.Bank.com
-  #   networks:
-  #     - mrtgexchg
+  bank-cli:
+    extends:
+      file: ./base/cli-base.yaml
+      service: cli
+    container_name: bank-cli
+    environment:
+      - CORE_PEER_ID=bank-cli
+      - CORE_PEER_ADDRESS=bank-peer:7051
+      - CORE_PEER_LOCALMSPID=BankOrgMSP
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@bank-org/msp
+    volumes:
+      - ./artifacts/crypto-config/peerOrganizations/bank-org:/etc/hyperledger/msp
+    depends_on:
+      - orderer0
+      - bank-peer
+    networks:
+      - landrecord
 
-  # cli.Insurance:
-  #   extends:
-  #     file: ./cli.yaml
-  #     service: cli
-  #   container_name: cli.Insurance
-  #   environment:
-  #     - CORE_PEER_ID=cli.Insurance.com
-  #     - CORE_PEER_ADDRESS=peer0.Insurance.com:7051
-  #     - CORE_PEER_LOCALMSPID=InsuranceMSP
-  #     - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@Insurance.com/msp
-  #   volumes:
-  #     - ./crypto-config/peerOrganizations/Insurance.com:/etc/hyperledger/msp
-  #   depends_on:
-  #     - orderer.mrtgexchg.com
-  #     - peer0.Insurance.com
-  #   networks:
-  #     - mrtgexchg
+  insurance-cli:
+    extends:
+      file: ./base/cli-base.yaml
+      service: cli
+    container_name: insurance-cli
+    environment:
+      - CORE_PEER_ID=insurance-cli
+      - CORE_PEER_ADDRESS=insurance-peer:7051
+      - CORE_PEER_LOCALMSPID=InsuranceOrgMSP
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@insurance-org/msp
+    volumes:
+      - ./artifacts/crypto-config/peerOrganizations/insurance-org:/etc/hyperledger/msp
+    depends_on:
+      - orderer0
+      - insurance-peer
+    networks:
+      - landrecord
 
-  # cli.Registry:
-  #   extends:
-  #     file: ./cli.yaml
-  #     service: cli
-  #   container_name: cli.Registry
-  #   environment:
-  #     - CORE_PEER_ID=cli.Registry.com
-  #     - CORE_PEER_ADDRESS=peer0.Registry.com:7051
-  #     - CORE_PEER_LOCALMSPID=RegistryMSP
-  #     - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@Registry.com/msp
-  #   volumes:
-  #     - ./crypto-config/peerOrganizations/Registry.com:/etc/hyperledger/msp
-  #   depends_on:
-  #     - orderer.mrtgexchg.com
-  #     - peer0.Registry.com
-  #   networks:
-  #     - mrtgexchg
+  registry-cli:
+    extends:
+      file: ./base/cli-base.yaml
+      service: cli
+    container_name: registry-cli
+    environment:
+      - CORE_PEER_ID=registry-cli
+      - CORE_PEER_ADDRESS=registry-peer:7051
+      - CORE_PEER_LOCALMSPID=RegistryOrgMSP
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@registry-org/msp
+    volumes:
+      - ./artifacts/crypto-config/peerOrganizations/registry-org:/etc/hyperledger/msp
+    depends_on:
+      - orderer0
+      - registry-peer
+    networks:
+      - landrecord
 
-  # cli.Title:
-  #   extends:
-  #     file: ./cli.yaml
-  #     service: cli
-  #   container_name: cli.Title
-  #   environment:
-  #     - CORE_PEER_ID=cli.Title.com
-  #     - CORE_PEER_ADDRESS=peer0.Title.com:7051
-  #     - CORE_PEER_LOCALMSPID=TitleMSP
-  #     - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@Title.com/msp
-  #   volumes:
-  #     - ./crypto-config/peerOrganizations/Title.com:/etc/hyperledger/msp
-  #   depends_on:
-  #     - orderer.mrtgexchg.com
-  #     - peer0.Title.com
-  #   networks:
-  #     - mrtgexchg
+  title-cli:
+    extends:
+      file: ./base/cli-base.yaml
+      service: cli
+    container_name: title-cli
+    environment:
+      - CORE_PEER_ID=title-cli
+      - CORE_PEER_ADDRESS=title-peer:7051
+      - CORE_PEER_LOCALMSPID=TitleOrgMSP
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@title-org/msp
+    volumes:
+      - ./artifacts/crypto-config/peerOrganizations/title-org:/etc/hyperledger/msp
+    depends_on:
+      - orderer0
+      - title-peer
+    networks:
+      - landrecord
 
-  # cli.Appraiser:
-  #   extends:
-  #     file: ./cli.yaml
-  #     service: cli
-  #   container_name: cli.Appraiser
-  #   environment:
-  #     - CORE_PEER_ID=cli.Appraiser.com
-  #     - CORE_PEER_ADDRESS=peer0.Appraiser.com:7051
-  #     - CORE_PEER_LOCALMSPID=AppraiserMSP
-  #     - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@Appraiser.com/msp
-  #   volumes:
-  #     - ./crypto-config/peerOrganizations/Appraiser.com:/etc/hyperledger/msp
-  #   depends_on:
-  #     - orderer.mrtgexchg.com
-  #     - peer0.Appraiser.com
-  #   networks:
-  #     - mrtgexchg
+  appraiser-cli:
+    extends:
+      file: ./base/cli-base.yaml
+      service: cli
+    container_name: appraiser-cli
+    environment:
+      - CORE_PEER_ID=appraiser-cli
+      - CORE_PEER_ADDRESS=appraiser-peer:7051
+      - CORE_PEER_LOCALMSPID=AppraiserOrgMSP
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@appraiser-org/msp
+    volumes:
+      - ./artifacts/crypto-config/peerOrganizations/appraiser-org:/etc/hyperledger/msp
+    depends_on:
+      - orderer0
+      - appraiser-peer
+    networks:
+      - landrecord
 
-  # cli.Audit:
-  #   extends:
-  #     file: ./cli.yaml
-  #     service: cli
-  #   container_name: cli.Audit
-  #   environment:
-  #     - CORE_PEER_ID=cli.Audit.com
-  #     - CORE_PEER_ADDRESS=peer0.Audit.com:7051
-  #     - CORE_PEER_LOCALMSPID=AuditMSP
-  #     - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@Audit.com/msp
-  #   volumes:
-  #     - ./crypto-config/peerOrganizations/Audit.com:/etc/hyperledger/msp
-  #   depends_on:
-  #     - orderer.mrtgexchg.com
-  #     - peer0.Audit.com
-  #   networks:
-  #     - mrtgexchg
+  audit-cli:
+    extends:
+      file: ./base/cli-base.yaml
+      service: cli
+    container_name: audit-cli
+    environment:
+      - CORE_PEER_ID=audit-cli
+      - CORE_PEER_ADDRESS=audit-peer:7051
+      - CORE_PEER_LOCALMSPID=AuditOrgMSP
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@audit-org/msp
+    volumes:
+      - ./artifacts/crypto-config/peerOrganizations/audit-org:/etc/hyperledger/msp
+    depends_on:
+      - orderer0
+      - audit-peer
+    networks:
+      - landrecord
 
-  # cli.Fico:
-  #   extends:
-  #     file: ./cli.yaml
-  #     service: cli
-  #   container_name: cli.Fico
-  #   environment:
-  #     - CORE_PEER_ID=cli.Fico.com
-  #     - CORE_PEER_ADDRESS=peer0.Fico.com:7051
-  #     - CORE_PEER_LOCALMSPID=FicoMSP
-  #     - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@Fico.com/msp
-  #   volumes:
-  #     - ./crypto-config/peerOrganizations/Fico.com:/etc/hyperledger/msp
-  #   depends_on:
-  #     - orderer.mrtgexchg.com
-  #     - peer0.Fico.com
-  #   networks:
-  #     - mrtgexchg
+  fico-cli:
+    extends:
+      file: ./base/cli-base.yaml
+      service: cli
+    container_name: fico-cli
+    environment:
+      - CORE_PEER_ID=fico-cli
+      - CORE_PEER_ADDRESS=fico-peer:7051
+      - CORE_PEER_LOCALMSPID=FicoOrgMSP
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@fico-org/msp
+    volumes:
+      - ./artifacts/crypto-config/peerOrganizations/fico-org:/etc/hyperledger/msp
+    depends_on:
+      - orderer0
+      - fico-peer
+    networks:
+      - landrecord
 
 
   # web:
