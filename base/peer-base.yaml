@@ -15,6 +15,7 @@ services:
     - CORE_PEER_TLS_CERT_FILE=/peer/crypto/tls/server.crt
     - CORE_PEER_TLS_KEY_FILE=/peer/crypto/tls/server.key
     - CORE_PEER_TLS_ROOTCERT_FILE=/peer/crypto/tls/ca.crt
+    # - CORE_PEER_ADDRESSAUTODETECT=true
     working_dir: /peer
     command: peer node start
     volumes:

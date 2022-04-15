@@ -6,23 +6,38 @@ OrdererOrgs:
   - Hostname: orderer0
     CommonName: "{{.Hostname}}"
 PeerOrgs:
-- Name: LandRecordOrg
-  Domain: landrecord-org
+- Name: RegistryOrg
+  Domain: registry-org
   Specs:
-  - Hostname: landrecord-peer
+  - Hostname: registry-peer
     CommonName: "{{.Hostname}}"
 - Name: BankOrg
   Domain: bank-org
   Specs:
   - Hostname: bank-peer
     CommonName: "{{.Hostname}}"
-- Name: IncomeTaxOrg
-  Domain: incometax-org
+- Name: TitleOrg
+  Domain: title-org
   Specs:
-  - Hostname: incometax-peer
+  - Hostname: title-peer
     CommonName: "{{.Hostname}}"
-- Name: CourtOrg
-  Domain: court-org
+- Name: AppraiserOrg
+  Domain: appraiser-org
   Specs:
-  - Hostname: court-peer
+  - Hostname: appraiser-peer
+    CommonName: "{{.Hostname}}"
+- Name: InsuranceOrg
+  Domain: insurance-org
+  Specs:
+  - Hostname: insurance-peer
+    CommonName: "{{.Hostname}}"
+- Name: AuditOrg
+  Domain: audit-org
+  Specs:
+  - Hostname: audit-peer
+    CommonName: "{{.Hostname}}"
+- Name: FicoOrg
+  Domain: fico-org
+  Specs:
+  - Hostname: fico-peer
     CommonName: "{{.Hostname}}"

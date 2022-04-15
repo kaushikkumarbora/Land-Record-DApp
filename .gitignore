@@ -9,6 +9,7 @@
 /**/crypto
 /web/certs/**
 /cli/peers/**
+/artifacts/**
 /**/admincerts
 /**/cacerts
 /**/keystore

@@ -1,0 +1,481 @@
+################################################################################
+#
+#   Section: Organizations
+#
+#   - This section defines the different organizational identities which will
+#   be referenced later in the configuration.
+#
+################################################################################
+Organizations:
+
+    - &OrdererOrg
+        Name: OrdererOrgMSP
+        ID: OrdererOrgMSP
+
+        MSPDir: artifacts/crypto-config/ordererOrganizations/orderer-org/msp
+
+        Policies:
+            Readers:
+                Type: Signature
+                Rule: "OR('OrdererOrgMSP.member')"
+            Writers:
+                Type: Signature
+                Rule: "OR('OrdererOrgMSP.member')"
+            Admins:
+                Type: Signature
+                Rule: "OR('OrdererOrgMSP.admin')"
+
+        OrdererEndpoints:
+            - orderer0:7050
+
+    - &BankOrg
+        Name: BankOrgMSP
+        ID: BankOrgMSP
+
+        MSPDir: artifacts/crypto-config/peerOrganizations/bank-org/msp
+        
+        Policies:
+            Readers:
+                Type: Signature
+                Rule: "OR('BankOrgMSP.admin', 'BankOrgMSP.peer', 'BankOrgMSP.client')"
+            Writers:
+                Type: Signature
+                Rule: "OR('BankOrgMSP.admin', 'BankOrgMSP.client')"
+            Admins:
+                Type: Signature
+                Rule: "OR('BankOrgMSP.admin')"
+            Endorsement:
+                Type: Signature
+                Rule: "OR('BankOrgMSP.peer')"
+        
+        AnchorPeers:
+            - Host: bank-peer
+              Port: 7051
+
+    - &InsuranceOrg
+        Name: InsuranceOrgMSP
+        ID: InsuranceOrgMSP
+
+        MSPDir: artifacts/crypto-config/peerOrganizations/insurance-org/msp
+        
+        Policies:
+            Readers:
+                Type: Signature
+                Rule: "OR('InsuranceOrgMSP.admin', 'InsuranceOrgMSP.peer', 'InsuranceOrgMSP.client')"
+            Writers:
+                Type: Signature
+                Rule: "OR('InsuranceOrgMSP.admin', 'InsuranceOrgMSP.client')"
+            Admins:
+                Type: Signature
+                Rule: "OR('InsuranceOrgMSP.admin')"
+            Endorsement:
+                Type: Signature
+                Rule: "OR('InsuranceOrgMSP.peer')"
+        
+        AnchorPeers:
+            - Host: insurance-peer
+              Port: 7051
+
+    - &RegistryOrg
+        Name: RegistryOrgMSP
+        ID: RegistryOrgMSP
+
+        MSPDir: artifacts/crypto-config/peerOrganizations/registry-org/msp
+        
+        Policies:
+            Readers:
+                Type: Signature
+                Rule: "OR('RegistryOrgMSP.admin', 'RegistryOrgMSP.peer', 'RegistryOrgMSP.client')"
+            Writers:
+                Type: Signature
+                Rule: "OR('RegistryOrgMSP.admin', 'RegistryOrgMSP.client')"
+            Admins:
+                Type: Signature
+                Rule: "OR('RegistryOrgMSP.admin')"
+            Endorsement:
+                Type: Signature
+                Rule: "OR('RegistryOrgMSP.peer')"
+
+        AnchorPeers:
+            - Host: registry-peer
+              Port: 7051
+
+    - &TitleOrg
+        Name: TitleOrgMSP
+        ID: TitleOrgMSP
+
+        MSPDir: artifacts/crypto-config/peerOrganizations/title-org/msp
+
+        Policies:
+            Readers:
+                Type: Signature
+                Rule: "OR('TitleOrgMSP.admin', 'TitleOrgMSP.peer', 'TitleOrgMSP.client')"
+            Writers:
+                Type: Signature
+                Rule: "OR('TitleOrgMSP.admin', 'TitleOrgMSP.client')"
+            Admins:
+                Type: Signature
+                Rule: "OR('TitleOrgMSP.admin')"
+            Endorsement:
+                Type: Signature
+                Rule: "OR('TitleOrgMSP.peer')"
+        
+        AnchorPeers:
+            - Host: title-peer
+              Port: 7051
+
+    - &AppraiserOrg
+        Name: AppraiserOrgMSP
+        ID: AppraiserOrgMSP
+
+        MSPDir: artifacts/crypto-config/peerOrganizations/appraiser-org/msp
+        
+        Policies:
+            Readers:
+                Type: Signature
+                Rule: "OR('AppraiserOrgMSP.admin', 'AppraiserOrgMSP.peer', 'AppraiserOrgMSP.client')"
+            Writers:
+                Type: Signature
+                Rule: "OR('AppraiserOrgMSP.admin', 'AppraiserOrgMSP.client')"
+            Admins:
+                Type: Signature
+                Rule: "OR('AppraiserOrgMSP.admin')"
+            Endorsement:
+                Type: Signature
+                Rule: "OR('AppraiserOrgMSP.peer')"
+        
+        AnchorPeers:
+            - Host: appraiser-peer
+              Port: 7051
+
+    - &AuditOrg
+        Name: AuditOrgMSP
+        ID: AuditOrgMSP
+
+        MSPDir: artifacts/crypto-config/peerOrganizations/audit-org/msp
+
+        Policies:
+            Readers:
+                Type: Signature
+                Rule: "OR('AuditOrgMSP.admin', 'AuditOrgMSP.peer', 'AuditOrgMSP.client')"
+            Writers:
+                Type: Signature
+                Rule: "OR('AuditOrgMSP.admin', 'AuditOrgMSP.client')"
+            Admins:
+                Type: Signature
+                Rule: "OR('AuditOrgMSP.admin')"
+            Endorsement:
+                Type: Signature
+                Rule: "OR('AuditOrgMSP.peer')"
+
+        AnchorPeers:
+            - Host: audit-peer
+              Port: 7051
+
+    - &FicoOrg
+        Name: FicoOrgMSP
+        ID: FicoOrgMSP
+
+        MSPDir: artifacts/crypto-config/peerOrganizations/fico-org/msp
+
+        Policies:
+            Readers:
+                Type: Signature
+                Rule: "OR('FicoOrgMSP.admin', 'FicoOrgMSP.peer', 'FicoOrgMSP.client')"
+            Writers:
+                Type: Signature
+                Rule: "OR('FicoOrgMSP.admin', 'FicoOrgMSP.client')"
+            Admins:
+                Type: Signature
+                Rule: "OR('FicoOrgMSP.admin')"
+            Endorsement:
+                Type: Signature
+                Rule: "OR('FicoOrgMSP.peer')"
+        
+        AnchorPeers:
+            - Host: fico-peer
+              Port: 7051
+
+
+
+
+
+################################################################################
+#
+#   SECTION: Capabilities
+#
+#   - This section defines the capabilities of fabric network. This is a new
+#   concept as of v1.1.0 and should not be utilized in mixed networks with
+#   v1.0.x peers and orderers.  Capabilities define features which must be
+#   present in a fabric binary for that binary to safely participate in the
+#   fabric network.  For instance, if a new MSP type is added, newer binaries
+#   might recognize and validate the signatures from this type, while older
+#   binaries without this support would be unable to validate those
+#   transactions.  This could lead to different versions of the fabric binaries
+#   having different world states.  Instead, defining a capability for a channel
+#   informs those binaries without this capability that they must cease
+#   processing transactions until they have been upgraded.  For v1.0.x if any
+#   capabilities are defined (including a map with all capabilities turned off)
+#   then the v1.0.x peer will deliberately crash.
+#
+################################################################################
+Capabilities:
+    # Channel capabilities apply to both the orderers and the peers and must be
+    # supported by both.
+    # Set the value of the capability to true to require it.
+    Channel: &ChannelCapabilities
+        # V2.0 for Channel is a catchall flag for behavior which has been
+        # determined to be desired for all orderers and peers running at the v2.0.0
+        # level, but which would be incompatible with orderers and peers from
+        # prior releases.
+        # Prior to enabling V2.0 channel capabilities, ensure that all
+        # orderers and peers on a channel are at v2.0.0 or later.
+        V2_0: true
+
+    # Orderer capabilities apply only to the orderers, and may be safely
+    # used with prior release peers.
+    # Set the value of the capability to true to require it.
+    Orderer: &OrdererCapabilities
+        # V1.1 for Orderer is a catchall flag for behavior which has been
+        # determined to be desired for all orderers running at the v1.1.x
+        # level, but which would be incompatible with orderers from prior releases.
+        # Prior to enabling V2.0 orderer capabilities, ensure that all
+        # orderers on a channel are at v2.0.0 or later.
+        V2_0: true
+
+    # Application capabilities apply only to the peer network, and may be safely
+    # used with prior release orderers.
+    # Set the value of the capability to true to require it.
+    Application: &ApplicationCapabilities
+        # V2.0 for Application enables the new non-backwards compatible
+        # features and fixes of fabric v2.0.
+        # Prior to enabling V2.0 orderer capabilities, ensure that all
+        # orderers on a channel are at v2.0.0 or later.
+        V2_0: true
+
+
+
+
+
+
+################################################################################
+#
+#   SECTION: Application
+#
+#   - This section defines the values to encode into a config transaction or
+#   genesis block for application related parameters
+#
+################################################################################
+Application: &ApplicationDefaults
+
+    # Organizations is the list of orgs which are defined as participants on
+    # the application side of the network
+    Organizations:
+
+    # Policies defines the set of policies at this level of the config tree
+    # For Application policies, their canonical path is
+    #   /Channel/Application/<PolicyName>
+    Policies:
+        Readers:
+            Type: ImplicitMeta
+            Rule: "ANY Readers"
+        Writers:
+            Type: ImplicitMeta
+            Rule: "ANY Writers"
+        Admins:
+            Type: ImplicitMeta
+            Rule: "MAJORITY Admins"
+        LifecycleEndorsement:
+            Type: ImplicitMeta
+            Rule: "MAJORITY Endorsement"
+        Endorsement:
+            Type: ImplicitMeta
+            Rule: "MAJORITY Endorsement"
+
+    Capabilities:
+        <<: *ApplicationCapabilities
+
+
+
+
+
+################################################################################
+#
+#   SECTION: Orderer
+#
+#   - This section defines the values to encode into a config transaction or
+#   genesis block for orderer related parameters
+#
+################################################################################
+Orderer: &OrdererDefaults
+
+    # Orderer Type: The orderer implementation to start
+    OrdererType: etcdraft
+    
+    # Addresses used to be the list of orderer addresses that clients and peers
+    # could connect to.  However, this does not allow clients to associate orderer
+    # addresses and orderer organizations which can be useful for things such
+    # as TLS validation.  The preferred way to specify orderer addresses is now
+    # to include the OrdererEndpoints item in your org definition
+    Addresses:
+        - orderer0:7050
+
+    EtcdRaft:
+        Consenters:
+        - Host: orderer0
+          Port: 7050
+          ClientTLSCert: artifacts/crypto-config/ordererOrganizations/orderer-org/orderers/orderer0/tls/server.crt
+          ServerTLSCert: artifacts/crypto-config/ordererOrganizations/orderer-org/orderers/orderer0/tls/server.crt
+
+    # Batch Timeout: The amount of time to wait before creating a batch
+    BatchTimeout: 2s
+
+    # Batch Size: Controls the number of messages batched into a block
+    BatchSize:
+
+        # Max Message Count: The maximum number of messages to permit in a batch
+        MaxMessageCount: 10
+
+        # Absolute Max Bytes: The absolute maximum number of bytes allowed for
+        # the serialized messages in a batch.
+        AbsoluteMaxBytes: 99 MB
+
+        # Preferred Max Bytes: The preferred maximum number of bytes allowed for
+        # the serialized messages in a batch. A message larger than the preferred
+        # max bytes will result in a batch larger than preferred max bytes.
+        PreferredMaxBytes: 512 KB
+
+    # Organizations is the list of orgs which are defined as participants on
+    # the orderer side of the network
+    Organizations:
+
+    # Policies defines the set of policies at this level of the config tree
+    # For Orderer policies, their canonical path is
+    #   /Channel/Orderer/<PolicyName>
+    Policies:
+        Readers:
+            Type: ImplicitMeta
+            Rule: "ANY Readers"
+        Writers:
+            Type: ImplicitMeta
+            Rule: "ANY Writers"
+        Admins:
+            Type: ImplicitMeta
+            Rule: "MAJORITY Admins"
+        # BlockValidation specifies what signatures must be included in the block
+        # from the orderer for the peer to validate it.
+        BlockValidation:
+            Type: ImplicitMeta
+            Rule: "ANY Writers"
+
+
+
+
+
+################################################################################
+#
+#   CHANNEL
+#
+#   This section defines the values to encode into a config transaction or
+#   genesis block for channel related parameters.
+#
+################################################################################
+Channel: &ChannelDefaults
+    # Policies defines the set of policies at this level of the config tree
+    # For Channel policies, their canonical path is
+    #   /Channel/<PolicyName>
+    Policies:
+        # Who may invoke the 'Deliver' API
+        Readers:
+            Type: ImplicitMeta
+            Rule: "ANY Readers"
+        # Who may invoke the 'Broadcast' API
+        Writers:
+            Type: ImplicitMeta
+            Rule: "ANY Writers"
+        # By default, who may modify elements at this config level
+        Admins:
+            Type: ImplicitMeta
+            Rule: "MAJORITY Admins"
+
+    # Capabilities describes the channel level capabilities, see the
+    # dedicated Capabilities section elsewhere in this file for a full
+    # description
+    Capabilities:
+        <<: *ChannelCapabilities
+
+
+
+
+
+################################################################################
+#
+#   Profile
+#
+#   - Different configuration profiles may be encoded here to be specified
+#   as parameters to the configtxgen tool
+#
+################################################################################
+Profiles:
+
+    LANDRECOrdererGenesis:
+        <<: *ChannelDefaults
+        Orderer:
+            <<: *OrdererDefaults
+            Organizations:
+                - *OrdererOrg
+            Capabilities:
+                <<: *OrdererCapabilities
+        Consortiums:
+            LANDREC:
+                Organizations:
+                    - *BankOrg
+                    - *InsuranceOrg
+                    - *RegistryOrg
+                    - *TitleOrg
+                    - *AppraiserOrg
+                    - *AuditOrg
+                    - *FicoOrg
+
+    RecordsChannel:
+        Consortium: LANDREC
+        <<: *ChannelDefaults
+        Application:
+            <<: *ApplicationDefaults
+            Organizations:
+                - *BankOrg
+                - *InsuranceOrg
+                - *RegistryOrg
+                - *TitleOrg
+                - *AppraiserOrg
+                - *AuditOrg
+                - *FicoOrg
+            Capabilities:
+                <<: *ApplicationCapabilities
+    LendingChannel:
+        Consortium: LANDREC
+        <<: *ChannelDefaults
+        Application:
+            <<: *ApplicationDefaults
+            Organizations:
+                - *BankOrg
+                - *InsuranceOrg
+                - *AuditOrg
+                - *FicoOrg
+                - *TitleOrg
+            Capabilities:
+                <<: *ApplicationCapabilities
+    BooksChannel:
+        Consortium: LANDREC
+        <<: *ChannelDefaults
+        Application:
+            <<: *ApplicationDefaults
+            Organizations:
+                - *BankOrg
+                - *InsuranceOrg
+                - *TitleOrg
+                - *AppraiserOrg
+                - *AuditOrg
+                - *RegistryOrg
+            Capabilities:
+                <<: *ApplicationCapabilities
