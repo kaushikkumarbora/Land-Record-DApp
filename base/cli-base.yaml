@@ -12,6 +12,6 @@ services:
     working_dir: /peer
     # command: /bin/bash
     volumes:
-      - ./artifacts/orderer/:/peer/orderer
-      - ./chaincode:/chaincode
-      - ./artifacts/channels/:/peer/channels
+      - ../artifacts/orderer/:/peer/orderer
+      - ../chaincode:/chaincode
+      - ../artifacts/channels/:/peer/channels
