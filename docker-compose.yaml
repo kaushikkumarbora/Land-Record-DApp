@@ -5,17 +5,28 @@ networks:
     name: fabric_landrecord
 
 services:
-  landrecord-ca:
-    container_name: landrecord-ca
+  appraiser-ca:
+    container_name: appraiser-ca
     extends:
       file: ./base/ca-base.yaml
       service: ca-base
-    image: landrecord-ca
+    image: appraiser-ca
     ports:
     - 7054:7054
     networks:
       - landrecord
-
+    
+  audit-ca:
+    container_name: audit-ca
+    extends:
+      file: ./base/ca-base.yaml
+      service: ca-base
+    image: audit-ca
+    ports:
+    - 8054:7054
+    networks:
+      - landrecord
+    
   bank-ca:
     container_name: bank-ca
     extends:
@@ -23,29 +34,51 @@ services:
       service: ca-base
     image: bank-ca
     ports:
-    - 8054:7054
-    networks:
-      - landrecord
-
-  incometax-ca:
-    container_name: incometax-ca
-    extends:
-      file: ./base/ca-base.yaml
-      service: ca-base
-    image: incometax-ca
-    ports:
     - 9054:7054
     networks:
       - landrecord
 
-  court-ca:
-    container_name: court-ca
+  fico-ca:
+    container_name: fico-ca
     extends:
       file: ./base/ca-base.yaml
       service: ca-base
-    image: court-ca
+    image: fico-ca
     ports:
     - 10054:7054
+    networks:
+      - landrecord
+  
+  insurance-ca:
+    container_name: insurance-ca
+    extends:
+      file: ./base/ca-base.yaml
+      service: ca-base
+    image: insurance-ca
+    ports:
+    - 11054:7054
+    networks:
+      - landrecord
+
+  registry-ca:
+    container_name: registry-ca
+    extends:
+      file: ./base/ca-base.yaml
+      service: ca-base
+    image: registry-ca
+    ports:
+    - 12054:7054
+    networks:
+      - landrecord
+  
+  title-ca:
+    container_name: title-ca
+    extends:
+      file: ./base/ca-base.yaml
+      service: ca-base
+    image: title-ca
+    ports:
+    - 13054:7054
     networks:
       - landrecord
 
@@ -57,7 +90,7 @@ services:
     - ORDERER_GENERAL_LISTENADDRESS=0.0.0.0
     - ORDERER_GENERAL_GENESISMETHOD=file
     - ORDERER_GENERAL_GENESISFILE=/orderer/crypto/genesis.block
-    - ORDERER_GENERAL_LOCALMSPID=OrdererMSP
+    - ORDERER_GENERAL_LOCALMSPID=OrdererOrgMSP
     - ORDERER_GENERAL_LOCALMSPDIR=/orderer/crypto/msp
     - ORDERER_GENERAL_TLS_ENABLED=true
     - ORDERER_GENERAL_TLS_PRIVATEKEY=/orderer/crypto/tls/server.key
@@ -70,17 +103,17 @@ services:
     networks:
       - landrecord
 
-  landrecord-peer:
-    container_name: landrecord-peer
+    appraiser-peer:
+    container_name: appraiser-peer
     extends:
       file: ./base/peer-base.yaml
       service: peer-base
-    image: landrecord-peer
+    image: appraiser-peer
     environment:
-    - CORE_PEER_ID=landrecord-peer
-    - CORE_PEER_ADDRESS=landrecord-peer:7051
-    - CORE_PEER_GOSSIP_EXTERNALENDPOINT=landrecord-peer:7051
-    - CORE_PEER_LOCALMSPID=LandRecordOrgMSP
+    - CORE_PEER_ID=appraiser-peer
+    - CORE_PEER_ADDRESS=appraiser-peer:7051
+    - CORE_PEER_GOSSIP_EXTERNALENDPOINT=appraiser-peer:7051
+    - CORE_PEER_LOCALMSPID=BankOrgMSP
     ports:
     - 7051:7051
     - 7053:7053
@@ -88,7 +121,27 @@ services:
     - orderer0
     networks:
       - landrecord
-
+  
+  audit-peer:
+    container_name: audit-peer
+    extends:
+      file: ./base/peer-base.yaml
+      service: peer-base
+    image: audit-peer
+    environment:
+    - CORE_PEER_ID=audit-peer
+    - CORE_PEER_ADDRESS=audit-peer:7051
+    - CORE_PEER_GOSSIP_EXTERNALENDPOINT=audit-peer:7051
+    - CORE_PEER_LOCALMSPID=BankOrgMSP
+    ports:
+    - 8051:7051
+    - 8053:7053
+    depends_on:
+    - orderer0
+    - appraiser-peer
+    networks:
+      - landrecord
+  
   bank-peer:
     container_name: bank-peer
     extends:
@@ -101,68 +154,248 @@ services:
     - CORE_PEER_GOSSIP_EXTERNALENDPOINT=bank-peer:7051
     - CORE_PEER_LOCALMSPID=BankOrgMSP
     ports:
-    - 8051:7051
-    - 8053:7053
-    depends_on:
-    - orderer0
-    - landrecord-peer
-    networks:
-      - landrecord
-
-  incometax-peer:
-    container_name: incometax-peer
-    extends:
-      file: ./base/peer-base.yaml
-      service: peer-base
-    image: incometax-peer
-    environment:
-    - CORE_PEER_ID=incometax-peer
-    - CORE_PEER_ADDRESS=incometax-peer:7051
-    - CORE_PEER_GOSSIP_EXTERNALENDPOINT=incometax-peer:7051
-    - CORE_PEER_LOCALMSPID=IncomeTaxOrgMSP
-    ports:
     - 9051:7051
     - 9053:7053
     depends_on:
     - orderer0
-    - landrecord-peer
-    - bank-peer
+    - appraiser-peer
+    - audit-peer
     networks:
       - landrecord
 
-  court-peer:
-    container_name: court-peer
+  fico-peer:
+    container_name: fico-peer
     extends:
       file: ./base/peer-base.yaml
       service: peer-base
-    image: court-peer
+    image: fico-peer
     environment:
-    - CORE_PEER_ID=court-peer
-    - CORE_PEER_ADDRESS=court-peer:7051
-    - CORE_PEER_GOSSIP_EXTERNALENDPOINT=court-peer:7051
-    - CORE_PEER_LOCALMSPID=CourtOrgMSP
+    - CORE_PEER_ID=fico-peer
+    - CORE_PEER_ADDRESS=fico-peer:7051
+    - CORE_PEER_GOSSIP_EXTERNALENDPOINT=fico-peer:7051
+    - CORE_PEER_LOCALMSPID=IncomeTaxOrgMSP
     ports:
     - 10051:7051
     - 10053:7053
     depends_on:
     - orderer0
-    - landrecord-peer
+    - appraiser-peer
+    - audit-peer
     - bank-peer
-    - incometax-peer
     networks:
       - landrecord
+
+  insurance-peer:
+    container_name: insurance-peer
+    extends:
+      file: ./base/peer-base.yaml
+      service: peer-base
+    image: insurance-peer
+    environment:
+    - CORE_PEER_ID=insurance-peer
+    - CORE_PEER_ADDRESS=insurance-peer:7051
+    - CORE_PEER_GOSSIP_EXTERNALENDPOINT=insurance-peer:7051
+    - CORE_PEER_LOCALMSPID=CourtOrgMSP
+    ports:
+    - 11051:7051
+    - 11053:7053
+    depends_on:
+    - orderer0
+    - appraiser-peer
+    - audit-peer
+    - bank-peer
+    - fico-peer
+    networks:
+      - landrecord
+  
+  registry-peer:
+    container_name: registry-peer
+    extends:
+      file: ./base/peer-base.yaml
+      service: peer-base
+    image: registry-peer
+    environment:
+    - CORE_PEER_ID=registry-peer
+    - CORE_PEER_ADDRESS=registry-peer:7051
+    - CORE_PEER_GOSSIP_EXTERNALENDPOINT=registry-peer:7051
+    - CORE_PEER_LOCALMSPID=BankOrgMSP
+    ports:
+    - 12051:7051
+    - 12053:7053
+    depends_on:
+    - orderer0
+    - appraiser-peer
+    - audit-peer
+    - bank-peer
+    - fico-peer
+    - insurance-peer
+    networks:
+      - landrecord
+  
+  title-peer:
+    container_name: title-peer
+    extends:
+      file: ./base/peer-base.yaml
+      service: peer-base
+    image: title-peer
+    environment:
+    - CORE_PEER_ID=title-peer
+    - CORE_PEER_ADDRESS=title-peer:7051
+    - CORE_PEER_GOSSIP_EXTERNALENDPOINT=title-peer:7051
+    - CORE_PEER_LOCALMSPID=BankOrgMSP
+    ports:
+    - 13051:7051
+    - 13053:7053
+    depends_on:
+    - orderer0
+    - appraiser-peer
+    - audit-peer
+    - bank-peer
+    - fico-peer
+    - insurance-peer
+    - registry-peer
+    networks:
+      - landrecord
+  
+  # cli.Bank:
+  #   extends:
+  #     file: ./cli.yaml
+  #     service: cli
+  #   container_name: cli.Bank
+  #   environment:
+  #     - CORE_PEER_ID=cli.Bank.com
+  #     - CORE_PEER_ADDRESS=peer0.Bank.com:7051
+  #     - CORE_PEER_LOCALMSPID=BankMSP
+  #     - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@Bank.com/msp
+  #   volumes:
+  #     - ./crypto-config/peerOrganizations/Bank.com:/etc/hyperledger/msp
+  #   depends_on:
+  #     - orderer.mrtgexchg.com
+  #     - peer0.Bank.com
+  #   networks:
+  #     - mrtgexchg
+
+  # cli.Insurance:
+  #   extends:
+  #     file: ./cli.yaml
+  #     service: cli
+  #   container_name: cli.Insurance
+  #   environment:
+  #     - CORE_PEER_ID=cli.Insurance.com
+  #     - CORE_PEER_ADDRESS=peer0.Insurance.com:7051
+  #     - CORE_PEER_LOCALMSPID=InsuranceMSP
+  #     - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@Insurance.com/msp
+  #   volumes:
+  #     - ./crypto-config/peerOrganizations/Insurance.com:/etc/hyperledger/msp
+  #   depends_on:
+  #     - orderer.mrtgexchg.com
+  #     - peer0.Insurance.com
+  #   networks:
+  #     - mrtgexchg
+
+  # cli.Registry:
+  #   extends:
+  #     file: ./cli.yaml
+  #     service: cli
+  #   container_name: cli.Registry
+  #   environment:
+  #     - CORE_PEER_ID=cli.Registry.com
+  #     - CORE_PEER_ADDRESS=peer0.Registry.com:7051
+  #     - CORE_PEER_LOCALMSPID=RegistryMSP
+  #     - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@Registry.com/msp
+  #   volumes:
+  #     - ./crypto-config/peerOrganizations/Registry.com:/etc/hyperledger/msp
+  #   depends_on:
+  #     - orderer.mrtgexchg.com
+  #     - peer0.Registry.com
+  #   networks:
+  #     - mrtgexchg
+
+  # cli.Title:
+  #   extends:
+  #     file: ./cli.yaml
+  #     service: cli
+  #   container_name: cli.Title
+  #   environment:
+  #     - CORE_PEER_ID=cli.Title.com
+  #     - CORE_PEER_ADDRESS=peer0.Title.com:7051
+  #     - CORE_PEER_LOCALMSPID=TitleMSP
+  #     - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@Title.com/msp
+  #   volumes:
+  #     - ./crypto-config/peerOrganizations/Title.com:/etc/hyperledger/msp
+  #   depends_on:
+  #     - orderer.mrtgexchg.com
+  #     - peer0.Title.com
+  #   networks:
+  #     - mrtgexchg
+
+  # cli.Appraiser:
+  #   extends:
+  #     file: ./cli.yaml
+  #     service: cli
+  #   container_name: cli.Appraiser
+  #   environment:
+  #     - CORE_PEER_ID=cli.Appraiser.com
+  #     - CORE_PEER_ADDRESS=peer0.Appraiser.com:7051
+  #     - CORE_PEER_LOCALMSPID=AppraiserMSP
+  #     - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@Appraiser.com/msp
+  #   volumes:
+  #     - ./crypto-config/peerOrganizations/Appraiser.com:/etc/hyperledger/msp
+  #   depends_on:
+  #     - orderer.mrtgexchg.com
+  #     - peer0.Appraiser.com
+  #   networks:
+  #     - mrtgexchg
+
+  # cli.Audit:
+  #   extends:
+  #     file: ./cli.yaml
+  #     service: cli
+  #   container_name: cli.Audit
+  #   environment:
+  #     - CORE_PEER_ID=cli.Audit.com
+  #     - CORE_PEER_ADDRESS=peer0.Audit.com:7051
+  #     - CORE_PEER_LOCALMSPID=AuditMSP
+  #     - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@Audit.com/msp
+  #   volumes:
+  #     - ./crypto-config/peerOrganizations/Audit.com:/etc/hyperledger/msp
+  #   depends_on:
+  #     - orderer.mrtgexchg.com
+  #     - peer0.Audit.com
+  #   networks:
+  #     - mrtgexchg
+
+  # cli.Fico:
+  #   extends:
+  #     file: ./cli.yaml
+  #     service: cli
+  #   container_name: cli.Fico
+  #   environment:
+  #     - CORE_PEER_ID=cli.Fico.com
+  #     - CORE_PEER_ADDRESS=peer0.Fico.com:7051
+  #     - CORE_PEER_LOCALMSPID=FicoMSP
+  #     - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@Fico.com/msp
+  #   volumes:
+  #     - ./crypto-config/peerOrganizations/Fico.com:/etc/hyperledger/msp
+  #   depends_on:
+  #     - orderer.mrtgexchg.com
+  #     - peer0.Fico.com
+  #   networks:
+  #     - mrtgexchg
+
 
   # web:
   #   container_name: web
   #   image: web
   #   # TODO
   #   depends_on:
-  #   - orderer0
-  #   - landrecord-ca
-  #   - landrecord-peer
-  #   - bank-ca
-  #   - bank-peer
-  #   - incometax-ca
-  #   - incometax-peer
+  #     - orderer0
+  #     - appraiser-peer
+  #     - audit-peer
+  #     - bank-peer
+  #     - fico-peer
+  #     - insurance-peer
+  #     - registry-peer
+  #     - title-peer
   #   networks:
   #     - landrecord
