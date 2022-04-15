@@ -6,6 +6,7 @@
 
 /**/ca
 /**/tls
+/**/tlsca
 /**/crypto
 /web/certs/**
 /cli/peers/**
@@ -14,5 +15,6 @@
 /**/cacerts
 /**/keystore
 /**/signcerts
-/**/tlscerts
+/**/tlscacerts
 /**/*.pem
+/**/*.block
