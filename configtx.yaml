@@ -9,188 +9,188 @@
 Organizations:
 
     - &OrdererOrg
-        Name: OrdererOrgMSP
-        ID: OrdererOrgMSP
+        Name: OrdererMSP
+        ID: OrdererMSP
 
         MSPDir: artifacts/crypto-config/ordererOrganizations/orderer-org/msp
 
         Policies:
             Readers:
                 Type: Signature
-                Rule: "OR('OrdererOrgMSP.member')"
+                Rule: "OR('OrdererMSP.member')"
             Writers:
                 Type: Signature
-                Rule: "OR('OrdererOrgMSP.member')"
+                Rule: "OR('OrdererMSP.member')"
             Admins:
                 Type: Signature
-                Rule: "OR('OrdererOrgMSP.admin')"
+                Rule: "OR('OrdererMSP.admin')"
 
         OrdererEndpoints:
             - orderer0:7050
 
     - &BankOrg
-        Name: BankOrgMSP
-        ID: BankOrgMSP
+        Name: BankMSP
+        ID: BankMSP
 
         MSPDir: artifacts/crypto-config/peerOrganizations/bank-org/msp
         
         Policies:
             Readers:
                 Type: Signature
-                Rule: "OR('BankOrgMSP.admin', 'BankOrgMSP.peer', 'BankOrgMSP.client')"
+                Rule: "OR('BankMSP.admin', 'BankMSP.peer', 'BankMSP.client')"
             Writers:
                 Type: Signature
-                Rule: "OR('BankOrgMSP.admin', 'BankOrgMSP.client')"
+                Rule: "OR('BankMSP.admin', 'BankMSP.client')"
             Admins:
                 Type: Signature
-                Rule: "OR('BankOrgMSP.admin')"
+                Rule: "OR('BankMSP.admin')"
             Endorsement:
                 Type: Signature
-                Rule: "OR('BankOrgMSP.peer')"
+                Rule: "OR('BankMSP.peer')"
         
         AnchorPeers:
             - Host: bank-peer
               Port: 7051
 
     - &InsuranceOrg
-        Name: InsuranceOrgMSP
-        ID: InsuranceOrgMSP
+        Name: InsuranceMSP
+        ID: InsuranceMSP
 
         MSPDir: artifacts/crypto-config/peerOrganizations/insurance-org/msp
         
         Policies:
             Readers:
                 Type: Signature
-                Rule: "OR('InsuranceOrgMSP.admin', 'InsuranceOrgMSP.peer', 'InsuranceOrgMSP.client')"
+                Rule: "OR('InsuranceMSP.admin', 'InsuranceMSP.peer', 'InsuranceMSP.client')"
             Writers:
                 Type: Signature
-                Rule: "OR('InsuranceOrgMSP.admin', 'InsuranceOrgMSP.client')"
+                Rule: "OR('InsuranceMSP.admin', 'InsuranceMSP.client')"
             Admins:
                 Type: Signature
-                Rule: "OR('InsuranceOrgMSP.admin')"
+                Rule: "OR('InsuranceMSP.admin')"
             Endorsement:
                 Type: Signature
-                Rule: "OR('InsuranceOrgMSP.peer')"
+                Rule: "OR('InsuranceMSP.peer')"
         
         AnchorPeers:
             - Host: insurance-peer
               Port: 7051
 
     - &RegistryOrg
-        Name: RegistryOrgMSP
-        ID: RegistryOrgMSP
+        Name: RegistryMSP
+        ID: RegistryMSP
 
         MSPDir: artifacts/crypto-config/peerOrganizations/registry-org/msp
         
         Policies:
             Readers:
                 Type: Signature
-                Rule: "OR('RegistryOrgMSP.admin', 'RegistryOrgMSP.peer', 'RegistryOrgMSP.client')"
+                Rule: "OR('RegistryMSP.admin', 'RegistryMSP.peer', 'RegistryMSP.client')"
             Writers:
                 Type: Signature
-                Rule: "OR('RegistryOrgMSP.admin', 'RegistryOrgMSP.client')"
+                Rule: "OR('RegistryMSP.admin', 'RegistryMSP.client')"
             Admins:
                 Type: Signature
-                Rule: "OR('RegistryOrgMSP.admin')"
+                Rule: "OR('RegistryMSP.admin')"
             Endorsement:
                 Type: Signature
-                Rule: "OR('RegistryOrgMSP.peer')"
+                Rule: "OR('RegistryMSP.peer')"
 
         AnchorPeers:
             - Host: registry-peer
               Port: 7051
 
     - &TitleOrg
-        Name: TitleOrgMSP
-        ID: TitleOrgMSP
+        Name: TitleMSP
+        ID: TitleMSP
 
         MSPDir: artifacts/crypto-config/peerOrganizations/title-org/msp
 
         Policies:
             Readers:
                 Type: Signature
-                Rule: "OR('TitleOrgMSP.admin', 'TitleOrgMSP.peer', 'TitleOrgMSP.client')"
+                Rule: "OR('TitleMSP.admin', 'TitleMSP.peer', 'TitleMSP.client')"
             Writers:
                 Type: Signature
-                Rule: "OR('TitleOrgMSP.admin', 'TitleOrgMSP.client')"
+                Rule: "OR('TitleMSP.admin', 'TitleMSP.client')"
             Admins:
                 Type: Signature
-                Rule: "OR('TitleOrgMSP.admin')"
+                Rule: "OR('TitleMSP.admin')"
             Endorsement:
                 Type: Signature
-                Rule: "OR('TitleOrgMSP.peer')"
+                Rule: "OR('TitleMSP.peer')"
         
         AnchorPeers:
             - Host: title-peer
               Port: 7051
 
     - &AppraiserOrg
-        Name: AppraiserOrgMSP
-        ID: AppraiserOrgMSP
+        Name: AppraiserMSP
+        ID: AppraiserMSP
 
         MSPDir: artifacts/crypto-config/peerOrganizations/appraiser-org/msp
         
         Policies:
             Readers:
                 Type: Signature
-                Rule: "OR('AppraiserOrgMSP.admin', 'AppraiserOrgMSP.peer', 'AppraiserOrgMSP.client')"
+                Rule: "OR('AppraiserMSP.admin', 'AppraiserMSP.peer', 'AppraiserMSP.client')"
             Writers:
                 Type: Signature
-                Rule: "OR('AppraiserOrgMSP.admin', 'AppraiserOrgMSP.client')"
+                Rule: "OR('AppraiserMSP.admin', 'AppraiserMSP.client')"
             Admins:
                 Type: Signature
-                Rule: "OR('AppraiserOrgMSP.admin')"
+                Rule: "OR('AppraiserMSP.admin')"
             Endorsement:
                 Type: Signature
-                Rule: "OR('AppraiserOrgMSP.peer')"
+                Rule: "OR('AppraiserMSP.peer')"
         
         AnchorPeers:
             - Host: appraiser-peer
               Port: 7051
 
     - &AuditOrg
-        Name: AuditOrgMSP
-        ID: AuditOrgMSP
+        Name: AuditMSP
+        ID: AuditMSP
 
         MSPDir: artifacts/crypto-config/peerOrganizations/audit-org/msp
 
         Policies:
             Readers:
                 Type: Signature
-                Rule: "OR('AuditOrgMSP.admin', 'AuditOrgMSP.peer', 'AuditOrgMSP.client')"
+                Rule: "OR('AuditMSP.admin', 'AuditMSP.peer', 'AuditMSP.client')"
             Writers:
                 Type: Signature
-                Rule: "OR('AuditOrgMSP.admin', 'AuditOrgMSP.client')"
+                Rule: "OR('AuditMSP.admin', 'AuditMSP.client')"
             Admins:
                 Type: Signature
-                Rule: "OR('AuditOrgMSP.admin')"
+                Rule: "OR('AuditMSP.admin')"
             Endorsement:
                 Type: Signature
-                Rule: "OR('AuditOrgMSP.peer')"
+                Rule: "OR('AuditMSP.peer')"
 
         AnchorPeers:
             - Host: audit-peer
               Port: 7051
 
     - &FicoOrg
-        Name: FicoOrgMSP
-        ID: FicoOrgMSP
+        Name: FicoMSP
+        ID: FicoMSP
 
         MSPDir: artifacts/crypto-config/peerOrganizations/fico-org/msp
 
         Policies:
             Readers:
                 Type: Signature
-                Rule: "OR('FicoOrgMSP.admin', 'FicoOrgMSP.peer', 'FicoOrgMSP.client')"
+                Rule: "OR('FicoMSP.admin', 'FicoMSP.peer', 'FicoMSP.client')"
             Writers:
                 Type: Signature
-                Rule: "OR('FicoOrgMSP.admin', 'FicoOrgMSP.client')"
+                Rule: "OR('FicoMSP.admin', 'FicoMSP.client')"
             Admins:
                 Type: Signature
-                Rule: "OR('FicoOrgMSP.admin')"
+                Rule: "OR('FicoMSP.admin')"
             Endorsement:
                 Type: Signature
-                Rule: "OR('FicoOrgMSP.peer')"
+                Rule: "OR('FicoMSP.peer')"
         
         AnchorPeers:
             - Host: fico-peer
@@ -310,7 +310,7 @@ Application: &ApplicationDefaults
 Orderer: &OrdererDefaults
 
     # Orderer Type: The orderer implementation to start
-    OrdererType: etcdraft
+    OrdererType: solo
     
     # Addresses used to be the list of orderer addresses that clients and peers
     # could connect to.  However, this does not allow clients to associate orderer
@@ -320,12 +320,12 @@ Orderer: &OrdererDefaults
     Addresses:
         - orderer0:7050
 
-    EtcdRaft:
-        Consenters:
-        - Host: orderer0
-          Port: 7050
-          ClientTLSCert: artifacts/crypto-config/ordererOrganizations/orderer-org/orderers/orderer0/tls/server.crt
-          ServerTLSCert: artifacts/crypto-config/ordererOrganizations/orderer-org/orderers/orderer0/tls/server.crt
+    # EtcdRaft:
+    #     Consenters:
+    #     - Host: orderer0
+    #       Port: 7050
+    #       ClientTLSCert: artifacts/crypto-config/ordererOrganizations/orderer-org/orderers/orderer0/tls/server.crt
+    #       ServerTLSCert: artifacts/crypto-config/ordererOrganizations/orderer-org/orderers/orderer0/tls/server.crt
 
     # Batch Timeout: The amount of time to wait before creating a batch
     BatchTimeout: 2s
