@@ -82,20 +82,34 @@ services:
     networks:
       - landrecord
 
+  orderer-ca:
+    container_name: orderer-ca
+    extends:
+      file: ./base/ca-base.yaml
+      service: ca-base
+    image: orderer-ca
+    ports:
+    - 14054:7054
+    networks:
+      - landrecord
+
   orderer0:
     container_name: orderer0
     image: orderer
     environment:
-    - ORDERER_GENERAL_LOGLEVEL=debug
+    - FABRIC_LOGGING_SPEC=INFO
     - ORDERER_GENERAL_LISTENADDRESS=0.0.0.0
-    - ORDERER_GENERAL_GENESISMETHOD=file
-    - ORDERER_GENERAL_GENESISFILE=/orderer/crypto/genesis.block
-    - ORDERER_GENERAL_LOCALMSPID=OrdererOrgMSP
+    - ORDERER_GENERAL_BOOTSTRAPMETHOD=file
+    - ORDERER_GENERAL_LISTENPORT=7050
+    - ORDERER_GENERAL_BOOTSTRAPFILE=/orderer/crypto/genesis.block
+    - ORDERER_GENERAL_LOCALMSPID=OrdererMSP
     - ORDERER_GENERAL_LOCALMSPDIR=/orderer/crypto/msp
     - ORDERER_GENERAL_TLS_ENABLED=true
     - ORDERER_GENERAL_TLS_PRIVATEKEY=/orderer/crypto/tls/server.key
     - ORDERER_GENERAL_TLS_CERTIFICATE=/orderer/crypto/tls/server.crt
-    - ORDERER_GENERAL_TLS_ROOTCAS=[/orderer/crypto/tls/ca.crt]
+    - ORDERER_GENERAL_TLS_ROOTCAS=/orderer/crypto/tls/ca.crt
+    # - ORDERER_GENERAL_TLS_CLIENTAUTHREQUIRED=true
+    # - ORDERER_GENERAL_TLS_CLIENTROOTCAS=/orderer/crypto/tls/ca.crt
     working_dir: /orderer
     command: orderer
     ports:
@@ -113,7 +127,9 @@ services:
     - CORE_PEER_ID=appraiser-peer
     - CORE_PEER_ADDRESS=appraiser-peer:7051
     - CORE_PEER_GOSSIP_EXTERNALENDPOINT=appraiser-peer:7051
-    - CORE_PEER_LOCALMSPID=AppraiserOrgMSP
+    - CORE_PEER_LOCALMSPID=AppraiserMSP
+    - CORE_PEER_GOSSIP_BOOTSTRAP=appraiser-peer:7051
+    - CORE_OPERATIONS_LISTENADDRESS=appraiser-peer:7053
     ports:
     - 7051:7051
     - 7053:7053
@@ -132,7 +148,9 @@ services:
     - CORE_PEER_ID=audit-peer
     - CORE_PEER_ADDRESS=audit-peer:7051
     - CORE_PEER_GOSSIP_EXTERNALENDPOINT=audit-peer:7051
-    - CORE_PEER_LOCALMSPID=AuditOrgMSP
+    - CORE_PEER_LOCALMSPID=AuditMSP
+    - CORE_PEER_GOSSIP_BOOTSTRAP=audit-peer:7051
+    - CORE_OPERATIONS_LISTENADDRESS=audit-peer:7053
     ports:
     - 8051:7051
     - 8053:7053
@@ -152,7 +170,9 @@ services:
     - CORE_PEER_ID=bank-peer
     - CORE_PEER_ADDRESS=bank-peer:7051
     - CORE_PEER_GOSSIP_EXTERNALENDPOINT=bank-peer:7051
-    - CORE_PEER_LOCALMSPID=BankOrgMSP
+    - CORE_PEER_LOCALMSPID=BankMSP
+    - CORE_PEER_GOSSIP_BOOTSTRAP=bank-peer:7051
+    - CORE_OPERATIONS_LISTENADDRESS=bank-peer:7053
     ports:
     - 9051:7051
     - 9053:7053
@@ -173,7 +193,9 @@ services:
     - CORE_PEER_ID=fico-peer
     - CORE_PEER_ADDRESS=fico-peer:7051
     - CORE_PEER_GOSSIP_EXTERNALENDPOINT=fico-peer:7051
-    - CORE_PEER_LOCALMSPID=FicoOrgMSP
+    - CORE_PEER_LOCALMSPID=FicoMSP
+    - CORE_PEER_GOSSIP_BOOTSTRAP=fico-peer:7051
+    - CORE_OPERATIONS_LISTENADDRESS=fico-peer:7053
     ports:
     - 10051:7051
     - 10053:7053
@@ -195,7 +217,9 @@ services:
     - CORE_PEER_ID=insurance-peer
     - CORE_PEER_ADDRESS=insurance-peer:7051
     - CORE_PEER_GOSSIP_EXTERNALENDPOINT=insurance-peer:7051
-    - CORE_PEER_LOCALMSPID=InsuranceOrgMSP
+    - CORE_PEER_LOCALMSPID=InsuranceMSP
+    - CORE_PEER_GOSSIP_BOOTSTRAP=insurance-peer:7051
+    - CORE_OPERATIONS_LISTENADDRESS=insurance-peer:7053
     ports:
     - 11051:7051
     - 11053:7053
@@ -218,7 +242,9 @@ services:
     - CORE_PEER_ID=registry-peer
     - CORE_PEER_ADDRESS=registry-peer:7051
     - CORE_PEER_GOSSIP_EXTERNALENDPOINT=registry-peer:7051
-    - CORE_PEER_LOCALMSPID=RegistryOrgMSP
+    - CORE_PEER_LOCALMSPID=RegistryMSP
+    - CORE_PEER_GOSSIP_BOOTSTRAP=registry-peer:7051
+    - CORE_OPERATIONS_LISTENADDRESS=registry-peer:7053
     ports:
     - 12051:7051
     - 12053:7053
@@ -242,7 +268,9 @@ services:
     - CORE_PEER_ID=title-peer
     - CORE_PEER_ADDRESS=title-peer:7051
     - CORE_PEER_GOSSIP_EXTERNALENDPOINT=title-peer:7051
-    - CORE_PEER_LOCALMSPID=TitleOrgMSP
+    - CORE_PEER_LOCALMSPID=TitleMSP
+    - CORE_PEER_GOSSIP_BOOTSTRAP=title-peer:7051
+    - CORE_OPERATIONS_LISTENADDRESS=title-peer:7053
     ports:
     - 13051:7051
     - 13053:7053
@@ -265,8 +293,11 @@ services:
     environment:
       - CORE_PEER_ID=bank-cli
       - CORE_PEER_ADDRESS=bank-peer:7051
-      - CORE_PEER_LOCALMSPID=BankOrgMSP
+      - CORE_PEER_LOCALMSPID=BankMSP
       - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@bank-org/msp
+      - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/msp/users/Admin@bank-org/tls/ca.crt
+      - ORDERER_TLS_CLIENTCERT_FILE=/etc/hyperledger/msp/users/Admin@bank-org/tls/client.crt
+      - ORDERER_TLS_CLIENTKEY_FILE=/etc/hyperledger/msp/users/Admin@bank-org/tls/client.key
     volumes:
       - ./artifacts/crypto-config/peerOrganizations/bank-org:/etc/hyperledger/msp
     depends_on:
@@ -283,8 +314,11 @@ services:
     environment:
       - CORE_PEER_ID=insurance-cli
       - CORE_PEER_ADDRESS=insurance-peer:7051
-      - CORE_PEER_LOCALMSPID=InsuranceOrgMSP
+      - CORE_PEER_LOCALMSPID=InsuranceMSP
       - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@insurance-org/msp
+      - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/msp/users/Admin@insurance-org/tls/ca.crt
+      - ORDERER_TLS_CLIENTCERT_FILE=/etc/hyperledger/msp/users/Admin@insurance-org/tls/client.crt
+      - ORDERER_TLS_CLIENTKEY_FILE=/etc/hyperledger/msp/users/Admin@insurance-org/tls/client.key
     volumes:
       - ./artifacts/crypto-config/peerOrganizations/insurance-org:/etc/hyperledger/msp
     depends_on:
@@ -301,8 +335,11 @@ services:
     environment:
       - CORE_PEER_ID=registry-cli
       - CORE_PEER_ADDRESS=registry-peer:7051
-      - CORE_PEER_LOCALMSPID=RegistryOrgMSP
+      - CORE_PEER_LOCALMSPID=RegistryMSP
       - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@registry-org/msp
+      - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/msp/users/Admin@registry-org/tls/ca.crt
+      - ORDERER_TLS_CLIENTCERT_FILE=/etc/hyperledger/msp/users/Admin@registry-org/tls/client.crt
+      - ORDERER_TLS_CLIENTKEY_FILE=/etc/hyperledger/msp/users/Admin@registry-org/tls/client.key
     volumes:
       - ./artifacts/crypto-config/peerOrganizations/registry-org:/etc/hyperledger/msp
     depends_on:
@@ -319,8 +356,11 @@ services:
     environment:
       - CORE_PEER_ID=title-cli
       - CORE_PEER_ADDRESS=title-peer:7051
-      - CORE_PEER_LOCALMSPID=TitleOrgMSP
+      - CORE_PEER_LOCALMSPID=TitleMSP
       - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@title-org/msp
+      - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/msp/users/Admin@title-org/tls/ca.crt
+      - ORDERER_TLS_CLIENTCERT_FILE=/etc/hyperledger/msp/users/Admin@title-org/tls/client.crt
+      - ORDERER_TLS_CLIENTKEY_FILE=/etc/hyperledger/msp/users/Admin@title-org/tls/client.key
     volumes:
       - ./artifacts/crypto-config/peerOrganizations/title-org:/etc/hyperledger/msp
     depends_on:
@@ -337,8 +377,11 @@ services:
     environment:
       - CORE_PEER_ID=appraiser-cli
       - CORE_PEER_ADDRESS=appraiser-peer:7051
-      - CORE_PEER_LOCALMSPID=AppraiserOrgMSP
+      - CORE_PEER_LOCALMSPID=AppraiserMSP
       - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@appraiser-org/msp
+      - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/msp/users/Admin@appraiser-org/tls/ca.crt
+      - ORDERER_TLS_CLIENTCERT_FILE=/etc/hyperledger/msp/users/Admin@appraiser-org/tls/client.crt
+      - ORDERER_TLS_CLIENTKEY_FILE=/etc/hyperledger/msp/users/Admin@appraiser-org/tls/client.key
     volumes:
       - ./artifacts/crypto-config/peerOrganizations/appraiser-org:/etc/hyperledger/msp
     depends_on:
@@ -355,8 +398,11 @@ services:
     environment:
       - CORE_PEER_ID=audit-cli
       - CORE_PEER_ADDRESS=audit-peer:7051
-      - CORE_PEER_LOCALMSPID=AuditOrgMSP
+      - CORE_PEER_LOCALMSPID=AuditMSP
       - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@audit-org/msp
+      - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/msp/users/Admin@audit-org/tls/ca.crt
+      - ORDERER_TLS_CLIENTCERT_FILE=/etc/hyperledger/msp/users/Admin@audit-org/tls/client.crt
+      - ORDERER_TLS_CLIENTKEY_FILE=/etc/hyperledger/msp/users/Admin@audit-org/tls/client.key
     volumes:
       - ./artifacts/crypto-config/peerOrganizations/audit-org:/etc/hyperledger/msp
     depends_on:
@@ -373,8 +419,11 @@ services:
     environment:
       - CORE_PEER_ID=fico-cli
       - CORE_PEER_ADDRESS=fico-peer:7051
-      - CORE_PEER_LOCALMSPID=FicoOrgMSP
+      - CORE_PEER_LOCALMSPID=FicoMSP
       - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@fico-org/msp
+      - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/msp/users/Admin@fico-org/tls/ca.crt
+      - ORDERER_TLS_CLIENTCERT_FILE=/etc/hyperledger/msp/users/Admin@fico-org/tls/client.crt
+      - ORDERER_TLS_CLIENTKEY_FILE=/etc/hyperledger/msp/users/Admin@fico-org/tls/client.key
     volumes:
       - ./artifacts/crypto-config/peerOrganizations/fico-org:/etc/hyperledger/msp
     depends_on:
