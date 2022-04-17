@@ -19,3 +19,4 @@
 /**/tlscacerts
 /**/*.pem
 /**/*.block
+/**/*.gz
