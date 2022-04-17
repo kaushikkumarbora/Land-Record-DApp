@@ -1,50 +1,49 @@
 OrdererOrgs:
   - Name: OrdererOrg
     Domain: orderer-org
-    EnableNodeOUs: false
     Specs:
       - Hostname: orderer0
         CommonName: '{{.Hostname}}'
 PeerOrgs:
   - Name: RegistryOrg
     Domain: registry-org
-    EnableNodeOUs: false
+    EnableNodeOUs: true
     Specs:
       - Hostname: registry-peer
         CommonName: '{{.Hostname}}'
   - Name: BankOrg
     Domain: bank-org
-    EnableNodeOUs: false
+    EnableNodeOUs: true
     Specs:
       - Hostname: bank-peer
         CommonName: '{{.Hostname}}'
   - Name: TitleOrg
     Domain: title-org
-    EnableNodeOUs: false
+    EnableNodeOUs: true
     Specs:
       - Hostname: title-peer
         CommonName: '{{.Hostname}}'
   - Name: AppraiserOrg
     Domain: appraiser-org
-    EnableNodeOUs: false
+    EnableNodeOUs: true
     Specs:
       - Hostname: appraiser-peer
         CommonName: '{{.Hostname}}'
   - Name: InsuranceOrg
     Domain: insurance-org
-    EnableNodeOUs: false
+    EnableNodeOUs: true
     Specs:
       - Hostname: insurance-peer
         CommonName: '{{.Hostname}}'
   - Name: AuditOrg
     Domain: audit-org
-    EnableNodeOUs: false
+    EnableNodeOUs: true
     Specs:
       - Hostname: audit-peer
         CommonName: '{{.Hostname}}'
   - Name: FicoOrg
     Domain: fico-org
-    EnableNodeOUs: false
+    EnableNodeOUs: true
     Specs:
       - Hostname: fico-peer
         CommonName: '{{.Hostname}}'
