@@ -2,8 +2,22 @@
 
 Ledgers/Channels:
 - Records
+    - createRealEstate
+    - queryAll
+    - recordPurchase
 - Lending
+    - queryAll
+    - initiateMortgage
+    - getFicoScores
+    - getInsuranceQuote
+    - closeMortgage
 - Books
+    - initiateBooks
+    - queryAll
+    - getAppraisal
+    - getTitle
+    - changeTitle
+    
 
 Land Record System - Orgs
 - Land/Property Record (District/City Registry)
@@ -16,6 +30,7 @@ Land Record System - Orgs
     - Records Channel - Read Only
     - Books Channel - Read Only
     - Lending Channel - Read Only
+    - queryAll
 - Lenders/Bank
     - Records Channel - Read Only
     - Books Channel - Read Only
@@ -38,12 +53,12 @@ Land Record System - Orgs
     - Lending Channel - No Participation
     - initiateBooks
     - getAppraisal
-    - changeTitle
 - Title Companies
     - Records Channel - Read Only
     - Books Channel - Update
     - Lending Channel - Read Only
     - getTitle
+    - changeTitle
 
 Consensus Options:
 1) Raft (Only Crash Fault Tolerant)
