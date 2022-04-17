@@ -7,7 +7,6 @@ dockerFabricPull() {
       echo "==> FABRIC IMAGE: $IMAGES"
       echo
       docker pull hyperledger/fabric-$IMAGES:$FABRIC_TAG
-      docker tag hyperledger/fabric-$IMAGES:$FABRIC_TAG hyperledger/fabric-$IMAGES
   done
 }
 
@@ -16,7 +15,6 @@ dockerCaPull() {
       echo "==> FABRIC CA IMAGE"
       echo
       docker pull hyperledger/fabric-ca:$CA_TAG
-      docker tag hyperledger/fabric-ca:$CA_TAG hyperledger/fabric-ca
 }
 
 BUILD=
@@ -38,8 +36,8 @@ else
 fi
 
 if [ $DOWNLOAD ]; then
-    : ${CA_TAG:="latest"}
-    : ${FABRIC_TAG:="latest"}
+    : ${CA_TAG:="1.5.2"}
+    : ${FABRIC_TAG:="2.2.5"}
 
     echo "===> Pulling fabric Images"
     dockerFabricPull ${FABRIC_TAG}
@@ -65,8 +63,9 @@ if [ $BUILD ];
     docker build -t registry-peer:latest image/registryPeer/
     docker build -t title-peer:latest image/titlePeer/
     # docker build -t web:latest web/
+    docker build -t orderer-ca:latest image/ordererCA/
     docker build -t insurance-ca:latest image/insuranceCA/
-    docker build -t police-ca:latest image/policeCA/
+    docker build -t appraiser-ca:latest image/appraiserCA/
     docker build -t audit-ca:latest image/auditCA/
     docker build -t bank-ca:latest image/bankCA/
     docker build -t title-ca:latest image/titleCA/
