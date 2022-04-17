@@ -4,7 +4,7 @@ export FABRIC_START_WAIT=3
 export FABRIC_CFG_PATH=./
 
 echo -e "\e[5;32;40mgenerating certificates in crypto-config folder for all entities\e[m "
-rm -rf artifacts
+sh clean.sh
 mkdir artifacts
 mkdir artifacts/crypto-config
 ./binaries/cryptogen generate --config crypto-config.yaml --output artifacts/crypto-config/
@@ -29,11 +29,19 @@ sleep ${FABRIC_START_WAIT}
 echo -e "\e[5;32;40mgenerate the anchor peer update transactions\e[m "
 
 
-./binaries/configtxgen -profile RecordsChannel -outputAnchorPeersUpdate ./artifacts/channels/recordsanchor.tx -channelID records -asOrg RegistryOrgMSP
+./binaries/configtxgen -profile RecordsChannel -outputAnchorPeersUpdate ./artifacts/channels/recordsanchor.tx -channelID records -asOrg RegistryMSP
 sleep ${FABRIC_START_WAIT}
-./binaries/configtxgen -profile LendingChannel -outputAnchorPeersUpdate ./artifacts/channels/lendinganchor.tx -channelID lending -asOrg BankOrgMSP
+./binaries/configtxgen -profile LendingChannel -outputAnchorPeersUpdate ./artifacts/channels/lendinganchor.tx -channelID lending -asOrg BankMSP
 sleep ${FABRIC_START_WAIT}
-./binaries/configtxgen -profile BooksChannel -outputAnchorPeersUpdate ./artifacts/channels/booksanchor.tx -channelID books -asOrg AppraiserOrgMSP
+./binaries/configtxgen -profile BooksChannel -outputAnchorPeersUpdate ./artifacts/channels/booksanchor.tx -channelID books -asOrg AppraiserMSP
+
+cp -r artifacts/crypto-config/ordererOrganizations/orderer-org/ca image/ordererCA
+cp -r artifacts/crypto-config/ordererOrganizations/orderer-org/tlsca image/ordererCA
+
+mv image/ordererCA/ca/priv_sk image/ordererCA/ca/key.pem
+mv image/ordererCA/tlsca/priv_sk image/ordererCA/tlsca/key.pem
+mv image/ordererCA/ca/*-cert.pem image/ordererCA/ca/cert.pem
+mv image/ordererCA/tlsca/*-cert.pem image/ordererCA/tlsca/cert.pem
 
 cp -r artifacts/crypto-config/ordererOrganizations/orderer-org/orderers/orderer0/msp image/orderer
 cp -r artifacts/crypto-config/ordererOrganizations/orderer-org/orderers/orderer0/tls image/orderer
