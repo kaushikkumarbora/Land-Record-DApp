@@ -114,6 +114,8 @@ services:
     command: orderer
     ports:
     - 7050:7050
+    depends_on:
+    - orderer-ca
     networks:
       - landrecord
 
@@ -135,6 +137,7 @@ services:
     - 7053:7053
     depends_on:
     - orderer0
+    - appraiser-ca
     networks:
       - landrecord
   
@@ -157,6 +160,7 @@ services:
     depends_on:
     - orderer0
     - appraiser-peer
+    - audit-ca
     networks:
       - landrecord
   
@@ -180,6 +184,7 @@ services:
     - orderer0
     - appraiser-peer
     - audit-peer
+    - bank-ca
     networks:
       - landrecord
 
@@ -204,6 +209,7 @@ services:
     - appraiser-peer
     - audit-peer
     - bank-peer
+    - fico-ca
     networks:
       - landrecord
 
@@ -229,6 +235,7 @@ services:
     - audit-peer
     - bank-peer
     - fico-peer
+    - insurance-ca
     networks:
       - landrecord
   
@@ -255,6 +262,7 @@ services:
     - bank-peer
     - fico-peer
     - insurance-peer
+    - registry-ca
     networks:
       - landrecord
   
@@ -282,6 +290,7 @@ services:
     - fico-peer
     - insurance-peer
     - registry-peer
+    - title-ca
     networks:
       - landrecord
   
