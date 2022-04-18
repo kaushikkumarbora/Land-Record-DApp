@@ -1,6 +1,3 @@
-docker stop $(docker ps -aq)
-docker rm $(docker ps -aq)
-
 rm -rf artifacts
 
 rm -rf image/appraiserCA/ca
