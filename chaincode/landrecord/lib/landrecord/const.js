@@ -1,16 +1,3 @@
-module.exports.FicoHigh = 800.0
-module.exports.FicoLow = 600.0
-module.exports.FicoThreshold = 650.0
-module.exports.InsuranceHigh = 5000.0
-module.exports.InsuranceLow = 2500.0
-module.exports.InsuranceThreshold = 0.0
-module.exports.AppraisalHigh = 2000000.0
-module.exports.AppraisalLow = 750000.0
-module.exports.RecordsChaincode = 'recordschaincode'
-module.exports.RecordsChannel = 'records'
-module.exports.LendingChaincode = 'lendingchaincode'
-module.exports.LendingChannel = 'lending'
 module.exports.BooksChaincode = 'bookschaincode'
 module.exports.BooksChannel = 'books'
 module.exports.QueryBooksString = 'queryBooks'
-module.exports.QueryLendingString = 'queryLending'
