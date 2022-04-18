@@ -4,7 +4,7 @@ export FABRIC_START_WAIT=3
 export FABRIC_CFG_PATH=./
 
 echo -e "\e[5;32;40mgenerating certificates in crypto-config folder for all entities\e[m "
-sh clean.sh
+sh scripts/clean.sh
 mkdir artifacts
 mkdir artifacts/crypto-config
 ./binaries/cryptogen generate --config crypto-config.yaml --output artifacts/crypto-config/
