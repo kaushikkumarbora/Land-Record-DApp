@@ -60,6 +60,7 @@ sleep ${FABRIC_START_WAIT}
 
 #Fico  joins 1 channels,
 docker exec fico-cli bash -c 'peer channel join -b ./channels/lending.block'
+docker exec fico-cli bash -c 'peer channel join -b ./channels/records.block'
 sleep ${FABRIC_START_WAIT}
 
 
