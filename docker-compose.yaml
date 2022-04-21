@@ -159,7 +159,6 @@ services:
     - 8053:7053
     depends_on:
     - orderer0
-    - appraiser-peer
     - audit-ca
     networks:
       - landrecord
@@ -182,8 +181,6 @@ services:
     - 9053:7053
     depends_on:
     - orderer0
-    - appraiser-peer
-    - audit-peer
     - bank-ca
     networks:
       - landrecord
@@ -206,9 +203,6 @@ services:
     - 10053:7053
     depends_on:
     - orderer0
-    - appraiser-peer
-    - audit-peer
-    - bank-peer
     - fico-ca
     networks:
       - landrecord
@@ -231,10 +225,6 @@ services:
     - 11053:7053
     depends_on:
     - orderer0
-    - appraiser-peer
-    - audit-peer
-    - bank-peer
-    - fico-peer
     - insurance-ca
     networks:
       - landrecord
@@ -257,11 +247,6 @@ services:
     - 12053:7053
     depends_on:
     - orderer0
-    - appraiser-peer
-    - audit-peer
-    - bank-peer
-    - fico-peer
-    - insurance-peer
     - registry-ca
     networks:
       - landrecord
@@ -284,12 +269,6 @@ services:
     - 13053:7053
     depends_on:
     - orderer0
-    - appraiser-peer
-    - audit-peer
-    - bank-peer
-    - fico-peer
-    - insurance-peer
-    - registry-peer
     - title-ca
     networks:
       - landrecord
