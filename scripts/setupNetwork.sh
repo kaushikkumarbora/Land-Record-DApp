@@ -1,14 +1,14 @@
 #!/bin/bash
 
 
-./scripts/createChannels.sh
+sh scripts/createChannels.sh
 sleep 5
 
-./scripts/checkOrgChannelSubscription.sh
+sh scripts/checkOrgChannelSubscription.sh
 sleep 5
 
-./scripts/chaincodeInstallInstantiate.sh
+sh scripts/chaincodeInstallInstantiate.sh
 sleep 5
 
-./scripts/createLedgerEntries.sh
+sh scripts/createLedgerEntries.sh
 sleep 5
