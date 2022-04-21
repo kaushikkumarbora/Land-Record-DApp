@@ -36,14 +36,12 @@ function random (max, min) {
  * checks whether the Transaction initiator is producer
  *
  * @param {Context} ctx
+ * @param {string} ID
  * @returns
  */
-function checkProducer (ctx) {
-  var creator = ctx.stub.getCreator()
-
-  var producerByte = creator.idBytes.toString()
-
-  return producerByte === 'producer'
+function checkProducer (ctx, ID) {
+  
+  return ctx.clientIdentity.getMSPID() === ID
 }
 
 // write to different ledgers- records, books and lending

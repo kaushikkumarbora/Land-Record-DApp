@@ -25,27 +25,36 @@ class RecordContract extends Contract {
    */
   async instantiate (ctx) {
     console.log('Instantiate was called!')
-    var creator = ctx.stub.getCreator()
-    stub.putState(creator.idBytes.toString(), Buffer.from('producer'))
     return
   }
 
   /**
+   * 
+   * /**
    * createRealEstate
    *
    * puts  real estate in the records Blockchain
-   *
-   * @param {Context} ctx
-   * @param {string} realEstateJSON
-   * @returns
+   * 
+   * @param {Context} ctx 
+   * @param {string} RealEstateID 
+   * @param {string} Address 
+   * @param {string} Value 
+   * @param {string} Details 
+   * @param {string} Owner 
+   * @returns 
    */
-  async createRealEstate (ctx, realEstateJSON) {
+  async createRealEstate (ctx, RealEstateID, Address, Value, Details, Owner,) {
     if (CheckProducer(ctx)) {
       var TransactionHistory = {}
       TransactionHistory['createRealEstate'] = GetTimeNow()
 
-      var args = JSON.parse(realEstateJSON)
-
+      var args = {}
+      args.RealEstateID = RealEstateID
+      args.Address = Address
+      args.Value = Value
+      args.Details = Details
+      args.Owner = Owner
+      args.TransactionHistory = TransactionHistory
       // A newly created property is available
       var re = RealEstate(args)
 
@@ -65,16 +74,15 @@ class RecordContract extends Contract {
    * puts real estate in the records Blockchain with updated owner
    *
    * @param {Context} ctx
-   * @param {string} purchaseJSON
+   * @param {string} RealEstateID
    * @returns
    */
-  async recordPurchase (ctx, purchaseJSON) {
+  async recordPurchase (ctx, RealEstateID) {
     if (CheckProducer(ctx)) {
-      var purchaseInfo = JSON.parse(purchaseJSON)
 
       // Create Key
       var recordsKey = ctx.stub.createCompositeKey(PrefixRecord, [
-        purchaseInfo.RealEstateID
+        RealEstateID
       ])
       // Look for the RealEstateID
       var recordsBytes = await ctx.stub.getState(recordsKey)
@@ -126,14 +134,13 @@ class RecordContract extends Contract {
   async queryAll (ctx) {
     // resultIterator is a StateQueryIteratorInterface
     var resultsIterator = await ctx.stub.getStateByRange('', '')
-    resultsIterator.Close()
 
     // allResults is a JSON array containing QueryResults
     var allResults = []
 
     var queryResponse = await resultsIterator.next()
 
-    while (!queryResponse.done()) {
+    while (!queryResponse.done) {
       const strValue = Buffer.from(
         queryResponse.value.value.toString()
       ).toString('utf8')
@@ -149,8 +156,10 @@ class RecordContract extends Contract {
     }
 
     console.log('- queryAll:\n%s\n', JSON.stringify(allResults))
-
-    return Buffer.from(JSON.stringify(allResults))
+    resultsIterator.close()
+    // return Buffer.from(JSON.stringify(allResults))
+    console.log(allResults)
+    return JSON.stringify(allResults)
   }
 
   /**
@@ -161,23 +170,22 @@ class RecordContract extends Contract {
    * ledger needs to be passed in
    *
    * @param {Context} ctx
-   * @param {string} queryJSON
+   * @param {string} ID
    * @returns
    */
-  async query (ctx, queryJSON) {
-    var queryInfo = JSON.parse(queryJSON)
+  async query (ctx, ID) {
 
-    if (queryInfo.ID === undefined) {
+    if (ID === undefined) {
       throw new Error('ID not defined')
-    } else if (typeof queryInfo.ID != 'string') {
+    } else if (typeof ID != 'string') {
       throw new Error('ID should be of type string')
     }
 
-    var key = ctx.stub.createCompositeKey(PrefixRecord, [queryInfo.ID])
+    var key = ctx.stub.createCompositeKey(PrefixRecord, [ID])
 
     var asBytes = await ctx.stub.getState(key)
 
-    return asBytes
+    return asBytes.toString()
   }
 }
 module.exports = RecordContract

@@ -1,7 +1,12 @@
 'use strict'
 
 const { Contract, Context } = require('fabric-contract-api')
-const { PrefixLending } = require('./prefix')
+const {
+  PrefixLending,
+  BankMSPID,
+  FicoMSPID,
+  InsuranceMSPID
+} = require('./prefix')
 const { CheckProducer, Random, WriteToLendingLedger } = require('./utils')
 const { Mortgage } = require('./data')
 const {
@@ -35,8 +40,6 @@ class LendingContract extends Contract {
    */
   async instantiate (ctx) {
     console.log('Instantiate was called!')
-    var creator = ctx.stub.getCreator()
-    stub.putState(creator.idBytes.toString(), Buffer.from('producer'))
     return
   }
 
@@ -45,12 +48,17 @@ class LendingContract extends Contract {
    * initiateMortgage
    *
    * @param {Context} ctx
-   * @param {string} lendingJSON
+   * @param {string} CustID
+   * @param {string} RealEstateID
+   * @param {Number} LoanAmount
    * @returns
    */
-  async initiateMortgage (ctx, lendingJSON) {
-    if (CheckProducer(ctx)) {
-      var lendingInfo = JSON.parse(lendingJSON)
+  async initiateMortgage (ctx, CustID, RealEstateID, LoanAmount) {
+    if ((CheckProducer(ctx), BankMSPID)) {
+      var lendingInfo = {}
+      lendingInfo.CustID = CustID
+      lendingInfo.RealEstateID = RealEstateID
+      lendingInfo.LoanAmount = LoanAmount
 
       var mrtg = Mortgage(lendingInfo)
 
@@ -70,28 +78,30 @@ class LendingContract extends Contract {
    * generates a score and updates the lending ledger
    *
    * @param {Context} ctx
-   * @param {string} lendingJSON
+   * @param {string} CustID
    * @returns
    */
-  async getFicoScores (ctx, lendingJSON) {
-    var lendingInfo = JSON.parse(lendingJSON)
+  async getFicoScores (ctx, CustID) {
+    if ((CheckProducer(ctx), FicoMSPID)) {
+      var lendingKey = ctx.stub.createCompositeKey(PrefixLending, [CustID])
+      var lendingBytes = await ctx.stub.getState(lendingKey)
+      if (!lendingBytes || lendingBytes.length === 0) {
+        return shim.Error('CustomerID ' + CustID + ' not found ')
+      }
 
-    var lendingKey = ctx.stub.createCompositeKey(PrefixLending, [
-      lendingInfo.CustID
-    ])
-    var lendingBytes = await ctx.stub.getState(lendingKey)
-    if (!lendingBytes || lendingBytes.length === 0) {
-      return shim.Error('CustomerID ' + lendingInfo.CustID + ' not found ')
+      // Get Information from Blockchain
+      var mrtg
+      // Decode JSON data
+      mrtg = JSON.parse(lendingBytes.toString())
+
+      // update FIco  randomly generated betweenn 600-800
+      mrtg.Fico = Random(FicoHigh, FicoLow)
+      WriteToLendingLedger(ctx, mrtg, 'getFicoScores')
+    } else {
+      throw new Error(
+        '+~+~+~+~+No matching chain code function found-- create, initiate, close and record mortgage can only be invoked by chaincode instantiators which are Bank, Registry and Appraiser+~+~+~+~+~+~+~+~'
+      )
     }
-
-    // Get Information from Blockchain
-    var mrtg
-    // Decode JSON data
-    mrtg = JSON.parse(lendingBytes.toString())
-
-    // update FIco  randomly generated betweenn 600-800
-    mrtg.Fico = Random(FicoHigh, FicoLow)
-    WriteToLendingLedger(ctx, mrtg, 'getFicoScores')
     return
   }
 
@@ -103,29 +113,32 @@ class LendingContract extends Contract {
    * it will need access to customer details, fico and RealEstateID
    *
    * @param {Context} ctx
-   * @param {string} lendingJSON
+   * @param {string} CustID
    * @returns
    */
-  async getInsuranceQuote (ctx, lendingJSON) {
-    var lendingInfo = JSON.parse(lendingJSON)
+  async getInsuranceQuote (ctx, CustID) {
+    if ((CheckProducer(ctx), InsuranceMSPID)) {
+      // Look for the customerID
+      var lendingKey = ctx.stub.createCompositeKey(PrefixLending, [CustID])
+      var lendingBytes = await ctx.stub.getState(lendingKey)
+      if (!lendingBytes || lendingBytes.length === 0) {
+        return shim.Error('CustomerID ' + CustID + ' not found ')
+      }
 
-    // Look for the customerID
-    var lendingKey = ctx.stub.createCompositeKey(PrefixLending, [
-      lendingInfo.CustID
-    ])
-    var lendingBytes = await ctx.stub.getState(lendingKey)
-    if (!lendingBytes || lendingBytes.length === 0) {
-      return shim.Error('CustomerID ' + lendingInfo.CustID + ' not found ')
+      // Get Information from Blockchain
+      var mrtg
+      // Decode JSON data
+      mrtg = JSON.parse(lendingBytes.toString())
+
+      // update insurance  randomly generated betweenn 2500-5000
+      mrtg.Insurance = random(InsuranceHigh, InsuranceLow)
+      writeToLendingLedger(ctx, mrtg, 'getInsuranceQuote')
+    } else {
+      throw new Error(
+        '+~+~+~+~+No matching chain code function found-- create, initiate, close and record mortgage can only be invoked by chaincode instantiators which are Bank, Registry and Appraiser+~+~+~+~+~+~+~+~'
+      )
     }
 
-    // Get Information from Blockchain
-    var mrtg
-    // Decode JSON data
-    mrtg = JSON.parse(lendingBytes.toString())
-
-    // update insurance  randomly generated betweenn 2500-5000
-    mrtg.Insurance = random(InsuranceHigh, InsuranceLow)
-    writeToLendingLedger(ctx, mrtg, 'getInsuranceQuote')
     return
   }
 
@@ -136,20 +149,16 @@ class LendingContract extends Contract {
    * updates the lending ledger
    *
    * @param {Context} ctx
-   * @param {string} lendingJSON
+   * @param {string} CustID
    * @returns
    */
-  async closeMortgage (ctx, lendingJSON) {
-    if (CheckProducer(ctx)) {
-      var lendingInfo = JSON.parse(lendingJSON)
-
+  async closeMortgage (ctx, CustID) {
+    if ((CheckProducer(ctx), BankMSPID)) {
       // Look for the serial number
-      var lendingKey = ctx.stub.createCompositeKey(PrefixLending, [
-        lendingInfo.CustID
-      ])
+      var lendingKey = ctx.stub.createCompositeKey(PrefixLending, [CustID])
       var lendingBytes = await ctx.stub.getState(lendingKey)
       if (!lendingBytes || lendingBytes.length === 0) {
-        return shim.Error('CustomerID ' + lendingInfo.CustID + ' not found ')
+        return shim.Error('CustomerID ' + CustID + ' not found ')
       }
 
       // Get Information from Blockchain
@@ -233,14 +242,13 @@ class LendingContract extends Contract {
   async queryAll (ctx) {
     // resultIterator is a StateQueryIteratorInterface
     var resultsIterator = await ctx.stub.getStateByRange('', '')
-    resultsIterator.Close()
 
     // allResults is a JSON array containing QueryResults
     var allResults = []
 
     var queryResponse = await resultsIterator.next()
 
-    while (!queryResponse.done()) {
+    while (!queryResponse.done) {
       const strValue = Buffer.from(
         queryResponse.value.value.toString()
       ).toString('utf8')
@@ -257,7 +265,10 @@ class LendingContract extends Contract {
 
     console.log('- queryAll:\n%s\n', JSON.stringify(allResults))
 
-    return Buffer.from(JSON.stringify(allResults))
+    resultsIterator.close()
+    // return Buffer.from(JSON.stringify(allResults))
+    console.log(allResults)
+    return JSON.stringify(allResults)
   }
 
   /**
@@ -268,23 +279,21 @@ class LendingContract extends Contract {
    * ledger needs to be passed in
    *
    * @param {Context} ctx
-   * @param {string} queryJSON
+   * @param {string} ID
    * @returns
    */
-  async query (ctx, queryJSON) {
-    var queryInfo = JSON.parse(queryJSON)
-
-    if (queryInfo.ID === undefined) {
+  async query (ctx, ID) {
+    if (ID === undefined) {
       throw new Error('ID not defined')
-    } else if (typeof queryInfo.ID != 'string') {
+    } else if (typeof ID != 'string') {
       throw new Error('ID should be of type string')
     }
 
-    var key = ctx.stub.createCompositeKey(PrefixLending, [queryInfo.ID])
+    var key = ctx.stub.createCompositeKey(PrefixLending, [ID])
 
     var asBytes = await ctx.stub.getState(key)
 
-    return asBytes
+    return asBytes.toString()
   }
 
   /**
@@ -292,19 +301,15 @@ class LendingContract extends Contract {
    * queryLending
    *
    * @param {Context} ctx
-   * @param {string} lendingJSON
+   * @param {string} CustID
    * @returns
    */
-  async queryLending (ctx, lendingJSON) {
-    var lendingInfo = JSON.parse(lendingJSON)
-
+  async queryLending (ctx, CustID) {
     // Look for the serial number
-    var lendingKey = ctx.stub.createCompositeKey(PrefixLending, [
-      lendingInfo.CustID
-    ])
+    var lendingKey = ctx.stub.createCompositeKey(PrefixLending, [CustID])
     var lendingBytes = await ctx.stub.getState(lendingKey)
     if (!lendingBytes || lendingBytes.length === 0) {
-      return shim.Error('CustomerID ' + lendingInfo.CustID + ' not found ')
+      return shim.Error('CustomerID ' + CustID + ' not found ')
     } else {
       // Get Information from Blockchain
       var mrtg

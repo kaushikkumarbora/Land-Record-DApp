@@ -26,11 +26,8 @@ function getTimeNow () {
  * @returns
  */
 function checkProducer (ctx) {
-  var creator = ctx.stub.getCreator()
 
-  var producerByte = creator.idBytes.toString()
-
-  return producerByte === 'producer'
+  return ctx.clientIdentity.getMSPID() === 'RegistryMSP'
 }
 
 // write to different ledgers- records, books and lending

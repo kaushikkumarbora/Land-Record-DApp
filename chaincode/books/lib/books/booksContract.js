@@ -1,7 +1,7 @@
 'use strict'
 
 const { Contract, Context } = require('fabric-contract-api')
-const { PrefixBook } = require('./prefix')
+const { PrefixBook, AppraiserMSPID, TitleMSPID } = require('./prefix')
 const { CheckProducer, Random, WriteToBooksLedger } = require('./utils')
 const { Books } = require('./data')
 const {
@@ -31,8 +31,6 @@ class BooksContract extends Contract {
    */
   async instantiate (ctx) {
     console.log('Instantiate was called!')
-    var creator = ctx.stub.getCreator()
-    ctx.stub.putState(creator.idBytes.toString(), Buffer.from('producer'))
     return
   }
 
@@ -43,13 +41,14 @@ class BooksContract extends Contract {
    * initializes books with realestates on records Blockchain
    *
    * @param {Context} ctx
-   * @param {string} bookJSON
+   * @param {string} RealEstateID
    * @returns
    */
-  async initiateBooks (ctx, bookJSON) {
-    if (CheckProducer(ctx)) {
+  async initiateBooks (ctx, RealEstateID) {
+    if ((CheckProducer(ctx), AppraiserMSPID)) {
       // A newly created property is available
-      var bookInfo = JSON.parse(bookJSON)
+      var bookInfo = {}
+      bookInfo.RealEstateID = RealEstateID
       var books = Books(bookInfo)
 
       WriteToBooksLedger(ctx, books, 'initiateBooks')
@@ -67,30 +66,32 @@ class BooksContract extends Contract {
    * get appraisal updated by appraiser on books ledger
    *
    * @param {Context} ctx
-   * @param {string} bookJSON
+   * @param {string} RealEstateID
    * @returns
    */
-  async getAppraisal (ctx, bookJSON) {
-    var bookInfo = JSON.parse(bookJSON)
+  async getAppraisal (ctx, RealEstateID) {
+    if ((CheckProducer(ctx), AppraiserMSPID)) {
+      // Look for the ID first number
+      var bookKey = ctx.stub.createCompositeKey(PrefixBook, [RealEstateID])
 
-    // Look for the ID first number
-    var bookKey = ctx.stub.createCompositeKey(PrefixBook, [
-      bookInfo.RealEstateID
-    ])
+      var bookBytes = await ctx.stub.getState(bookKey)
+      if (!bookBytes || bookBytes.length == 0) {
+        return shim.Error('RealEstateID ' + RealEstateID + ' not found ')
+      }
 
-    var bookBytes = await ctx.stub.getState(bookKey)
-    if (!bookBytes || bookBytes.length == 0) {
-      return shim.Error('RealEstateID ' + bookInfo.RealEstateID + ' not found ')
+      // Get Information from Blockchain
+      var books
+      // Decode JSON data
+      books = JSON.parse(bookBytes.toString())
+
+      // update appraisal between 1-2 million
+      books.Appraisal = Random(AppraisalHigh, AppraisalLow)
+      WriteToBooksLedger(ctx, books, 'getAppraisal')
+    } else {
+      throw new Error(
+        '+~+~+~+~+No matching chain code function found-- create, initiate, close and record mortgage can only be invoked by chaincode instantiators which are Bank, Registry and Appraiser+~+~+~+~+~+~+~+~'
+      )
     }
-
-    // Get Information from Blockchain
-    var books
-    // Decode JSON data
-    books = JSON.parse(bookBytes.toString())
-
-    // update appraisal between 1-2 million
-    books.Appraisal = Random(AppraisalHigh, AppraisalLow)
-    WriteToBooksLedger(ctx, books, 'getAppraisal')
     return
   }
 
@@ -101,31 +102,32 @@ class BooksContract extends Contract {
    * get Title updated by appraiser on books ledger
    *
    * @param {Context} ctx
-   * @param {string} bookJSON
+   * @param {string} RealEstateID
    * @returns
    */
-  async getTitle (ctx, bookJSON) {
-    // Look for the ID first number
-    var bookInfo = JSON.parse(bookJSON)
+  async getTitle (ctx, RealEstateID) {
+    if ((CheckProducer(ctx), TitleMSPID)) {
+      // Look for the ID first number
+      var bookKey = ctx.stub.createCompositeKey(PrefixBook, [RealEstateID])
 
-    // Look for the ID first number
-    var bookKey = ctx.stub.createCompositeKey(PrefixBook, [
-      bookInfo.RealEstateID
-    ])
+      var bookBytes = await ctx.stub.getState(bookKey)
+      if (!bookBytes || bookBytes.length == 0) {
+        return shim.Error('RealEstateID ' + RealEstateID + ' not found ')
+      }
 
-    var bookBytes = await ctx.stub.getState(bookKey)
-    if (!bookBytes || bookBytes.length == 0) {
-      return shim.Error('RealEstateID ' + bookInfo.RealEstateID + ' not found ')
+      // Get Information from Blockchain
+      var books
+      // Decode JSON data
+      books = JSON.parse(bookBytes.toString())
+
+      // update Title randomly for true or false
+      books.TitleStatus = Boolean(Math.random())
+      WriteToBooksLedger(ctx, books, 'getTitle')
+    } else {
+      throw new Error(
+        '+~+~+~+~+No matching chain code function found-- create, initiate, close and record mortgage can only be invoked by chaincode instantiators which are Bank, Registry and Appraiser+~+~+~+~+~+~+~+~'
+      )
     }
-
-    // Get Information from Blockchain
-    var books
-    // Decode JSON data
-    books = JSON.parse(bookBytes.toString())
-
-    // update Title randomly for true or false
-    books.TitleStatus = Boolean(Math.random())
-    WriteToBooksLedger(ctx, books, 'getTitle')
     return
   }
 
@@ -136,47 +138,49 @@ class BooksContract extends Contract {
    * changeTitle to be called by bank and updated by appraiser on books ledger
    *
    * @param {Context} ctx
-   * @param {string} changeTitleJSON
+   * @param {string} RealEstateID
+   * @param {string} CustID
    * @returns
    */
-  async changeTitle (ctx, changeTitleJSON) {
-    // Look for the ID first number
-    var changeTitleInfo = JSON.parse(changeTitleJSON)
+  async changeTitle (ctx, RealEstateID, CustID) {
+    if ((CheckProducer(ctx), TitleMSPID)) {
+      // Look for the ID first number
+      var bookKey = ctx.stub.createCompositeKey(PrefixBook, [RealEstateID])
 
-    // Look for the ID first number
-    var bookKey = ctx.stub.createCompositeKey(PrefixBook, [
-      changeTitleInfo.RealEstateID
-    ])
+      var bookBytes = await ctx.stub.getState(bookKey)
+      if (!bookBytes || bookBytes.length == 0) {
+        return shim.Error('RealEstateID ' + RealEstateID + ' not found ')
+      }
 
-    var bookBytes = await ctx.stub.getState(bookKey)
-    if (!bookBytes || bookBytes.length == 0) {
-      return shim.Error('RealEstateID ' + bookInfo.RealEstateID + ' not found ')
+      // Get Information from Blockchain
+      var books
+      // Decode JSON data
+      books = JSON.parse(bookBytes.toString())
+
+      //first check if the mortgage is funded else reject the title change to new owner
+      var callArgs = new Array()
+
+      callArgs[0] = Buffer.from(QueryLendingString)
+      callArgs[1] = Buffer.from(CustID) //this is the new customer passed to this function
+
+      var res = await ctx.stub.invokeChaincode(
+        LendingChaincode,
+        callArgs,
+        LendingChannel
+      )
+
+      var mrtg = JSON.parse(res.payload.toString())
+
+      // update owner if mortgage is Funded else it stays blank
+      if (mrtg.Status == 'Funded') {
+        books.NewTitleOwner = mrtg.CustID //we will rely on the books leder to update new owner
+      }
+      WriteToBooksLedger(ctx, books, 'changeTitle')
+    } else {
+      throw new Error(
+        '+~+~+~+~+No matching chain code function found-- create, initiate, close and record mortgage can only be invoked by chaincode instantiators which are Bank, Registry and Appraiser+~+~+~+~+~+~+~+~'
+      )
     }
-
-    // Get Information from Blockchain
-    var books
-    // Decode JSON data
-    books = JSON.parse(bookBytes.toString())
-
-    //first check if the mortgage is funded else reject the title change to new owner
-    var callArgs = new Array()
-
-    callArgs[0] = Buffer.from(QueryLendingString)
-    callArgs[1] = Buffer.from(bookInfo.CustID) //this is the new customer passed to this function
-
-    var res = await ctx.stub.invokeChaincode(
-      LendingChaincode,
-      callArgs,
-      LendingChannel
-    )
-
-    var mrtg = JSON.parse(res.payload.toString())
-
-    // update owner if mortgage is Funded else it stays blank
-    if (mrtg.Status == 'Funded') {
-      books.NewTitleOwner = mrtg.CustID //we will rely on the books leder to update new owner
-    }
-    WriteToBooksLedger(ctx, books, 'changeTitle')
     return
   }
 
@@ -192,14 +196,13 @@ class BooksContract extends Contract {
   async queryAll (ctx) {
     // resultIterator is a StateQueryIteratorInterface
     var resultsIterator = await ctx.stub.getStateByRange('', '')
-    resultsIterator.Close()
 
     // allResults is a JSON array containing QueryResults
     var allResults = []
 
     var queryResponse = await resultsIterator.next()
 
-    while (!queryResponse.done()) {
+    while (!queryResponse.done) {
       const strValue = Buffer.from(
         queryResponse.value.value.toString()
       ).toString('utf8')
@@ -216,7 +219,10 @@ class BooksContract extends Contract {
 
     console.log('- queryAll:\n%s\n', JSON.stringify(allResults))
 
-    return Buffer.from(JSON.stringify(allResults))
+    resultsIterator.close()
+    // return Buffer.from(JSON.stringify(allResults))
+    console.log(allResults)
+    return JSON.stringify(allResults)
   }
 
   /**
@@ -227,23 +233,21 @@ class BooksContract extends Contract {
    * ledger needs to be passed in
    *
    * @param {Context} ctx
-   * @param {string} queryJSON
+   * @param {string} ID
    * @returns
    */
-  async query (ctx, queryJSON) {
-    var queryInfo = JSON.parse(queryJSON)
-
-    if (queryInfo.ID === undefined) {
+  async query (ctx, ID) {
+    if (ID === undefined) {
       throw new Error('ID not defined')
-    } else if (typeof queryInfo.ID != 'string') {
+    } else if (typeof ID != 'string') {
       throw new Error('ID should be of type string')
     }
 
-    var key = ctx.stub.createCompositeKey(PrefixBook, [queryInfo.ID])
+    var key = ctx.stub.createCompositeKey(PrefixBook, [ID])
 
     var asBytes = await ctx.stub.getState(key)
 
-    return asBytes
+    return asBytes.toString()
   }
 
   /**
@@ -251,18 +255,15 @@ class BooksContract extends Contract {
    * queryBooks
    *
    * @param {Context} ctx
-   * @param {string} bookJSON
+   * @param {string} RealEstateID
    * @returns
    */
-  async queryBooks (ctx, bookJSON) {
-    var bookInfo = JSON.parse(bookJSON)
-    var bookKey = ctx.stub.createCompositeKey(PrefixBook, [
-      bookInfo.RealEstateID
-    ])
+  async queryBooks (ctx, RealEstateID) {
+    var bookKey = ctx.stub.createCompositeKey(PrefixBook, [RealEstateID])
 
     var bookBytes = await ctx.stub.getState(bookKey)
     if (!bookBytes || bookBytes.length == 0) {
-      throw new Error('RealEstateID ' + bookInfo.RealEstateID + ' not found ')
+      throw new Error('RealEstateID ' + RealEstateID + ' not found ')
     } else {
       var bks
       bks = JSON.parse(bookBytes.toString())
