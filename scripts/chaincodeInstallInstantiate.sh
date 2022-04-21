@@ -47,36 +47,44 @@ docker exec audit-cli bash -c 'peer lifecycle chaincode install /chaincode/packa
 docker exec title-cli bash -c 'peer lifecycle chaincode install /chaincode/package/lendingchaincode.tar.gz'
 sleep ${FABRIC_START_WAIT}
 
+echo -e '-----------------------\e[5;32;40m Getting Package IDs\e[m---------------------------------------------------------'
+
+docker exec audit-cli bash -c 'peer lifecycle chaincode queryinstalled' > log.txt
+cat log.txt
+export PACKAGE_ID_R=$(sed -n "/recordschaincode_0.0/{s/^Package ID: //; s/, Label:.*$//; p;}" log.txt)
+export PACKAGE_ID_L=$(sed -n "/lendingchaincode_0.0/{s/^Package ID: //; s/, Label:.*$//; p;}" log.txt)
+export PACKAGE_ID_B=$(sed -n "/bookschaincode_0.0/{s/^Package ID: //; s/, Label:.*$//; p;}" log.txt)
+
 echo -e '-----------------------\e[5;32;40m Approve chaincodes\e[m---------------------------------------------------------'
 
 echo " ----------------------------- For Records channel --------------------------------------------"
-docker exec registry-cli bash -c 'peer lifecycle chaincode approveformyorg -C records -n recordschaincode -v 0.0 --sequence 1 --tls --cafile $ORDERER_TLS_ROOTCERT_FILE'
-docker exec audit-cli bash -c 'peer lifecycle chaincode approveformyorg -C records -n recordschaincode -v 0.0 --sequence 1 --tls --cafile $ORDERER_TLS_ROOTCERT_FILE'
-docker exec bank-cli bash -c 'peer lifecycle chaincode approveformyorg -C records -n recordschaincode -v 0.0 --sequence 1 --tls --cafile $ORDERER_TLS_ROOTCERT_FILE'
-docker exec appraiser-cli bash -c 'peer lifecycle chaincode approveformyorg -C records -n recordschaincode -v 0.0 --sequence 1 --tls --cafile $ORDERER_TLS_ROOTCERT_FILE'
-docker exec title-cli bash -c 'peer lifecycle chaincode approveformyorg -C records -n recordschaincode -v 0.0 --sequence 1 --tls --cafile $ORDERER_TLS_ROOTCERT_FILE'
-docker exec insurance-cli bash -c 'peer lifecycle chaincode approveformyorg -C records -n recordschaincode -v 0.0 --sequence 1 --tls --cafile $ORDERER_TLS_ROOTCERT_FILE'
-docker exec fico-cli bash -c 'peer lifecycle chaincode approveformyorg -C records -n recordschaincode -v 0.0 --sequence 1 --tls --cafile $ORDERER_TLS_ROOTCERT_FILE'
+docker exec registry-cli bash -c "peer lifecycle chaincode approveformyorg -C records -n recordschaincode -v 0.0 --package-id ${PACKAGE_ID_R} --sequence 1 --tls --cafile \$ORDERER_TLS_ROOTCERT_FILE"
+docker exec audit-cli bash -c "peer lifecycle chaincode approveformyorg -C records -n recordschaincode -v 0.0 --package-id ${PACKAGE_ID_R} --sequence 1 --tls --cafile \$ORDERER_TLS_ROOTCERT_FILE"
+docker exec bank-cli bash -c "peer lifecycle chaincode approveformyorg -C records -n recordschaincode -v 0.0 --package-id ${PACKAGE_ID_R} --sequence 1 --tls --cafile \$ORDERER_TLS_ROOTCERT_FILE"
+docker exec appraiser-cli bash -c "peer lifecycle chaincode approveformyorg -C records -n recordschaincode -v 0.0 --package-id ${PACKAGE_ID_R} --sequence 1 --tls --cafile \$ORDERER_TLS_ROOTCERT_FILE"
+docker exec title-cli bash -c "peer lifecycle chaincode approveformyorg -C records -n recordschaincode -v 0.0 --package-id ${PACKAGE_ID_R} --sequence 1 --tls --cafile \$ORDERER_TLS_ROOTCERT_FILE"
+docker exec insurance-cli bash -c "peer lifecycle chaincode approveformyorg -C records -n recordschaincode -v 0.0 --package-id ${PACKAGE_ID_R} --sequence 1 --tls --cafile \$ORDERER_TLS_ROOTCERT_FILE"
+docker exec fico-cli bash -c "peer lifecycle chaincode approveformyorg -C records -n recordschaincode -v 0.0 --package-id ${PACKAGE_ID_R} --sequence 1 --tls --cafile \$ORDERER_TLS_ROOTCERT_FILE"
 sleep ${FABRIC_START_WAIT}
 
 echo "----------------------------- For books channel------------------------------------------------"
-docker exec appraiser-cli bash -c 'peer lifecycle chaincode approveformyorg -C books -n bookschaincode -v 0.0 --sequence 1 --tls --cafile $ORDERER_TLS_ROOTCERT_FILE'
-docker exec title-cli bash -c 'peer lifecycle chaincode approveformyorg -C books -n bookschaincode -v 0.0 --sequence 1 --tls --cafile $ORDERER_TLS_ROOTCERT_FILE'
-docker exec bank-cli bash -c 'peer lifecycle chaincode approveformyorg -C books -n bookschaincode -v 0.0 --sequence 1 --tls --cafile $ORDERER_TLS_ROOTCERT_FILE'
-docker exec insurance-cli bash -c 'peer lifecycle chaincode approveformyorg -C books -n bookschaincode -v 0.0 --sequence 1 --tls --cafile $ORDERER_TLS_ROOTCERT_FILE'
-docker exec audit-cli bash -c 'peer lifecycle chaincode approveformyorg -C books -n bookschaincode -v 0.0 --sequence 1 --tls --cafile $ORDERER_TLS_ROOTCERT_FILE'
-docker exec registry-cli bash -c 'peer lifecycle chaincode approveformyorg -C books -n bookschaincode -v 0.0 --sequence 1 --tls --cafile $ORDERER_TLS_ROOTCERT_FILE'
+docker exec appraiser-cli bash -c "peer lifecycle chaincode approveformyorg -C books -n bookschaincode -v 0.0 --package-id ${PACKAGE_ID_B} --sequence 1 --tls --cafile \$ORDERER_TLS_ROOTCERT_FILE"
+docker exec title-cli bash -c "peer lifecycle chaincode approveformyorg -C books -n bookschaincode -v 0.0 --package-id ${PACKAGE_ID_B} --sequence 1 --tls --cafile \$ORDERER_TLS_ROOTCERT_FILE"
+docker exec bank-cli bash -c "peer lifecycle chaincode approveformyorg -C books -n bookschaincode -v 0.0 --package-id ${PACKAGE_ID_B} --sequence 1 --tls --cafile \$ORDERER_TLS_ROOTCERT_FILE"
+docker exec insurance-cli bash -c "peer lifecycle chaincode approveformyorg -C books -n bookschaincode -v 0.0 --package-id ${PACKAGE_ID_B} --sequence 1 --tls --cafile \$ORDERER_TLS_ROOTCERT_FILE"
+docker exec audit-cli bash -c "peer lifecycle chaincode approveformyorg -C books -n bookschaincode -v 0.0 --package-id ${PACKAGE_ID_B} --sequence 1 --tls --cafile \$ORDERER_TLS_ROOTCERT_FILE"
+docker exec registry-cli bash -c "peer lifecycle chaincode approveformyorg -C books -n bookschaincode -v 0.0 --package-id ${PACKAGE_ID_B} --sequence 1 --tls --cafile \$ORDERER_TLS_ROOTCERT_FILE"
 sleep ${FABRIC_START_WAIT}
 
 echo " ----------------- For lending channel ----------------------------------------------------"
-docker exec bank-cli bash -c 'peer lifecycle chaincode approveformyorg -C lending -n lendingchaincode -v 0.0 --sequence 1 --tls --cafile $ORDERER_TLS_ROOTCERT_FILE'
-docker exec fico-cli bash -c 'peer lifecycle chaincode approveformyorg -C lending -n lendingchaincode -v 0.0 --sequence 1 --tls --cafile $ORDERER_TLS_ROOTCERT_FILE'
-docker exec insurance-cli bash -c 'peer lifecycle chaincode approveformyorg -C lending -n lendingchaincode -v 0.0 --sequence 1 --tls --cafile $ORDERER_TLS_ROOTCERT_FILE'
-docker exec audit-cli bash -c 'peer lifecycle chaincode approveformyorg -C lending -n lendingchaincode -v 0.0 --sequence 1 --tls --cafile $ORDERER_TLS_ROOTCERT_FILE'
-docker exec title-cli bash -c 'peer lifecycle chaincode approveformyorg -C lending -n lendingchaincode -v 0.0 --sequence 1 --tls --cafile $ORDERER_TLS_ROOTCERT_FILE'
+docker exec bank-cli bash -c "peer lifecycle chaincode approveformyorg -C lending -n lendingchaincode -v 0.0 --package-id ${PACKAGE_ID_L} --sequence 1 --tls --cafile \$ORDERER_TLS_ROOTCERT_FILE"
+docker exec fico-cli bash -c "peer lifecycle chaincode approveformyorg -C lending -n lendingchaincode -v 0.0 --package-id ${PACKAGE_ID_L} --sequence 1 --tls --cafile \$ORDERER_TLS_ROOTCERT_FILE"
+docker exec insurance-cli bash -c "peer lifecycle chaincode approveformyorg -C lending -n lendingchaincode -v 0.0 --package-id ${PACKAGE_ID_L} --sequence 1 --tls --cafile \$ORDERER_TLS_ROOTCERT_FILE"
+docker exec audit-cli bash -c "peer lifecycle chaincode approveformyorg -C lending -n lendingchaincode -v 0.0 --package-id ${PACKAGE_ID_L} --sequence 1 --tls --cafile \$ORDERER_TLS_ROOTCERT_FILE"
+docker exec title-cli bash -c "peer lifecycle chaincode approveformyorg -C lending -n lendingchaincode -v 0.0 --package-id ${PACKAGE_ID_L} --sequence 1 --tls --cafile \$ORDERER_TLS_ROOTCERT_FILE"
 sleep ${FABRIC_START_WAIT}
 
-echo -e '-----------------------\e[5;32;40m Approve chaincodes\e[m---------------------------------------------------------'
+echo -e '-----------------------\e[5;32;40m Commit chaincodes\e[m---------------------------------------------------------'
 
 echo " ----------------------------- For Records channel --------------------------------------------"
 docker exec registry-cli  bash -c 'peer lifecycle chaincode checkcommitreadiness -C records -n recordschaincode -v 0.0 --sequence 1 --tls --cafile $ORDERER_TLS_ROOTCERT_FILE'
