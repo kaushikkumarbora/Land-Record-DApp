@@ -29,21 +29,21 @@ class RecordContract extends Contract {
   }
 
   /**
-   * 
+   *
    * /**
    * createRealEstate
    *
    * puts  real estate in the records Blockchain
-   * 
-   * @param {Context} ctx 
-   * @param {string} RealEstateID 
-   * @param {string} Address 
-   * @param {string} Value 
-   * @param {string} Details 
-   * @param {string} Owner 
-   * @returns 
+   *
+   * @param {Context} ctx
+   * @param {string} RealEstateID
+   * @param {string} Address
+   * @param {string} Value
+   * @param {string} Details
+   * @param {string} Owner
+   * @returns
    */
-  async createRealEstate (ctx, RealEstateID, Address, Value, Details, Owner,) {
+  async createRealEstate (ctx, RealEstateID, Address, Value, Details, Owner) {
     if (CheckProducer(ctx)) {
       var TransactionHistory = {}
       TransactionHistory['createRealEstate'] = GetTimeNow()
@@ -79,11 +79,8 @@ class RecordContract extends Contract {
    */
   async recordPurchase (ctx, RealEstateID) {
     if (CheckProducer(ctx)) {
-
       // Create Key
-      var recordsKey = ctx.stub.createCompositeKey(PrefixRecord, [
-        RealEstateID
-      ])
+      var recordsKey = ctx.stub.createCompositeKey(PrefixRecord, [RealEstateID])
       // Look for the RealEstateID
       var recordsBytes = await ctx.stub.getState(recordsKey)
       if (!recordsBytes || recordsBytes.length === 0) {
@@ -132,33 +129,24 @@ class RecordContract extends Contract {
    * @returns
    */
   async queryAll (ctx) {
-    // resultIterator is a StateQueryIteratorInterface
-    var resultsIterator = await ctx.stub.getStateByRange('', '')
-
-    // allResults is a JSON array containing QueryResults
+    const startKey = ''
+    const endKey = ''
     var allResults = []
-
-    var queryResponse = await resultsIterator.next()
-
-    while (!queryResponse.done) {
-      const strValue = Buffer.from(
-        queryResponse.value.value.toString()
-      ).toString('utf8')
-      var record = {}
+    for await (const { key, value } of ctx.stub.getStateByPartialCompositeKey(
+      PrefixRecord,
+      []
+    )) {
+      const strValue = Buffer.from(value).toString('utf8')
+      let record
       try {
         record = JSON.parse(strValue)
       } catch (err) {
         console.log(err)
         record = strValue
       }
-      allResults.push({ Key: queryResponse.value.key, Record: record })
-      result = await iterator.next()
+      allResults.push({ Key: key, Record: record })
     }
-
-    console.log('- queryAll:\n%s\n', JSON.stringify(allResults))
-    resultsIterator.close()
-    // return Buffer.from(JSON.stringify(allResults))
-    console.log(allResults)
+    console.info('- queryAll:\n%s\n', JSON.stringify(allResults))
     return JSON.stringify(allResults)
   }
 
@@ -174,7 +162,6 @@ class RecordContract extends Contract {
    * @returns
    */
   async query (ctx, ID) {
-
     if (ID === undefined) {
       throw new Error('ID not defined')
     } else if (typeof ID != 'string') {

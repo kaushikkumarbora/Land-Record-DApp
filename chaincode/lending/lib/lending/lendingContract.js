@@ -240,34 +240,24 @@ class LendingContract extends Contract {
    * @returns
    */
   async queryAll (ctx) {
-    // resultIterator is a StateQueryIteratorInterface
-    var resultsIterator = await ctx.stub.getStateByRange('', '')
-
-    // allResults is a JSON array containing QueryResults
+    const startKey = ''
+    const endKey = ''
     var allResults = []
-
-    var queryResponse = await resultsIterator.next()
-
-    while (!queryResponse.done) {
-      const strValue = Buffer.from(
-        queryResponse.value.value.toString()
-      ).toString('utf8')
-      var record = {}
+    for await (const { key, value } of ctx.stub.getStateByPartialCompositeKey(
+      PrefixLending,
+      []
+    )) {
+      const strValue = Buffer.from(value).toString('utf8')
+      let record
       try {
         record = JSON.parse(strValue)
       } catch (err) {
         console.log(err)
         record = strValue
       }
-      allResults.push({ Key: queryResponse.value.key, Record: record })
-      result = await iterator.next()
+      allResults.push({ Key: key, Record: record })
     }
-
-    console.log('- queryAll:\n%s\n', JSON.stringify(allResults))
-
-    resultsIterator.close()
-    // return Buffer.from(JSON.stringify(allResults))
-    console.log(allResults)
+    console.info('- queryAll:\n%s\n', JSON.stringify(allResults))
     return JSON.stringify(allResults)
   }
 
