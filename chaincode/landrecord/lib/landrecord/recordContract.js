@@ -84,7 +84,7 @@ class RecordContract extends Contract {
       // Look for the RealEstateID
       var recordsBytes = await ctx.stub.getState(recordsKey)
       if (!recordsBytes || recordsBytes.length === 0) {
-        throw new Error('RealEstateID ' + recordsKey + ' not found ')
+        throw new Error('RealEstateID ' + RealEstateID + ' not found ')
       }
 
       // Decode JSON data
@@ -94,7 +94,7 @@ class RecordContract extends Contract {
       var callArgs = new Array()
 
       callArgs[0] = Buffer.from(QueryBooksString)
-      callArgs[1] = Buffer.from(recordsKey)
+      callArgs[1] = Buffer.from(realEstate.RealEstateID)
 
       var res = await ctx.stub.invokeChaincode(
         BooksChaincode,
@@ -171,6 +171,10 @@ class RecordContract extends Contract {
     var key = ctx.stub.createCompositeKey(PrefixRecord, [ID])
 
     var asBytes = await ctx.stub.getState(key)
+
+    if (!asBytes || asBytes.length == 0) {
+      throw new Error('RealEstateID ' + ID + ' not found ')
+    }
 
     return asBytes.toString()
   }

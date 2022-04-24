@@ -80,10 +80,10 @@ function writeToLendingLedger (ctx, mrtg, txnType) {
   mrtgAsBytes = Buffer.from(JSON.stringify(mrtg))
 
   // Create Key
-  var mortgageKey = ctx.stub.createCompositeKey(PrefixLending, [mrtg.CustID])
+  var mortgageKey = ctx.stub.createCompositeKey(PrefixLending, [mrtg.CustID, mrtg.RealEstateID])
 
   // Store in the Blockchain
-  ctx.stub.PutState(mortgageKey, mrtgAsBytes)
+  ctx.stub.putState(mortgageKey, mrtgAsBytes)
   return
 }
 

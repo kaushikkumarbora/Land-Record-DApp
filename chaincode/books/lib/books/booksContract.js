@@ -9,7 +9,8 @@ const {
   AppraisalLow,
   LendingChaincode,
   LendingChannel,
-  QueryLendingString
+  QueryLendingString,
+  QueryBooksString
 } = require('./const')
 
 class BooksContract extends Contract {
@@ -76,7 +77,7 @@ class BooksContract extends Contract {
 
       var bookBytes = await ctx.stub.getState(bookKey)
       if (!bookBytes || bookBytes.length == 0) {
-        return shim.Error('RealEstateID ' + RealEstateID + ' not found ')
+        throw new Error('RealEstateID ' + RealEstateID + ' not found ')
       }
 
       // Get Information from Blockchain
@@ -112,7 +113,7 @@ class BooksContract extends Contract {
 
       var bookBytes = await ctx.stub.getState(bookKey)
       if (!bookBytes || bookBytes.length == 0) {
-        return shim.Error('RealEstateID ' + RealEstateID + ' not found ')
+        throw new Error('RealEstateID ' + RealEstateID + ' not found ')
       }
 
       // Get Information from Blockchain
@@ -149,19 +150,20 @@ class BooksContract extends Contract {
 
       var bookBytes = await ctx.stub.getState(bookKey)
       if (!bookBytes || bookBytes.length == 0) {
-        return shim.Error('RealEstateID ' + RealEstateID + ' not found ')
+        throw new Error('RealEstateID ' + RealEstateID + ' not found ')
       }
 
       // Get Information from Blockchain
       var books
       // Decode JSON data
-      books = JSON.parse(bookBytes.toString())
+      books = Books(JSON.parse(bookBytes.toString()))
 
       //first check if the mortgage is funded else reject the title change to new owner
       var callArgs = new Array()
 
       callArgs[0] = Buffer.from(QueryLendingString)
       callArgs[1] = Buffer.from(CustID) //this is the new customer passed to this function
+      callArgs[2] = Buffer.from(RealEstateID)
 
       var res = await ctx.stub.invokeChaincode(
         LendingChaincode,
@@ -236,6 +238,10 @@ class BooksContract extends Contract {
     var key = ctx.stub.createCompositeKey(PrefixBook, [ID])
 
     var asBytes = await ctx.stub.getState(key)
+
+    if (!asBytes || asBytes.length == 0) {
+      throw new Error('RealEstateID ' + ID + ' not found ')
+    }
 
     return asBytes.toString()
   }

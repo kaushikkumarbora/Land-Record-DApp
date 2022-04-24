@@ -7,3 +7,4 @@ module.exports.InsuranceThreshold = 0.0
 module.exports.BooksChaincode = 'bookschaincode'
 module.exports.BooksChannel = 'books'
 module.exports.QueryBooksString = 'queryBooks'
+module.exports.QueryLendingString = 'queryLending'
