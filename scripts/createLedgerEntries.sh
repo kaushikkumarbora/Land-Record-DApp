@@ -5,6 +5,8 @@ export FABRIC_START_WAIT=2
 
 
 echo -e "------------------------\e[5;32;40mNow creating real estates on the records blockchain\e[m ----------------------------------------------------"
+sleep ${FABRIC_START_WAIT}
+
 docker exec registry-cli bash -c "peer chaincode invoke -C records -n recordschaincode -c '{\"Args\":[\"createRealEstate\", \"123\", \"5 High Strret, TX 75000 \",\"250000\",\"4000 sq. ft 3 beds 2 baths blah blah\", \"John Doe\"]}' --tls --cafile \$ORDERER_TLS_ROOTCERT_FILE"
 
 docker exec registry-cli bash -c "peer chaincode invoke -C records -n recordschaincode -c '{\"Args\":[\"createRealEstate\", \"456\", \"6 Low Strret, FL 75001 \",\"500000\",\"6000 sq. ft 4 beds 2 baths blah blah\", \"Alice Monet\"]}' --tls --cafile \$ORDERER_TLS_ROOTCERT_FILE"
