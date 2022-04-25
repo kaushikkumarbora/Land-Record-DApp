@@ -103,7 +103,10 @@ class RecordContract extends Contract {
       )
       //console.log("************************ received  from books for realestateID=", mrtg.RealEstateID, " Response status=", res.GetStatus(), "payload=", res.Payload)
 
-      var bks = JSON.parse(res.payload.toString())
+      if (!res || res.length === 0) {
+        throw new Error('RealEstateID ' + RealEstateID + ' not found ')
+      }
+      var bks = Books(JSON.parse(res.payload.toString()))
 
       if (bks.NewTitleOwner != '') {
         //if the new owner is a non blank field then it means the loan was funded and new owner was populated.
@@ -172,7 +175,7 @@ class RecordContract extends Contract {
 
     var asBytes = await ctx.stub.getState(key)
 
-    if (!asBytes || asBytes.length == 0) {
+    if (!asBytes || asBytes.length === 0) {
       throw new Error('RealEstateID ' + ID + ' not found ')
     }
 

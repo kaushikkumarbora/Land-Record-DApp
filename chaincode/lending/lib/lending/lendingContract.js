@@ -8,7 +8,7 @@ const {
   InsuranceMSPID
 } = require('./prefix')
 const { CheckProducer, Random, WriteToLendingLedger } = require('./utils')
-const { Mortgage } = require('./data')
+const { Mortgage, Books } = require('./data')
 const {
   FicoHigh,
   FicoLow,
@@ -85,16 +85,25 @@ class LendingContract extends Contract {
    */
   async getFicoScores (ctx, CustID, RealEstateID) {
     if ((CheckProducer(ctx), FicoMSPID)) {
-      var lendingKey = ctx.stub.createCompositeKey(PrefixLending, [CustID, RealEstateID])
+      var lendingKey = ctx.stub.createCompositeKey(PrefixLending, [
+        CustID,
+        RealEstateID
+      ])
       var lendingBytes = await ctx.stub.getState(lendingKey)
       if (!lendingBytes || lendingBytes.length === 0) {
-        throw new Error('CustomerID ' + CustID + ', RealEstateID ' + RealEstateID + ' not found ')
+        throw new Error(
+          'CustomerID ' +
+            CustID +
+            ', RealEstateID ' +
+            RealEstateID +
+            ' not found '
+        )
       }
 
       // Get Information from Blockchain
       var mrtg
       // Decode JSON data
-      mrtg = JSON.parse(lendingBytes.toString())
+      mrtg = Mortgage(JSON.parse(lendingBytes.toString()))
 
       // update FIco  randomly generated betweenn 600-800
       mrtg.Fico = Random(FicoHigh, FicoLow)
@@ -122,16 +131,25 @@ class LendingContract extends Contract {
   async getInsuranceQuote (ctx, CustID, RealEstateID) {
     if ((CheckProducer(ctx), InsuranceMSPID)) {
       // Look for the customerID
-      var lendingKey = ctx.stub.createCompositeKey(PrefixLending, [CustID, RealEstateID])
+      var lendingKey = ctx.stub.createCompositeKey(PrefixLending, [
+        CustID,
+        RealEstateID
+      ])
       var lendingBytes = await ctx.stub.getState(lendingKey)
       if (!lendingBytes || lendingBytes.length === 0) {
-        throw new Error('CustomerID ' + CustID + ', RealEstateID ' + RealEstateID + ' not found ')
+        throw new Error(
+          'CustomerID ' +
+            CustID +
+            ', RealEstateID ' +
+            RealEstateID +
+            ' not found '
+        )
       }
 
       // Get Information from Blockchain
       var mrtg
       // Decode JSON data
-      mrtg = JSON.parse(lendingBytes.toString())
+      mrtg = Mortgage(JSON.parse(lendingBytes.toString()))
 
       // update insurance  randomly generated betweenn 2500-5000
       mrtg.Insurance = Random(InsuranceHigh, InsuranceLow)
@@ -159,10 +177,19 @@ class LendingContract extends Contract {
   async closeMortgage (ctx, CustID, RealEstateID) {
     if ((CheckProducer(ctx), BankMSPID)) {
       // Look for the serial number
-      var lendingKey = ctx.stub.createCompositeKey(PrefixLending, [CustID, RealEstateID])
+      var lendingKey = ctx.stub.createCompositeKey(PrefixLending, [
+        CustID,
+        RealEstateID
+      ])
       var lendingBytes = await ctx.stub.getState(lendingKey)
       if (!lendingBytes || lendingBytes.length === 0) {
-        throw new Error('CustomerID ' + CustID + ', RealEstateID ' + RealEstateID + ' not found ')
+        throw new Error(
+          'CustomerID ' +
+            CustID +
+            ', RealEstateID ' +
+            RealEstateID +
+            ' not found '
+        )
       }
 
       // Get Information from Blockchain
@@ -181,8 +208,10 @@ class LendingContract extends Contract {
         callArgs,
         BooksChannel
       )
-
-      var bks = JSON.parse(res.payload.toString())
+      if (!res || res.length === 0) {
+        throw new Error('RealEstateID ' + RealEstateID + ' not found ')
+      }
+      var bks = Books(JSON.parse(res.payload.toString()))
 
       // update status of the mortgage to funded if fico score, Insurance and appraisal meets the criteria
       console.log(
@@ -288,8 +317,14 @@ class LendingContract extends Contract {
 
     var asBytes = await ctx.stub.getState(key)
 
-    if (!asBytes || asBytes.length == 0) {
-      throw new Error('CustomerID ' + CustID + ', RealEstateID ' + RealEstateID + ' not found ')
+    if (!asBytes || asBytes.length === 0) {
+      throw new Error(
+        'CustomerID ' +
+          CustID +
+          ', RealEstateID ' +
+          RealEstateID +
+          ' not found '
+      )
     }
 
     return asBytes.toString()
@@ -305,10 +340,19 @@ class LendingContract extends Contract {
    */
   async queryLending (ctx, CustID, RealEstateID) {
     // Look for the serial number
-    var lendingKey = ctx.stub.createCompositeKey(PrefixLending, [CustID, RealEstateID])
+    var lendingKey = ctx.stub.createCompositeKey(PrefixLending, [
+      CustID,
+      RealEstateID
+    ])
     var lendingBytes = await ctx.stub.getState(lendingKey)
     if (!lendingBytes || lendingBytes.length === 0) {
-      throw new Error('CustomerID ' + CustID + ', RealEstateID ' + RealEstateID + ' not found ')
+      throw new Error(
+        'CustomerID ' +
+          CustID +
+          ', RealEstateID ' +
+          RealEstateID +
+          ' not found '
+      )
     } else {
       // Get Information from Blockchain
       var mrtg
@@ -316,7 +360,7 @@ class LendingContract extends Contract {
       mrtg = JSON.parse(lendingBytes.toString())
 
       WriteToLendingLedger(ctx, mrtg, QueryLendingString) //log it for audit
-      return lendingBytes
+      return lendingBytes.toString()
     }
   }
 }

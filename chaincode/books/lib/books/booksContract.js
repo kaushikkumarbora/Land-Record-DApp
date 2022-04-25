@@ -3,7 +3,7 @@
 const { Contract, Context } = require('fabric-contract-api')
 const { PrefixBook, AppraiserMSPID, TitleMSPID } = require('./prefix')
 const { CheckProducer, Random, WriteToBooksLedger } = require('./utils')
-const { Books } = require('./data')
+const { Books, Mortgage } = require('./data')
 const {
   AppraisalHigh,
   AppraisalLow,
@@ -76,14 +76,14 @@ class BooksContract extends Contract {
       var bookKey = ctx.stub.createCompositeKey(PrefixBook, [RealEstateID])
 
       var bookBytes = await ctx.stub.getState(bookKey)
-      if (!bookBytes || bookBytes.length == 0) {
+      if (!bookBytes || bookBytes.length === 0) {
         throw new Error('RealEstateID ' + RealEstateID + ' not found ')
       }
 
       // Get Information from Blockchain
       var books
       // Decode JSON data
-      books = JSON.parse(bookBytes.toString())
+      books = Books(JSON.parse(bookBytes.toString()))
 
       // update appraisal between 1-2 million
       books.Appraisal = Random(AppraisalHigh, AppraisalLow)
@@ -112,14 +112,14 @@ class BooksContract extends Contract {
       var bookKey = ctx.stub.createCompositeKey(PrefixBook, [RealEstateID])
 
       var bookBytes = await ctx.stub.getState(bookKey)
-      if (!bookBytes || bookBytes.length == 0) {
+      if (!bookBytes || bookBytes.length === 0) {
         throw new Error('RealEstateID ' + RealEstateID + ' not found ')
       }
 
       // Get Information from Blockchain
       var books
       // Decode JSON data
-      books = JSON.parse(bookBytes.toString())
+      books = Books(JSON.parse(bookBytes.toString()))
 
       // update Title randomly for true or false
       books.TitleStatus = Boolean(Math.random())
@@ -149,7 +149,7 @@ class BooksContract extends Contract {
       var bookKey = ctx.stub.createCompositeKey(PrefixBook, [RealEstateID])
 
       var bookBytes = await ctx.stub.getState(bookKey)
-      if (!bookBytes || bookBytes.length == 0) {
+      if (!bookBytes || bookBytes.length === 0) {
         throw new Error('RealEstateID ' + RealEstateID + ' not found ')
       }
 
@@ -170,12 +170,20 @@ class BooksContract extends Contract {
         callArgs,
         LendingChannel
       )
-
-      var mrtg = JSON.parse(res.payload.toString())
+      if (!res || res.length === 0) {
+        throw new Error(
+          'CustomerID ' +
+            CustID +
+            ', RealEstateID ' +
+            RealEstateID +
+            ' not found '
+        )
+      }
+      var mrtg = Mortgage(JSON.parse(res.payload.toString()))
 
       // update owner if mortgage is Funded else it stays blank
-      if (mrtg.Status == 'Funded') {
-        books.NewTitleOwner = mrtg.CustID //we will rely on the books leder to update new owner
+      if (mrtg.Status === 'Funded') {
+        books.NewTitleOwner = mrtg.CustID //we will rely on the books ledger to update new owner
       }
       WriteToBooksLedger(ctx, books, 'changeTitle')
     } else {
@@ -239,7 +247,7 @@ class BooksContract extends Contract {
 
     var asBytes = await ctx.stub.getState(key)
 
-    if (!asBytes || asBytes.length == 0) {
+    if (!asBytes || asBytes.length === 0) {
       throw new Error('RealEstateID ' + ID + ' not found ')
     }
 
@@ -258,14 +266,14 @@ class BooksContract extends Contract {
     var bookKey = ctx.stub.createCompositeKey(PrefixBook, [RealEstateID])
 
     var bookBytes = await ctx.stub.getState(bookKey)
-    if (!bookBytes || bookBytes.length == 0) {
+    if (!bookBytes || bookBytes.length === 0) {
       throw new Error('RealEstateID ' + RealEstateID + ' not found ')
     } else {
       var bks
       bks = JSON.parse(bookBytes.toString())
 
       WriteToBooksLedger(ctx, bks, QueryBooksString) //log it for audit
-      return bookBytes
+      return bookBytes.toString()
     }
   }
 }
