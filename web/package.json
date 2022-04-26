@@ -1,0 +1,48 @@
+{
+  "name": "web",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "engines": {
+    "node": "^10.24.1",
+    "npm": "^6.14.12"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon ./index.js --exec babel-node --inspect",
+    "prebuild": "npm install",
+    "build": "npm-run-all build:server",
+    "build:webpack": "cross-env NODE_ENV=production&&babel-node ./tools/build",
+    "build:server": "babel www -d bin webpack.config.prod.js",
+    "serve": "cross-env NODE_ENV=production&&node ./bin/server",
+    "server": "npm run serve",
+    "lint": "eslint .",
+    "autofix": "eslint --fix .",
+    "clean": "rimraf -rf ./dist ./bin"
+  },
+  "keywords": [],
+  "author": "Kaushik Kumar Bora <kaushikkumarbora@gmail.com> (https://github.com/kaushikkumarbora)",
+  "license": "MIT",
+  "dependencies": {
+    "body-parser": "^1.20.0",
+    "compression": "^1.7.4",
+    "cookie-parser": "^1.4.6",
+    "csurf": "^1.11.0",
+    "express": "^4.17.3",
+    "express-rate-limit": "^6.3.0",
+    "fabric-network": "^2.2.11",
+    "helmet": "^5.0.2",
+    "i18n": "^0.14.2",
+    "morgan": "^1.10.0",
+    "path": "^0.12.7",
+    "pug": "^3.0.2",
+    "socket.io": "^4.5.0"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.17.6",
+    "@babel/core": "^7.17.9",
+    "@babel/node": "^7.16.8",
+    "@babel/preset-env": "^7.16.11",
+    "nodemon": "^2.0.15"
+  }
+}

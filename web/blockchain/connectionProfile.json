@@ -1,0 +1,224 @@
+{
+  "name": "Network",
+  "version": "1.1",
+  "organizations": {
+    "Appraiser": {
+      "mspid": "AppraiserMSP",
+      "peers": [
+        "appraiser-peer"
+      ],
+      "certificateAuthorities": [
+        "appraiser-ca"
+      ]
+    },
+    "Audit": {
+      "mspid": "AuditMSP",
+      "peers": [
+        "audit-peer"
+      ],
+      "certificateAuthorities": [
+        "audit-ca"
+      ]
+    },
+    "Bank": {
+      "mspid": "BankMSP",
+      "peers": [
+        "bank-peer"
+      ],
+      "certificateAuthorities": [
+        "bank-ca"
+      ]
+    },
+    "Fico": {
+      "mspid": "FicoMSP",
+      "peers": [
+        "fico-peer"
+      ],
+      "certificateAuthorities": [
+        "fico-ca"
+      ]
+    },
+    "Insurance": {
+      "mspid": "InsuranceMSP",
+      "peers": [
+        "insurance-peer"
+      ],
+      "certificateAuthorities": [
+        "insurance-ca"
+      ]
+    },
+    "Registry": {
+      "mspid": "RegistryMSP",
+      "peers": [
+        "registry-peer"
+      ],
+      "certificateAuthorities": [
+        "registry-ca"
+      ]
+    },
+    "Title": {
+      "mspid": "TitleMSP",
+      "peers": [
+        "title-peer"
+      ],
+      "certificateAuthorities": [
+        "title-ca"
+      ]
+    }
+  },
+  "orderers": {
+    "orderer0": {
+      "url": "grpcs://localhost:7050",
+      "grpcOptions": {
+        "ssl-target-name-override": "orderer0"
+      },
+      "tlsCACerts": {
+        "path": "/home/freegan/Public/INTERNSHIP/Project_fabric/Project/artifacts/crypto-config/ordererOrganizations/orderer-org/orderers/orderer0/msp/tlscacerts/tlsca.orderer-org-cert.pem"
+      }
+    }
+  },
+  "peers": {
+    "appraiser-peer": {
+      "url": "grpcs://localhost:7051",
+      "grpcOptions": {
+        "ssl-target-name-override": "appraiser-peer",
+        "hostnameOverride": "appraiser-peer"
+      },
+      "tlsCACerts": {
+        "path": "/home/freegan/Public/INTERNSHIP/Project_fabric/Project/artifacts/crypto-config/peerOrganizations/appraiser-org/peers/appraiser-peer/msp/tlscacerts/tlsca.appraiser-org-cert.pem"
+      }
+    },
+    "audit-peer": {
+      "url": "grpcs://localhost:8051",
+      "grpcOptions": {
+        "ssl-target-name-override": "audit-peer",
+        "hostnameOverride": "audit-peer"
+      },
+      "tlsCACerts": {
+        "path": "/home/freegan/Public/INTERNSHIP/Project_fabric/Project/artifacts/crypto-config/peerOrganizations/audit-org/peers/audit-peer/msp/tlscacerts/tlsca.audit-org-cert.pem"
+      }
+    },
+    "bank-peer": {
+      "url": "grpcs://localhost:9051",
+      "grpcOptions": {
+        "ssl-target-name-override": "bank-peer",
+        "hostnameOverride": "bank-peer"
+      },
+      "tlsCACerts": {
+        "path": "/home/freegan/Public/INTERNSHIP/Project_fabric/Project/artifacts/crypto-config/peerOrganizations/bank-org/peers/bank-peer/msp/tlscacerts/tlsca.bank-org-cert.pem"
+      }
+    },
+    "fico-peer": {
+      "url": "grpcs://localhost:10051",
+      "grpcOptions": {
+        "ssl-target-name-override": "fico-peer",
+        "hostnameOverride": "fico-peer"
+      },
+      "tlsCACerts": {
+        "path": "/home/freegan/Public/INTERNSHIP/Project_fabric/Project/artifacts/crypto-config/peerOrganizations/fico-org/peers/fico-peer/msp/tlscacerts/tlsca.fico-org-cert.pem"
+      }
+    },
+    "insurance-peer": {
+      "url": "grpcs://localhost:11051",
+      "grpcOptions": {
+        "ssl-target-name-override": "insurance-peer",
+        "hostnameOverride": "insurance-peer"
+      },
+      "tlsCACerts": {
+        "path": "/home/freegan/Public/INTERNSHIP/Project_fabric/Project/artifacts/crypto-config/peerOrganizations/insurance-org/peers/insurance-peer/msp/tlscacerts/tlsca.insurance-org-cert.pem"
+      }
+    },
+    "registry-peer": {
+      "url": "grpcs://localhost:12051",
+      "grpcOptions": {
+        "ssl-target-name-override": "registry-peer",
+        "hostnameOverride": "registry-peer"
+      },
+      "tlsCACerts": {
+        "path": "/home/freegan/Public/INTERNSHIP/Project_fabric/Project/artifacts/crypto-config/peerOrganizations/registry-org/peers/registry-peer/msp/tlscacerts/tlsca.registry-org-cert.pem"
+      }
+    },
+    "title-peer": {
+      "url": "grpcs://localhost:13051",
+      "grpcOptions": {
+        "ssl-target-name-override": "title-peer",
+        "hostnameOverride": "title-peer"
+      },
+      "tlsCACerts": {
+        "path": "/home/freegan/Public/INTERNSHIP/Project_fabric/Project/artifacts/crypto-config/peerOrganizations/title-org/peers/title-peer/msp/tlscacerts/tlsca.title-org-cert.pem"
+      }
+    }
+  },
+  "certificateAuthorities": {
+    "appraiser-ca": {
+      "url": "https://localhost:7054",
+      "caName": "appraiser-ca",
+      "tlsCACerts": {
+        "path": "/home/freegan/Public/INTERNSHIP/Project_fabric/Project/artifacts/crypto-config/peerOrganizations/appraiser-org/tlsca/tlsca.appraiser-org-cert.pem"
+      },
+      "httpOptions": {
+        "verify": false
+      }
+    },
+    "audit-ca": {
+      "url": "https://localhost:8054",
+      "caName": "audit-ca",
+      "tlsCACerts": {
+        "path": "/home/freegan/Public/INTERNSHIP/Project_fabric/Project/artifacts/crypto-config/peerOrganizations/audit-org/tlsca/tlsca.audit-org-cert.pem"
+      },
+      "httpOptions": {
+        "verify": false
+      }
+    },
+    "bank-ca": {
+      "url": "https://localhost:9054",
+      "caName": "bank-ca",
+      "tlsCACerts": {
+        "path": "/home/freegan/Public/INTERNSHIP/Project_fabric/Project/artifacts/crypto-config/peerOrganizations/bank-org/tlsca/tlsca.bank-org-cert.pem"
+      },
+      "httpOptions": {
+        "verify": false
+      }
+    },
+    "fico-ca": {
+      "url": "https://localhost:10054",
+      "caName": "fico-ca",
+      "tlsCACerts": {
+        "path": "/home/freegan/Public/INTERNSHIP/Project_fabric/Project/artifacts/crypto-config/peerOrganizations/fico-org/tlsca/tlsca.fico-org-cert.pem"
+      },
+      "httpOptions": {
+        "verify": false
+      }
+    },
+    "insurance-ca": {
+      "url": "https://localhost:11054",
+      "caName": "insurance-ca",
+      "tlsCACerts": {
+        "path": "/home/freegan/Public/INTERNSHIP/Project_fabric/Project/artifacts/crypto-config/peerOrganizations/insurance-org/tlsca/tlsca.insurance-org-cert.pem"
+      },
+      "httpOptions": {
+        "verify": false
+      }
+    },
+    "registry-ca": {
+      "url": "https://localhost:12054",
+      "caName": "registry-ca",
+      "tlsCACerts": {
+        "path": "/home/freegan/Public/INTERNSHIP/Project_fabric/Project/artifacts/crypto-config/peerOrganizations/registry-org/tlsca/tlsca.registry-org-cert.pem"
+      },
+      "httpOptions": {
+        "verify": false
+      }
+    },
+    "title-ca": {
+      "url": "https://localhost:13054",
+      "caName": "title-ca",
+      "tlsCACerts": {
+        "path": "/home/freegan/Public/INTERNSHIP/Project_fabric/Project/artifacts/crypto-config/peerOrganizations/title-org/tlsca/tlsca.title-org-cert.pem"
+      },
+      "httpOptions": {
+        "verify": false
+      }
+    }
+  }
+}
