@@ -3,6 +3,13 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "engines": {
+    "node": "^12.22.12",
+    "npm" : "^6.14.16"
+   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "fabric-chaincode-node start"
