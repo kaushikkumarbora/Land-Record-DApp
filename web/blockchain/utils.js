@@ -79,14 +79,14 @@ export class OrganizationClient {
 
       try {
         let result = await contract.submitTransaction(TransactionName, args)
-        console.log(`Result: ${prettyJSONString(result.toString())}`)
+        console.log(`Result: ${JSON.parse(result.toString())}`)
       } catch (error) {
         console.log(`Something went wrong with chaincode error: \n    ${error}`)
       }
     } finally {
       // Disconnect from the gateway when the application is closing
       // This will close all connections to the network
-      this.gateway.disconnect()
+      this._gateway.disconnect()
     }
   }
 
@@ -99,8 +99,7 @@ export class OrganizationClient {
       // signed by this user using the credentials stored in the wallet.
       await this._gateway.connect(ccp, {
         wallet: this._wallet,
-        identity: this._adminID,
-        discovery: { enabled: true, asLocalhost: true } // using asLocalhost as this gateway is using a fabric network deployed locally
+        identity: this._adminID
       })
 
       // Build a network instance based on the channel where the smart contract is deployed
@@ -111,7 +110,7 @@ export class OrganizationClient {
 
       try {
         result = await contract.evaluateTransaction(TransactionName, args)
-        console.log(`Result: ${prettyJSONString(result.toString())}`)
+        console.log(`Result: ${JSON.parse(result.toString())}`)
       } catch (error) {
         console.log(`Something went wrong with chaincode error: \n    ${error}`)
       }

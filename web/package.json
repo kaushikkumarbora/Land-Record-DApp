@@ -36,7 +36,9 @@
     "morgan": "^1.10.0",
     "path": "^0.12.7",
     "pug": "^3.0.2",
-    "socket.io": "^4.5.0"
+    "socket.io": "^4.5.0",
+    "swagger-jsdoc": "^6.2.1",
+    "swagger-ui-express": "^4.3.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.17.6",
