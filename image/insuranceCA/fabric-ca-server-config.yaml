@@ -1,4 +1,4 @@
-port: 7054
+port: 11054
 debug: false
 tls:
   enabled: true

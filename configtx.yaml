@@ -28,102 +28,6 @@ Organizations:
         OrdererEndpoints:
             - orderer0:7050
 
-    - &BankOrg
-        Name: BankMSP
-        ID: BankMSP
-
-        MSPDir: artifacts/crypto-config/peerOrganizations/bank-org/msp
-        
-        Policies:
-            Readers:
-                Type: Signature
-                Rule: "OR('BankMSP.admin', 'BankMSP.peer', 'BankMSP.client')"
-            Writers:
-                Type: Signature
-                Rule: "OR('BankMSP.admin', 'BankMSP.client')"
-            Admins:
-                Type: Signature
-                Rule: "OR('BankMSP.admin')"
-            Endorsement:
-                Type: Signature
-                Rule: "OR('BankMSP.peer')"
-        
-        AnchorPeers:
-            - Host: bank-peer
-              Port: 7051
-
-    - &InsuranceOrg
-        Name: InsuranceMSP
-        ID: InsuranceMSP
-
-        MSPDir: artifacts/crypto-config/peerOrganizations/insurance-org/msp
-        
-        Policies:
-            Readers:
-                Type: Signature
-                Rule: "OR('InsuranceMSP.admin', 'InsuranceMSP.peer', 'InsuranceMSP.client')"
-            Writers:
-                Type: Signature
-                Rule: "OR('InsuranceMSP.admin', 'InsuranceMSP.client')"
-            Admins:
-                Type: Signature
-                Rule: "OR('InsuranceMSP.admin')"
-            Endorsement:
-                Type: Signature
-                Rule: "OR('InsuranceMSP.peer')"
-        
-        AnchorPeers:
-            - Host: insurance-peer
-              Port: 7051
-
-    - &RegistryOrg
-        Name: RegistryMSP
-        ID: RegistryMSP
-
-        MSPDir: artifacts/crypto-config/peerOrganizations/registry-org/msp
-        
-        Policies:
-            Readers:
-                Type: Signature
-                Rule: "OR('RegistryMSP.admin', 'RegistryMSP.peer', 'RegistryMSP.client')"
-            Writers:
-                Type: Signature
-                Rule: "OR('RegistryMSP.admin', 'RegistryMSP.client')"
-            Admins:
-                Type: Signature
-                Rule: "OR('RegistryMSP.admin')"
-            Endorsement:
-                Type: Signature
-                Rule: "OR('RegistryMSP.peer')"
-
-        AnchorPeers:
-            - Host: registry-peer
-              Port: 7051
-
-    - &TitleOrg
-        Name: TitleMSP
-        ID: TitleMSP
-
-        MSPDir: artifacts/crypto-config/peerOrganizations/title-org/msp
-
-        Policies:
-            Readers:
-                Type: Signature
-                Rule: "OR('TitleMSP.admin', 'TitleMSP.peer', 'TitleMSP.client')"
-            Writers:
-                Type: Signature
-                Rule: "OR('TitleMSP.admin', 'TitleMSP.client')"
-            Admins:
-                Type: Signature
-                Rule: "OR('TitleMSP.admin')"
-            Endorsement:
-                Type: Signature
-                Rule: "OR('TitleMSP.peer')"
-        
-        AnchorPeers:
-            - Host: title-peer
-              Port: 7051
-
     - &AppraiserOrg
         Name: AppraiserMSP
         ID: AppraiserMSP
@@ -170,7 +74,31 @@ Organizations:
 
         AnchorPeers:
             - Host: audit-peer
-              Port: 7051
+              Port: 8051
+
+    - &BankOrg
+        Name: BankMSP
+        ID: BankMSP
+
+        MSPDir: artifacts/crypto-config/peerOrganizations/bank-org/msp
+        
+        Policies:
+            Readers:
+                Type: Signature
+                Rule: "OR('BankMSP.admin', 'BankMSP.peer', 'BankMSP.client')"
+            Writers:
+                Type: Signature
+                Rule: "OR('BankMSP.admin', 'BankMSP.client')"
+            Admins:
+                Type: Signature
+                Rule: "OR('BankMSP.admin')"
+            Endorsement:
+                Type: Signature
+                Rule: "OR('BankMSP.peer')"
+        
+        AnchorPeers:
+            - Host: bank-peer
+              Port: 9051
 
     - &FicoOrg
         Name: FicoMSP
@@ -194,7 +122,79 @@ Organizations:
         
         AnchorPeers:
             - Host: fico-peer
-              Port: 7051
+              Port: 10051
+
+    - &InsuranceOrg
+        Name: InsuranceMSP
+        ID: InsuranceMSP
+
+        MSPDir: artifacts/crypto-config/peerOrganizations/insurance-org/msp
+        
+        Policies:
+            Readers:
+                Type: Signature
+                Rule: "OR('InsuranceMSP.admin', 'InsuranceMSP.peer', 'InsuranceMSP.client')"
+            Writers:
+                Type: Signature
+                Rule: "OR('InsuranceMSP.admin', 'InsuranceMSP.client')"
+            Admins:
+                Type: Signature
+                Rule: "OR('InsuranceMSP.admin')"
+            Endorsement:
+                Type: Signature
+                Rule: "OR('InsuranceMSP.peer')"
+        
+        AnchorPeers:
+            - Host: insurance-peer
+              Port: 11051
+
+    - &RegistryOrg
+        Name: RegistryMSP
+        ID: RegistryMSP
+
+        MSPDir: artifacts/crypto-config/peerOrganizations/registry-org/msp
+        
+        Policies:
+            Readers:
+                Type: Signature
+                Rule: "OR('RegistryMSP.admin', 'RegistryMSP.peer', 'RegistryMSP.client')"
+            Writers:
+                Type: Signature
+                Rule: "OR('RegistryMSP.admin', 'RegistryMSP.client')"
+            Admins:
+                Type: Signature
+                Rule: "OR('RegistryMSP.admin')"
+            Endorsement:
+                Type: Signature
+                Rule: "OR('RegistryMSP.peer')"
+
+        AnchorPeers:
+            - Host: registry-peer
+              Port: 12051
+
+    - &TitleOrg
+        Name: TitleMSP
+        ID: TitleMSP
+
+        MSPDir: artifacts/crypto-config/peerOrganizations/title-org/msp
+
+        Policies:
+            Readers:
+                Type: Signature
+                Rule: "OR('TitleMSP.admin', 'TitleMSP.peer', 'TitleMSP.client')"
+            Writers:
+                Type: Signature
+                Rule: "OR('TitleMSP.admin', 'TitleMSP.client')"
+            Admins:
+                Type: Signature
+                Rule: "OR('TitleMSP.admin')"
+            Endorsement:
+                Type: Signature
+                Rule: "OR('TitleMSP.peer')"
+        
+        AnchorPeers:
+            - Host: title-peer
+              Port: 13051
 
 
 
