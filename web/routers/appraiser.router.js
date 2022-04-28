@@ -67,7 +67,7 @@ router.get('/api/appraisals', async (req, res) => {
  */
 router.post('/api/initiate-book', async (req, res) => {
   let { RealEstateID } = req.body
-  if (typeof RealEstateID !== 'string') {
+  if (typeof RealEstateID != 'string') {
     res.status(400).json({ error: 'Invalid request.' })
     return
   }
@@ -105,7 +105,7 @@ router.post('/api/initiate-book', async (req, res) => {
  */
 router.put('/api/process-appraisal', async (req, res) => {
   let { RealEstateID } = req.body
-  if (typeof RealEstateID !== 'string') {
+  if (typeof RealEstateID != 'string') {
     res.status(400).json({ error: 'Invalid request.' })
     return
   }
@@ -144,7 +144,7 @@ router.put('/api/process-appraisal', async (req, res) => {
  */
 router.get('/api/blocks', async (req, res) => {
   const { noOfLastBlocks } = req.body
-  if (typeof noOfLastBlocks !== 'number') {
+  if (typeof noOfLastBlocks != 'number') {
     res.status(400).json({ error: 'Invalid request' })
   }
   try {

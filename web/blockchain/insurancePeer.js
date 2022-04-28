@@ -8,7 +8,7 @@ export async function getInsurances (status) {
     return
   }
   try {
-    if (typeof status !== 'string') {
+    if (typeof status != 'string') {
       status = ''
     }
     const insurance = await query('getInsurance', status)
@@ -29,7 +29,7 @@ export async function setInsurance (CustID, RealEstateID) {
     return
   }
   try {
-    if (typeof RealEstateID !== 'string' || CustID !== 'string') {
+    if (typeof RealEstateID != 'string' || typeof CustID != 'string') {
       throw new Error('Error give realestateID, CustID')
     }
     const insurance = await invoke('getInsuranceQuote', CustID, RealEstateID)

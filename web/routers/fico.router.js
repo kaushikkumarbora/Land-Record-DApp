@@ -67,7 +67,7 @@ router.get('/api/ficos', async (req, res) => {
  */
 router.put('/api/set-fico', async (req, res) => {
   let { CustID, RealEstateID } = req.body
-  if (typeof RealEstateID !== 'string' || CustID !== 'string') {
+  if (typeof RealEstateID != 'string' || typeof CustID != 'string') {
     res.status(400).json({ error: 'Invalid request.' })
     return
   }
@@ -106,7 +106,7 @@ router.put('/api/set-fico', async (req, res) => {
  */
 router.get('/api/blocks', async (req, res) => {
   const { noOfLastBlocks } = req.body
-  if (typeof noOfLastBlocks !== 'number') {
+  if (typeof noOfLastBlocks != 'number') {
     res.status(400).json({ error: 'Invalid request' })
   }
   try {

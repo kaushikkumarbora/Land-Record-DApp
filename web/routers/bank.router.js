@@ -152,7 +152,7 @@ router.put('/api/close-mortgage', async (req, res) => {
  */
 router.get('/api/blocks', async (req, res) => {
   const { noOfLastBlocks } = req.body
-  if (typeof noOfLastBlocks !== 'number') {
+  if (typeof noOfLastBlocks != 'number') {
     res.status(400).json({ error: 'Invalid request' })
   }
   try {

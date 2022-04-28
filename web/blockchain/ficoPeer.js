@@ -8,7 +8,7 @@ export async function getFicos (status) {
     return
   }
   try {
-    if (typeof status !== 'string') {
+    if (typeof status != 'string') {
       status = ''
     }
     const fico = await query('getFico', status)
@@ -29,7 +29,7 @@ export async function setFico (CustID, RealEstateID) {
     return
   }
   try {
-    if (typeof RealEstateID !== 'string' || CustID !== 'string') {
+    if (typeof RealEstateID != 'string' || typeof CustID != 'string') {
       throw new Error('Error give realestateID, CustID')
     }
     const fico = await invoke('getFicoScores', CustID, RealEstateID)

@@ -8,7 +8,7 @@ export async function getMortgages (status) {
     return
   }
   try {
-    if (typeof status !== 'string') {
+    if (typeof status != 'string') {
       status = ''
     }
     const mortgages = await query('getMortgage', status)

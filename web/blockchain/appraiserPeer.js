@@ -8,7 +8,7 @@ export async function getAppraisals (status) {
     return
   }
   try {
-    if (typeof status !== 'string') {
+    if (typeof status != 'string') {
       status = ''
     }
     const appraisals = await query('getAppraisal', status)
@@ -29,7 +29,7 @@ export async function initiateBook (RealEstateID) {
     return
   }
   try {
-    if (typeof RealEstateID !== 'string') {
+    if (typeof RealEstateID != 'string') {
       throw new Error('Error give realestateID')
     }
     const appraisals = await invoke('initiateBooks', RealEstateID)
@@ -46,7 +46,7 @@ export async function setAppraisals (RealEstateID) {
     return
   }
   try {
-    if (typeof RealEstateID !== 'string') {
+    if (typeof RealEstateID != 'string') {
       throw new Error('Error give realestateID')
     }
     const appraisals = await invoke('getAppraisal', RealEstateID)
