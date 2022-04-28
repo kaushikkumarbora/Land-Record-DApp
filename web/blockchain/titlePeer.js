@@ -39,7 +39,7 @@ export async function changeTitle (RealEstateID, CustID) {
     return
   }
   try {
-    if (typeof RealEstateID != 'string') {
+    if (typeof RealEstateID != 'string' || typeof CustID != 'string') {
       throw new Error('Error give correct parameters')
     }
     const book = await invoke('changeTitle', RealEstateID, CustID)
