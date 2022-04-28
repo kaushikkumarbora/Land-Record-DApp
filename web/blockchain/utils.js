@@ -78,7 +78,7 @@ export class OrganizationClient {
       const contract = network.getContract(chaincodeName)
 
       try {
-        let result = await contract.submitTransaction(TransactionName, args)
+        let result = await contract.submitTransaction(TransactionName, ...args)
         console.log(`Result: ${JSON.parse(result.toString())}`)
       } catch (error) {
         console.log(`Something went wrong with chaincode error: \n    ${error}`)
@@ -109,7 +109,7 @@ export class OrganizationClient {
       const contract = network.getContract(chaincodeName)
 
       try {
-        result = await contract.evaluateTransaction(TransactionName, args)
+        result = await contract.evaluateTransaction(TransactionName, ...args)
         console.log(`Result: ${JSON.parse(result.toString())}`)
       } catch (error) {
         console.log(`Something went wrong with chaincode error: \n    ${error}`)
