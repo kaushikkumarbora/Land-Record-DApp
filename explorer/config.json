@@ -1,0 +1,9 @@
+{
+	"network-configs": {
+		"landrecord": {
+			"name": "fabric_landrecord",
+			"profile": "./connection-profile/fabric_landrecord.json"
+		}
+	},
+	"license": "Apache-2.0"
+}

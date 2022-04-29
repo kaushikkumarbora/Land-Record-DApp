@@ -1,0 +1,232 @@
+{
+	"name": "fabric_landrecord",
+	"version": "1.0.0",
+	"client": {
+		"tlsEnable": true,
+		"adminCredential": {
+			"id": "exploreradmin",
+			"password": "exploreradminpw"
+		},
+		"enableAuthentication": true,
+		"organization": "AuditOrg",
+		"connection": {
+			"timeout": {
+				"peer": {
+					"endorser": "300"
+				},
+				"orderer": "300"
+			}
+		}
+	},
+	"channels": {
+		"records": {
+			"peers": {
+				"bank-peer": {},
+				"insurance-peer": {},
+				"registry-peer": {},
+				"title-peer": {},
+				"appraiser-peer": {},
+				"audit-peer": {},
+				"fico-peer": {}
+			}
+		},
+		"lending": {
+			"peers": {
+				"bank-peer": {},
+				"insurance-peer": {},
+				"title-peer": {},
+				"audit-peer": {},
+				"fico-peer": {}
+			}
+		},
+		"books": {
+			"peers": {
+				"bank-peer": {},
+				"insurance-peer": {},
+				"registry-peer": {},
+				"title-peer": {},
+				"appraiser-peer": {},
+				"audit-peer": {}
+			}
+		}
+	},
+	"organizations": {
+		"AppraiserOrg": {
+			"mspid": "AppraiserMSP",
+			"peers": [
+			  "appraiser-peer"
+			],
+			"certificateAuthorities": [
+			  "appraiser-ca"
+			],
+			"adminPrivateKey": {
+				"path": "/tmp/crypto/peerOrganizations/appraiser-org/users/Admin@appraiser-org/msp/keystore/priv_sk"
+			},
+			"signedCert": {
+				"path": "/tmp/crypto/peerOrganizations/appraiser-org/users/Admin@appraiser-org/msp/signcerts/Admin@appraiser-org-cert.pem"
+			}
+		  },
+		  "AuditOrg": {
+			"mspid": "AuditMSP",
+			"peers": [
+			  "audit-peer"
+			],
+			"certificateAuthorities": [
+			  "audit-ca"
+			],
+			"adminPrivateKey": {
+				"path": "/tmp/crypto/peerOrganizations/audit-org/users/Admin@audit-org/msp/keystore/priv_sk"
+			},
+			"signedCert": {
+				"path": "/tmp/crypto/peerOrganizations/audit-org/users/Admin@audit-org/msp/signcerts/Admin@audit-org-cert.pem"
+			}
+		  },
+		  "BankOrg": {
+			"mspid": "BankMSP",
+			"peers": [
+			  "bank-peer"
+			],
+			"certificateAuthorities": [
+			  "bank-ca"
+			],
+			"adminPrivateKey": {
+				"path": "/tmp/crypto/peerOrganizations/bank-org/users/Admin@bank-org/msp/keystore/priv_sk"
+			},
+			"signedCert": {
+				"path": "/tmp/crypto/peerOrganizations/bank-org/users/Admin@bank-org/msp/signcerts/Admin@bank-org-cert.pem"
+			}
+		  },
+		  "FicoOrg": {
+			"mspid": "FicoMSP",
+			"peers": [
+			  "fico-peer"
+			],
+			"certificateAuthorities": [
+			  "fico-ca"
+			],
+			"adminPrivateKey": {
+				"path": "/tmp/crypto/peerOrganizations/fico-org/users/Admin@fico-org/msp/keystore/priv_sk"
+			},
+			"signedCert": {
+				"path": "/tmp/crypto/peerOrganizations/fico-org/users/Admin@fico-org/msp/signcerts/Admin@fico-org-cert.pem"
+			}
+		  },
+		  "InsuranceOrg": {
+			"mspid": "InsuranceMSP",
+			"peers": [
+			  "insurance-peer"
+			],
+			"certificateAuthorities": [
+			  "insurance-ca"
+			],
+			"adminPrivateKey": {
+				"path": "/tmp/crypto/peerOrganizations/insurance-org/users/Admin@insurance-org/msp/keystore/priv_sk"
+			},
+			"signedCert": {
+				"path": "/tmp/crypto/peerOrganizations/insurance-org/users/Admin@insurance-org/msp/signcerts/Admin@insurance-org-cert.pem"
+			}
+		  },
+		  "RegistryOrg": {
+			"mspid": "RegistryMSP",
+			"peers": [
+			  "registry-peer"
+			],
+			"certificateAuthorities": [
+			  "registry-ca"
+			],
+			"adminPrivateKey": {
+				"path": "/tmp/crypto/peerOrganizations/registry-org/users/Admin@registry-org/msp/keystore/priv_sk"
+			},
+			"signedCert": {
+				"path": "/tmp/crypto/peerOrganizations/registry-org/users/Admin@registry-org/msp/signcerts/Admin@registry-org-cert.pem"
+			}
+		  },
+		  "TitleOrg": {
+			"mspid": "TitleMSP",
+			"peers": [
+			  "title-peer"
+			],
+			"certificateAuthorities": [
+			  "title-ca"
+			],
+			"adminPrivateKey": {
+				"path": "/tmp/crypto/peerOrganizations/title-org/users/Admin@title-org/msp/keystore/priv_sk"
+			},
+			"signedCert": {
+				"path": "/tmp/crypto/peerOrganizations/title-org/users/Admin@title-org/msp/signcerts/Admin@title-org-cert.pem"
+			}
+		  }
+	},
+	"peers": {
+		"appraiser-peer": {
+			"url": "grpcs://appraiser-peer:7051",
+			"grpcOptions": {
+				"ssl-target-name-override": "appraiser-peer",
+				"hostnameOverride": "appraiser-peer"
+			},
+			"tlsCACerts": {
+				"path": "/tmp/crypto/peerOrganizations/appraiser-org/peers/appraiser-peer/msp/tlscacerts/tlsca.appraiser-org-cert.pem"
+			}
+		},
+		"audit-peer": {
+			"url": "grpcs://audit-peer:8051",
+			"grpcOptions": {
+				"ssl-target-name-override": "audit-peer",
+				"hostnameOverride": "audit-peer"
+			},
+			"tlsCACerts": {
+				"path": "/tmp/crypto/peerOrganizations/audit-org/peers/audit-peer/msp/tlscacerts/tlsca.audit-org-cert.pem"
+			}
+		},
+		"bank-peer": {
+			"url": "grpcs://bank-peer:9051",
+			"grpcOptions": {
+				"ssl-target-name-override": "bank-peer",
+				"hostnameOverride": "bank-peer"
+			},
+			"tlsCACerts": {
+				"path": "/tmp/crypto/peerOrganizations/bank-org/peers/bank-peer/msp/tlscacerts/tlsca.bank-org-cert.pem"
+			}
+		},
+		"fico-peer": {
+			"url": "grpcs://fico-peer:10051",
+			"grpcOptions": {
+				"ssl-target-name-override": "fico-peer",
+				"hostnameOverride": "fico-peer"
+			},
+			"tlsCACerts": {
+				"path": "/tmp/crypto/peerOrganizations/fico-org/peers/fico-peer/msp/tlscacerts/tlsca.fico-org-cert.pem"
+			}
+		},
+		"insurance-peer": {
+			"url": "grpcs://insurance-peer:11051",
+			"grpcOptions": {
+				"ssl-target-name-override": "insurance-peer",
+				"hostnameOverride": "insurance-peer"
+			},
+			"tlsCACerts": {
+				"path": "/tmp/crypto/peerOrganizations/insurance-org/peers/insurance-peer/msp/tlscacerts/tlsca.insurance-org-cert.pem"
+			}
+		},
+		"registry-peer": {
+			"url": "grpcs://registry-peer:12051",
+			"grpcOptions": {
+				"ssl-target-name-override": "registry-peer",
+				"hostnameOverride": "registry-peer"
+			},
+			"tlsCACerts": {
+				"path": "/tmp/crypto/peerOrganizations/registry-org/peers/registry-peer/msp/tlscacerts/tlsca.registry-org-cert.pem"
+			}
+		},
+		"title-peer": {
+			"url": "grpcs://title-peer:13051",
+			"grpcOptions": {
+				"ssl-target-name-override": "title-peer",
+				"hostnameOverride": "title-peer"
+			},
+			"tlsCACerts": {
+				"path": "/tmp/crypto/peerOrganizations/title-org/peers/title-peer/msp/tlscacerts/tlsca.title-org-cert.pem"
+			}
+		}
+	}
+}
