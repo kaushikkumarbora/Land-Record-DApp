@@ -1,7 +1,7 @@
 version: '2'
 
 services:
-  cli:
+  cli-base:
     image: hyperledger/fabric-tools:2.2.5
     tty: true
     stdin_open: true

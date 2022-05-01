@@ -19,6 +19,12 @@ services:
       # - CORE_PEER_TLS_CLIENTAUTHREQUIRED=true
       # - CORE_PEER_TLS_CLIENTROOTCAS_FILES=/peer/crypto/tls/ca.crt
       # - CORE_PEER_ADDRESSAUTODETECT=true
+      - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
+      # The CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME and CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD
+      # provide the credentials for ledger to connect to CouchDB.  The username and password must
+      # match the username and password set for the associated CouchDB.
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME=admin
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD=adminpw
     working_dir: /peer
     command: peer node start
     volumes:
