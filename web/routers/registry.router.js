@@ -25,8 +25,9 @@ router.get('/', (req, res) => {
  *          description: Internal Error
  */
 router.get('/api/records', async (req, res) => {
+  let { status } = req.body //Owned Currently, Previously Owned, All
   try {
-    let records = await RegistryPeer.getRecords()
+    let records = await RegistryPeer.queryString(status) //TODO
     res.json(records)
   } catch (e) {
     res.json({ error: 'Error accessing blockchain. ' + e })

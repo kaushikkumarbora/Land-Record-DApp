@@ -33,9 +33,9 @@ router.get('/', (req, res) => {
  *          description: Internal Error
  */
 router.get('/api/insurances', async (req, res) => {
-  let { status } = req.body
+  let { status } = req.body// Pending, FicoSet, InsuranceSet, Funded, Not Funded
   try {
-    let mortgage = await InsurancePeer.getInsurances(status)
+    let mortgage = await InsurancePeer.queryString(status)//TODO
     res.json(mortgage)
   } catch (e) {
     res.status(500).json({ error: 'Error accessing blockchain. ' + e })

@@ -33,9 +33,9 @@ router.get('/', (req, res) => {
  *          description: Internal Error
  */
 router.get('/api/ficos', async (req, res) => {
-  let { status } = req.body
+  let { status } = req.body// Pending, FicoSet, InsuranceSet, Funded, Not Funded
   try {
-    let mortgages = await FicoPeer.getFicos(status)
+    let mortgages = await FicoPeer.queryString(status)//TODO
     res.json(mortgages)
   } catch (e) {
     res.status(500).json({ error: 'Error accessing blockchain. ' + e })

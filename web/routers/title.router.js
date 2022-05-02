@@ -12,7 +12,7 @@ router.get('/', (req, res) => {
 // book Processing
 /**
  * @swagger
- * /title/api/books:
+ * /title/api/title:
  *    get:
  *      tags:
  *      - 'title'
@@ -32,10 +32,10 @@ router.get('/', (req, res) => {
  *        '500':
  *          description: Internal Error
  */
-router.get('/api/books', async (req, res) => {
-  let { status } = req.body
+router.get('/api/title', async (req, res) => {
+  let { status } = req.body// Appraiser, NewTitleStatus
   try {
-    let books = await TitlePeer.getBooks(status)
+    let books = await TitlePeer.queryString(status)//TODO
     res.json(books)
   } catch (e) {
     res.status(500).json({ error: 'Error accessing blockchain. ' + e })
