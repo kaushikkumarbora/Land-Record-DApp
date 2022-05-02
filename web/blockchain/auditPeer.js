@@ -52,3 +52,67 @@ export async function queryAllBooks () {
     throw new Error(errMessage, e)
   }
 }
+
+export async function getBookHistory (RealEstateID) {
+  if (!isReady()) {
+    return
+  }
+  try {
+    if (typeof RealEstateID != 'string') {
+      throw new Error('Error give realestateID')
+    }
+    const appraisals = await booksclient.query(
+      config.booksChaincodeId,
+      'queryHistory',
+      RealEstateID
+    )
+    return appraisals
+  } catch (e) {
+    let errMessage
+    errMessage = `Error getting books history for Real Estate with ID ${RealEstateID}: ${e.message}`
+    throw new Error(errMessage, e)
+  }
+}
+
+export async function getLendingHistory (CustID, RealEstateID) {
+  if (!isReady()) {
+    return
+  }
+  try {
+    if (typeof RealEstateID != 'string' || typeof CustID != 'string') {
+      throw new Error('Error give correct parameters')
+    }
+    const mortgages = await lendingclient.query(
+      config.lendingChaincodeId,
+      'queryHistory',
+      CustID,
+      RealEstateID
+    )
+    return mortgages
+  } catch (e) {
+    let errMessage
+    errMessage = `Error getting lending history for Real Estate with ID ${RealEstateID} and CustID ${CustID}: ${e.message}`
+    throw new Error(errMessage, e)
+  }
+}
+
+export async function getRecordHistory (RealEstateID) {
+  if (!isReady()) {
+    return
+  }
+  try {
+    if (typeof RealEstateID != 'string') {
+      throw new Error('Error give correct parameters')
+    }
+    const record = await recordsclient.query(
+      config.recordsChaincodeId,
+      'queryHistory',
+      RealEstateID
+    )
+    return record
+  } catch (e) {
+    let errMessage
+    errMessage = `Error getting records history for Real Estate with ID ${RealEstateID}: ${e.message}`
+    throw new Error(errMessage, e)
+  }
+}
