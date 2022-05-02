@@ -7,7 +7,12 @@ const {
   FicoMSPID,
   InsuranceMSPID
 } = require('./prefix')
-const { CheckProducer, Random, WriteToLendingLedger } = require('./utils')
+const {
+  CheckProducer,
+  Random,
+  WriteToLendingLedger,
+  GetAllResults
+} = require('./utils')
 const { Mortgage, Books } = require('./data')
 const {
   FicoHigh,
@@ -267,6 +272,46 @@ class LendingContract extends Contract {
 
   /**
    *
+   * getQueryResultForQueryString
+   *
+   * Executes the passed in query string.
+   * Result set is built and returned as a byte array containing the JSON results.
+   *
+   * @param {Context} ctx
+   * @param {string} queryString
+   * @returns
+   */
+  async getQueryResultForQueryString (ctx, queryString) {
+    let resultsIterator = await ctx.stub.getQueryResult(queryString)
+    let results = await GetAllResults(resultsIterator, false)
+
+    return JSON.stringify(results)
+  }
+
+  /**
+   *
+   * getHistory
+   *
+   * returns the chain of custody for an asset since issuance.
+   *
+   * @param {Context} ctx
+   * @param {string} CustID
+   * @param {string} RealEstateID
+   * @returns
+   */
+  async queryHistory (ctx, CustID, RealEstateID) {
+    var lendingKey = ctx.stub.createCompositeKey(PrefixLending, [
+      CustID,
+      RealEstateID
+    ])
+    let resultsIterator = await ctx.stub.getHistoryForKey(lendingKey)
+    let results = await GetAllResults(resultsIterator, true)
+
+    return JSON.stringify(results)
+  }
+
+  /**
+   *
    * queryAll
    *
    * queryRecords, Lending or Books gives all stored keys in the  database- ledger needs to be passed in
@@ -275,25 +320,14 @@ class LendingContract extends Contract {
    * @returns
    */
   async queryAll (ctx) {
-    const startKey = ''
-    const endKey = ''
-    var allResults = []
-    for await (const { key, value } of ctx.stub.getStateByPartialCompositeKey(
+    let resultsIterator = ctx.stub.getStateByPartialCompositeKey(
       PrefixLending,
       []
-    )) {
-      const strValue = Buffer.from(value).toString('utf8')
-      let record
-      try {
-        record = JSON.parse(strValue)
-      } catch (err) {
-        console.log(err)
-        record = strValue
-      }
-      allResults.push({ Key: key, Record: record })
-    }
-    console.info('- queryAll:\n%s\n', JSON.stringify(allResults))
-    return JSON.stringify(allResults)
+    )
+    let results = await GetAllResults(resultsIterator, false)
+    console.info('- queryAll:\n%s\n', JSON.stringify(results))
+
+    return JSON.stringify(results)
   }
 
   /**

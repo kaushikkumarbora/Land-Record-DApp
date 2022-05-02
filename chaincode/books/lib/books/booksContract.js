@@ -2,7 +2,12 @@
 
 const { Contract, Context } = require('fabric-contract-api')
 const { PrefixBook, AppraiserMSPID, TitleMSPID } = require('./prefix')
-const { CheckProducer, Random, WriteToBooksLedger } = require('./utils')
+const {
+  CheckProducer,
+  Random,
+  WriteToBooksLedger,
+  GetAllResults
+} = require('./utils')
 const { Books, Mortgage } = require('./data')
 const {
   AppraisalHigh,
@@ -196,6 +201,42 @@ class BooksContract extends Contract {
 
   /**
    *
+   * getQueryResultForQueryString
+   *
+   * Executes the passed in query string.
+   * Result set is built and returned as a byte array containing the JSON results.
+   *
+   * @param {Context} ctx
+   * @param {string} queryString
+   * @returns
+   */
+  async getQueryResultForQueryString (ctx, queryString) {
+    let resultsIterator = await ctx.stub.getQueryResult(queryString)
+    let results = await GetAllResults(resultsIterator, false)
+
+    return JSON.stringify(results)
+  }
+
+  /**
+   *
+   * getHistory
+   *
+   * returns the chain of custody for an asset since issuance.
+   *
+   * @param {Context} ctx
+   * @param {string} RealEstateID
+   * @returns
+   */
+  async queryHistory (ctx, RealEstateID) {
+    var bookKey = ctx.stub.createCompositeKey(PrefixBook, [RealEstateID])
+    let resultsIterator = await ctx.stub.getHistoryForKey(bookKey)
+    let results = await GetAllResults(resultsIterator, true)
+
+    return JSON.stringify(results)
+  }
+
+  /**
+   *
    * queryAll
    *
    * queryRecords, Lending or Books gives all stored keys in the  database- ledger needs to be passed in
@@ -204,25 +245,11 @@ class BooksContract extends Contract {
    * @returns
    */
   async queryAll (ctx) {
-    const startKey = ''
-    const endKey = ''
-    var allResults = []
-    for await (const { key, value } of ctx.stub.getStateByPartialCompositeKey(
-      PrefixBook,
-      []
-    )) {
-      const strValue = Buffer.from(value).toString('utf8')
-      let record
-      try {
-        record = JSON.parse(strValue)
-      } catch (err) {
-        console.log(err)
-        record = strValue
-      }
-      allResults.push({ Key: key, Record: record })
-    }
-    console.info('- queryAll:\n%s\n', JSON.stringify(allResults))
-    return JSON.stringify(allResults)
+    let resultsIterator = ctx.stub.getStateByPartialCompositeKey(PrefixBook, [])
+    let results = await GetAllResults(resultsIterator, false)
+    console.info('- queryAll:\n%s\n', JSON.stringify(results))
+
+    return JSON.stringify(results)
   }
 
   /**

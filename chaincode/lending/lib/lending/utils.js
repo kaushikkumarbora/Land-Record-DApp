@@ -40,7 +40,6 @@ function random (max, min) {
  * @returns
  */
 function checkProducer (ctx, ID) {
-  
   return ctx.clientIdentity.getMSPID() === ID
 }
 
@@ -80,16 +79,60 @@ function writeToLendingLedger (ctx, mrtg, txnType) {
   mrtgAsBytes = Buffer.from(JSON.stringify(mrtg))
 
   // Create Key
-  var mortgageKey = ctx.stub.createCompositeKey(PrefixLending, [mrtg.CustID, mrtg.RealEstateID])
+  var mortgageKey = ctx.stub.createCompositeKey(PrefixLending, [
+    mrtg.CustID,
+    mrtg.RealEstateID
+  ])
 
   // Store in the Blockchain
   ctx.stub.putState(mortgageKey, mrtgAsBytes)
   return
 }
 
+/**
+ *
+ * getAllResults
+ *
+ * Convert Results in iterator to json
+ *
+ * @param {Promise<Iterator>} iterator
+ * @param {boolean} isHistory
+ * @returns
+ */
+async function getAllResults (iterator, isHistory) {
+  let allResults = []
+  if (isHistory && isHistory === true) {
+    for await (const { value, TxId, Timestamp } of iterator) {
+      const strValue = Buffer.from(value).toString('utf8')
+      let record
+      try {
+        record = JSON.parse(strValue)
+      } catch (err) {
+        console.log(err)
+        record = strValue
+      }
+      allResults.push({ TxId, Timestamp, Value: record })
+    }
+  } else {
+    for await (const { key, value } of iterator) {
+      const strValue = Buffer.from(value).toString('utf8')
+      let record
+      try {
+        record = JSON.parse(strValue)
+      } catch (err) {
+        console.log(err)
+        record = strValue
+      }
+      allResults.push({ Key: key, Record: record })
+    }
+  }
+  return allResults
+}
+
 module.exports = {
   CheckProducer: checkProducer,
   WriteToLendingLedger: writeToLendingLedger,
   GetTimeNow: getTimeNow,
-  Random: random
+  Random: random,
+  GetAllResults: getAllResults
 }

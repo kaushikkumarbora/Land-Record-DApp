@@ -26,7 +26,6 @@ function getTimeNow () {
  * @returns
  */
 function checkProducer (ctx) {
-
   return ctx.clientIdentity.getMSPID() === 'RegistryMSP'
 }
 
@@ -66,8 +65,49 @@ function writeToRecordsLedger (ctx, re, txnType) {
   return
 }
 
+/**
+ *
+ * getAllResults
+ *
+ * Convert Results in iterator to json
+ *
+ * @param {Promise<Iterator>} iterator
+ * @param {boolean} isHistory
+ * @returns
+ */
+async function getAllResults (iterator, isHistory) {
+  let allResults = []
+  if (isHistory && isHistory === true) {
+    for await (const { value, TxId, Timestamp } of iterator) {
+      const strValue = Buffer.from(value).toString('utf8')
+      let record
+      try {
+        record = JSON.parse(strValue)
+      } catch (err) {
+        console.log(err)
+        record = strValue
+      }
+      allResults.push({ TxId, Timestamp, Value: record })
+    }
+  } else {
+    for await (const { key, value } of iterator) {
+      const strValue = Buffer.from(value).toString('utf8')
+      let record
+      try {
+        record = JSON.parse(strValue)
+      } catch (err) {
+        console.log(err)
+        record = strValue
+      }
+      allResults.push({ Key: key, Record: record })
+    }
+  }
+  return allResults
+}
+
 module.exports = {
   CheckProducer: checkProducer,
   WriteToRecordsLedger: writeToRecordsLedger,
-  GetTimeNow: getTimeNow
+  GetTimeNow: getTimeNow,
+  GetAllResults: getAllResults
 }
