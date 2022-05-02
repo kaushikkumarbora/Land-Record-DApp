@@ -107,6 +107,7 @@ class LendingContract extends Contract {
 
       // update FIco  randomly generated betweenn 600-800
       mrtg.Fico = Random(FicoHigh, FicoLow)
+      mrtg.Status = 'FicoSet'
       WriteToLendingLedger(ctx, mrtg, 'getFicoScores')
     } else {
       throw new Error(
@@ -153,6 +154,7 @@ class LendingContract extends Contract {
 
       // update insurance  randomly generated betweenn 2500-5000
       mrtg.Insurance = Random(InsuranceHigh, InsuranceLow)
+      mrtg.Status = 'InsuranceSet'
       WriteToLendingLedger(ctx, mrtg, 'getInsuranceQuote')
     } else {
       throw new Error(

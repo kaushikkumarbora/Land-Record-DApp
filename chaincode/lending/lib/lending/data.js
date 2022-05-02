@@ -64,7 +64,7 @@ function dataMortgage (args) {
     Fico: args.Fico,
     Insurance: args.Insurance,
     Appraisal: args.Appraisal, //this we will get from books ledger
-    Status: args.Status, //status of the mortgage pending -> Funded -> not Funded
+    Status: args.Status, //status of the mortgage Pending -> FicoSet -> InsuranceSet -> Funded -> not Funded
     TransactionHistory: args.TransactionHistory //to hold details for auditing - includes the function called and timestamp
   }
   return mortgage
