@@ -70,6 +70,23 @@ export async function recordPurchase (RealEstateID) {
   }
 }
 
+export async function queryString (queryString) {
+  if (!isReady()) {
+    return
+  }
+  try {
+    if (typeof queryString != 'string') {
+      throw new Error('Error give queryString')
+    }
+    const record = await query('getQueryResultForQueryString', queryString)
+    return record
+  } catch (e) {
+    let errMessage
+    errMessage = `Error executing querystring: ${queryString}: ${e.message}`
+    throw new Error(errMessage, e)
+  }
+}
+
 //identity to use for submitting transactions to smart contract
 async function invoke (fcn, ...args) {
   console.log(`args in registryPeer invoke: ${args}`)

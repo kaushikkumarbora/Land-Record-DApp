@@ -51,6 +51,23 @@ export async function changeTitle (RealEstateID, CustID) {
   }
 }
 
+export async function queryString (queryString) {
+  if (!isReady()) {
+    return
+  }
+  try {
+    if (typeof queryString != 'string') {
+      throw new Error('Error give queryString')
+    }
+    const appraisals = await query('getQueryResultForQueryString', queryString)
+    return appraisals
+  } catch (e) {
+    let errMessage
+    errMessage = `Error executing querystring: ${queryString}: ${e.message}`
+    throw new Error(errMessage, e)
+  }
+}
+
 //identity to use for submitting transactions to smart contract
 async function invoke (fcn, ...args) {
   console.log(`args in titlePeer invoke: ${args}`)

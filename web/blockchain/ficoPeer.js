@@ -41,6 +41,23 @@ export async function setFico (CustID, RealEstateID) {
   }
 }
 
+export async function queryString (queryString) {
+  if (!isReady()) {
+    return
+  }
+  try {
+    if (typeof queryString != 'string') {
+      throw new Error('Error give queryString')
+    }
+    const mortgages = await query('getQueryResultForQueryString', queryString)
+    return mortgages
+  } catch (e) {
+    let errMessage
+    errMessage = `Error executing querystring: ${queryString}: ${e.message}`
+    throw new Error(errMessage, e)
+  }
+}
+
 //identity to use for submitting transactions to smart contract
 async function invoke (fcn, ...args) {
   console.log(`args in ficoPeer invoke: ${args}`)
