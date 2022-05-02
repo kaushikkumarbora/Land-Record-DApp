@@ -332,7 +332,7 @@ class LendingContract extends Contract {
 
   /**
    *
-   * query
+   * queryID
    *
    * queryDetail gives all fields of stored data and needs the key
    * ledger needs to be passed in
@@ -342,7 +342,7 @@ class LendingContract extends Contract {
    * @param {string} RealEstateID
    * @returns
    */
-  async query (ctx, CustID, RealEstateID) {
+  async queryID (ctx, CustID, RealEstateID) {
     if (CustID === undefined) {
       throw new Error('ID not defined')
     } else if (typeof CustID != 'string') {

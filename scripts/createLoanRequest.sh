@@ -12,7 +12,7 @@ docker exec bank-cli bash -c "peer chaincode invoke -C lending -n lendingchainco
 sleep ${FABRIC_START_WAIT}
 
 echo -e "................\e[5;32;40mAudit query lending ledger for the request created\e[m ........................"
-docker exec audit-cli bash -c "peer chaincode query -C lending -n lendingchaincode -c '{\"Args\":[\"query\",\"TestCustomer12131415\", \"12131415\"]}' --tls --cafile \$ORDERER_TLS_ROOTCERT_FILE"
+docker exec audit-cli bash -c "peer chaincode query -C lending -n lendingchaincode -c '{\"Args\":[\"queryID\",\"TestCustomer12131415\", \"12131415\"]}' --tls --cafile \$ORDERER_TLS_ROOTCERT_FILE"
 sleep ${FABRIC_START_WAIT}
 
 echo -e "................\e[5;32;40mrequest ficoScore for  TestCustomer12131415 \e[m ..................................."
@@ -20,7 +20,7 @@ docker exec fico-cli bash -c "peer chaincode invoke -C lending -n lendingchainco
 sleep ${FABRIC_START_WAIT}
 
 echo -e "................\e[5;32;40mAudit query lending ledger for the ficoScore created\e[m ..............................."
-docker exec audit-cli bash -c "peer chaincode query -C lending -n lendingchaincode -c '{\"Args\":[\"query\",\"TestCustomer12131415\", \"12131415\"]}' --tls --cafile \$ORDERER_TLS_ROOTCERT_FILE"
+docker exec audit-cli bash -c "peer chaincode query -C lending -n lendingchaincode -c '{\"Args\":[\"queryID\",\"TestCustomer12131415\", \"12131415\"]}' --tls --cafile \$ORDERER_TLS_ROOTCERT_FILE"
 sleep ${FABRIC_START_WAIT}
 
 echo -e "................\e[5;32;40mrequest Appraisal \e[m........................"
@@ -28,7 +28,7 @@ docker exec appraiser-cli bash -c "peer chaincode invoke -C books -n bookschainc
 sleep ${FABRIC_START_WAIT}
 
 echo -e "................\e[5;32;40mAudit query books ledger for the appraiser created f\e[m..............................."
-docker exec audit-cli bash -c "peer chaincode query -C books -n bookschaincode -c '{\"Args\":[\"query\",\"12131415\"]}' --tls --cafile \$ORDERER_TLS_ROOTCERT_FILE"
+docker exec audit-cli bash -c "peer chaincode query -C books -n bookschaincode -c '{\"Args\":[\"queryID\",\"12131415\"]}' --tls --cafile \$ORDERER_TLS_ROOTCERT_FILE"
 sleep ${FABRIC_START_WAIT}
 
 echo -e "................\e[5;32;40mrequest Insurance quote \e[m ..................................."
@@ -36,14 +36,14 @@ docker exec insurance-cli bash -c "peer chaincode invoke -C lending -n lendingch
 sleep ${FABRIC_START_WAIT}
 
 echo -e "................\e[5;32;40mAudit query lending ledger for the insurance quote created\e[m ..............................."
-docker exec audit-cli bash -c "peer chaincode query -C lending -n lendingchaincode -c '{\"Args\":[\"query\",\"TestCustomer12131415\", \"12131415\"]}' --tls --cafile \$ORDERER_TLS_ROOTCERT_FILE"
+docker exec audit-cli bash -c "peer chaincode query -C lending -n lendingchaincode -c '{\"Args\":[\"queryID\",\"TestCustomer12131415\", \"12131415\"]}' --tls --cafile \$ORDERER_TLS_ROOTCERT_FILE"
 
 echo -e "................\e[5;32;40mget Title on books ledger \e[m  .................................."
 docker exec title-cli bash -c "peer chaincode invoke -C books -n bookschaincode -c '{\"Args\":[\"getTitle\", \"12131415\"]}' --tls --cafile \$ORDERER_TLS_ROOTCERT_FILE"
 sleep ${FABRIC_START_WAIT}
 
 echo -e "................\e[5;32;40mAudit query books ledger for the Title created \e[m..............................."
-docker exec audit-cli bash -c "peer chaincode query -C books -n bookschaincode -c '{\"Args\":[\"query\",\"12131415\"]}' --tls --cafile \$ORDERER_TLS_ROOTCERT_FILE"
+docker exec audit-cli bash -c "peer chaincode query -C books -n bookschaincode -c '{\"Args\":[\"queryID\",\"12131415\"]}' --tls --cafile \$ORDERER_TLS_ROOTCERT_FILE"
 sleep ${FABRIC_START_WAIT}
 
 echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
@@ -56,7 +56,7 @@ sleep ${FABRIC_START_WAIT}
 
 
 echo -e "................\e[5;32;40mAudit query lending ledger for closed mortgage status \e[m..............................."
-docker exec audit-cli bash -c "peer chaincode query -C lending -n lendingchaincode -c '{\"Args\":[\"query\",\"TestCustomer12131415\", \"12131415\"]}' --tls --cafile \$ORDERER_TLS_ROOTCERT_FILE"
+docker exec audit-cli bash -c "peer chaincode query -C lending -n lendingchaincode -c '{\"Args\":[\"queryID\",\"TestCustomer12131415\", \"12131415\"]}' --tls --cafile \$ORDERER_TLS_ROOTCERT_FILE"
 sleep ${FABRIC_START_WAIT}
 
 echo -e "................\e[5;32;40mChange Title on books ledger on \e[m  .................................."
@@ -64,7 +64,7 @@ docker exec title-cli bash -c "peer chaincode invoke -C books -n bookschaincode 
 sleep ${FABRIC_START_WAIT}
 
 echo -e "................\e[5;32;40mAudit query books ledger for the Titlechanges \e[m..............................."
-docker exec audit-cli bash -c "peer chaincode query -C books -n bookschaincode -c '{\"Args\":[\"query\",\"12131415\"]}' --tls --cafile \$ORDERER_TLS_ROOTCERT_FILE"
+docker exec audit-cli bash -c "peer chaincode query -C books -n bookschaincode -c '{\"Args\":[\"queryID\",\"12131415\"]}' --tls --cafile \$ORDERER_TLS_ROOTCERT_FILE"
 sleep ${FABRIC_START_WAIT}
 
 echo -e "................\e[5;32;40mrecord purchase on records ledger for new owner  \e[m ..................................."
@@ -72,5 +72,5 @@ docker exec registry-cli bash -c "peer chaincode invoke -C records -n recordscha
 sleep ${FABRIC_START_WAIT}
 
 echo -e "................\e[5;32;40mAudit query records ledger for the owner changes if loan was successful \e[m..............................."
-docker exec audit-cli bash -c "peer chaincode query -C records -n recordschaincode -c '{\"Args\":[\"query\",\"12131415\"]}' --tls --cafile \$ORDERER_TLS_ROOTCERT_FILE"
+docker exec audit-cli bash -c "peer chaincode query -C records -n recordschaincode -c '{\"Args\":[\"queryID\",\"12131415\"]}' --tls --cafile \$ORDERER_TLS_ROOTCERT_FILE"
 sleep ${FABRIC_START_WAIT}

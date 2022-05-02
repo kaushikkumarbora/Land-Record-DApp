@@ -254,7 +254,7 @@ class BooksContract extends Contract {
 
   /**
    *
-   * query
+   * queryID
    *
    * queryDetail gives all fields of stored data and needs the key
    * ledger needs to be passed in
@@ -263,7 +263,7 @@ class BooksContract extends Contract {
    * @param {string} ID
    * @returns
    */
-  async query (ctx, ID) {
+  async queryID (ctx, ID) {
     if (ID === undefined) {
       throw new Error('ID not defined')
     } else if (typeof ID != 'string') {
