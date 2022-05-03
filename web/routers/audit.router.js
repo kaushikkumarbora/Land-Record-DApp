@@ -87,12 +87,16 @@ router.get('/api/query-all-books', async (req, res) => {
  *      summary: Get Lending History
  *      description: Used to get all lending history
  *      parameters:
- *      - name: body
- *        in: body
- *        description: The Real Estate ID and Cust ID against which the Mortgage record exists.
+ *      - name: RealEstateID
+ *        in: query
+ *        description: The ID of Real Estate.
  *        required: true
- *        schema:
- *          $ref: '#/definitions/MortgageKey'
+ *        type: string
+ *      - name: CustID
+ *        in: query
+ *        description: The ID of Customer.
+ *        required: true
+ *        type: string
  *      responses:
  *        '200':
  *          description: Successfully queried appraisals
@@ -102,7 +106,7 @@ router.get('/api/query-all-books', async (req, res) => {
  *          description: Internal Error
  */
 router.get('/api/query-lending-history', async (req, res) => {
-  let { CustID, RealEstateID } = req.body
+  let { CustID, RealEstateID } = req.query
   if (typeof RealEstateID != 'string' || typeof CustID != 'string') {
     res.status(400).json({ error: 'Invalid request.' })
     return
@@ -125,12 +129,11 @@ router.get('/api/query-lending-history', async (req, res) => {
  *      summary: Get Record History
  *      description: Used to get all Record history
  *      parameters:
- *      - name: body
- *        in: body
+ *      - name: RealEstateID
+ *        in: query
  *        description: The ID of Real Estate.
  *        required: true
- *        schema:
- *          $ref: '#/definitions/RecordsKey'
+ *        type: string
  *      responses:
  *        '200':
  *          description: Successfully queried record history
@@ -140,7 +143,7 @@ router.get('/api/query-lending-history', async (req, res) => {
  *          description: Internal Error
  */
 router.get('/api/query-record-history', async (req, res) => {
-  let { RealEstateID } = req.body
+  let { RealEstateID } = req.query
   if (typeof RealEstateID != 'string') {
     res.status(400).json({ error: 'Invalid request.' })
     return
@@ -163,12 +166,11 @@ router.get('/api/query-record-history', async (req, res) => {
  *      summary: Get Book History
  *      description: Used to get all Book history
  *      parameters:
- *      - name: body
- *        in: body
- *        description: The ID of Real Estate against which the Book record exists.
+ *      - name: RealEstateID
+ *        in: query
+ *        description: The ID of Real Estate.
  *        required: true
- *        schema:
- *          $ref: '#/definitions/RecordsKey'
+ *        type: string
  *      responses:
  *        '200':
  *          description: Successfully queried book record history
@@ -178,7 +180,7 @@ router.get('/api/query-record-history', async (req, res) => {
  *          description: Internal Error
  */
 router.get('/api/query-book-history', async (req, res) => {
-  let { RealEstateID } = req.body
+  let { RealEstateID } = req.query
   if (typeof RealEstateID != 'string') {
     res.status(400).json({ error: 'Invalid request.' })
     return
@@ -205,9 +207,8 @@ router.get('/api/query-book-history', async (req, res) => {
  *        in: query
  *        description: The Number of Blocks
  *        required: true
- *        schema:
- *          type: integer
- *          format: int64
+ *        type: integer
+ *        format: int64
  *      responses:
  *        '200':
  *          description: Successfully queried appraisals
