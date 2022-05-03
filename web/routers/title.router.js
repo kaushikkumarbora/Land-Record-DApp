@@ -21,11 +21,19 @@ router.get('/', (req, res) => {
  *      parameters:
  *      - name: status
  *        in: query
- *        description: Status of Book. Keep blank for all.
+ *        description: Status of Appraisal. Keep blank for all.
+ *        required: true
+ *        type: boolean
+ *      - name: appraised
+ *        in: query
+ *        description: Has appraisal amount been set?
  *        required: false
- *        schema:
- *          type: string
- *          format: string
+ *        type: boolean
+ *      - name: RealEstateID
+ *        in: query
+ *        description: RealEstateID
+ *        required: false
+ *        type: string
  *      responses:
  *        '200':
  *          description: Successfully queried books
@@ -33,9 +41,24 @@ router.get('/', (req, res) => {
  *          description: Internal Error
  */
 router.get('/api/title', async (req, res) => {
-  let { status } = req.body// Appraiser, NewTitleStatus
+  let { status, appraised, RealEstateID } = req.query // Appraiser, NewTitleStatus
+  if (typeof status != 'boolean') {
+    res.status(400).json({ error: 'Invalid request.' })
+    return
+  }
+
+  let query = {}
+
+  query.selector = {}
+  query.selector.Status = status
+  if (typeof appraised === 'boolean') {
+  }
+  if (typeof RealEstateID === 'string')
+    query.selector.RealEstateID = RealEstateID
+  // query.selector. TODO
+
   try {
-    let books = await TitlePeer.queryString(status)//TODO
+    let books = await TitlePeer.queryString(JSON.stringify(query))
     res.json(books)
   } catch (e) {
     res.status(500).json({ error: 'Error accessing blockchain. ' + e })
@@ -131,9 +154,8 @@ router.put('/api/change-title', async (req, res) => {
  *        in: query
  *        description: The Number of Blocks
  *        required: true
- *        schema:
- *          type: integer
- *          format: int64
+ *        type: integer
+ *        format: int64
  *      responses:
  *        '200':
  *          description: Successfully queried blocks
