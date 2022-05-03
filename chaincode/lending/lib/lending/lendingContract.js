@@ -281,7 +281,7 @@ class LendingContract extends Contract {
    * @returns
    */
   async getQueryResultForQueryString (ctx, queryString) {
-    let resultsIterator = await ctx.stub.getQueryResult(queryString)
+    let resultsIterator = ctx.stub.getQueryResult(queryString)
     let results = await GetAllResults(resultsIterator, false)
 
     return JSON.stringify(results)
@@ -303,7 +303,7 @@ class LendingContract extends Contract {
       CustID,
       RealEstateID
     ])
-    let resultsIterator = await ctx.stub.getHistoryForKey(lendingKey)
+    let resultsIterator = ctx.stub.getHistoryForKey(lendingKey)
     let results = await GetAllResults(resultsIterator, true)
 
     return JSON.stringify(results)

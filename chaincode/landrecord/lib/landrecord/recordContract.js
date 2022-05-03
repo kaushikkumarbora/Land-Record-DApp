@@ -139,7 +139,7 @@ class RecordContract extends Contract {
    * @returns
    */
   async getQueryResultForQueryString (ctx, queryString) {
-    let resultsIterator = await ctx.stub.getQueryResult(queryString)
+    let resultsIterator = ctx.stub.getQueryResult(queryString)
     let results = await GetAllResults(resultsIterator, false)
 
     return JSON.stringify(results)

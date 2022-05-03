@@ -211,7 +211,7 @@ class BooksContract extends Contract {
    * @returns
    */
   async getQueryResultForQueryString (ctx, queryString) {
-    let resultsIterator = await ctx.stub.getQueryResult(queryString)
+    let resultsIterator = ctx.stub.getQueryResult(queryString)
     let results = await GetAllResults(resultsIterator, false)
 
     return JSON.stringify(results)
@@ -229,7 +229,7 @@ class BooksContract extends Contract {
    */
   async queryHistory (ctx, RealEstateID) {
     var bookKey = ctx.stub.createCompositeKey(PrefixBook, [RealEstateID])
-    let resultsIterator = await ctx.stub.getHistoryForKey(bookKey)
+    let resultsIterator = ctx.stub.getHistoryForKey(bookKey)
     let results = await GetAllResults(resultsIterator, true)
 
     return JSON.stringify(results)
