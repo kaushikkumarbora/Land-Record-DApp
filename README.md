@@ -99,7 +99,7 @@ type Mortgage struct {
 	Fico               float64
 	Insurance          float64
 	Appraisal          float64           //this we will get from books ledger
-	Status             string            //status of the mortgage Pending -> FicoSet -> InsuranceSet -> Funded -> not Funded
+	Status             string            //status of the mortgage Pending -> FicoSet -> InsuranceSet -> Funded -> Rejected
 	TransactionHistory json(value = 'string') //to hold details for auditing - includes the function called and timestamp
 }
 

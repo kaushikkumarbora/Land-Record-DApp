@@ -252,8 +252,7 @@ class LendingContract extends Contract {
         mrtg.Status = 'Funded'
         console.log('@@@@@@@@@@@@@@@@@@ Loan Funded @@@@@@@@@@@@@@@@@@@@@@')
       } else {
-        mrtg.Status =
-          'Does not meet criteria for fico and insurance and title an appraised value'
+        mrtg.Status = 'Rejected'
         console.log(
           '--------------------- Loan Rejected------------------------'
         )
