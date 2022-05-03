@@ -22,20 +22,47 @@ router.get('/', (req, res) => {
  *      - name: status
  *        in: query
  *        description: Status of Mortgage. Keep blank for all.
- *        required: false
- *        schema:
+ *        required: true
+ *        type: array
+ *        items:
  *          type: string
- *          format: string
+ *          enum:
+ *          - "Any"
+ *          - "Pending"
+ *          - "FicoSet"
+ *          - "InsuranceSet"
+ *          - "Funded"
+ *          - "Rejected"
+ *          default: "Any"
+ *        collectionFormat: multi
+ *      - name: CustID
+ *        in: query
+ *        description: ID of Customer.
+ *        required: false
+ *        type: string
  *      responses:
  *        '200':
  *          description: Successfully queried mortgages
+ *        '400':
+ *          description: Bad Request
  *        '500':
  *          description: Internal Error
  */
 router.get('/api/mortgages', async (req, res) => {
-  let { status } = req.body// Pending, FicoSet, InsuranceSet, Funded, Not Funded
+  let { status, CustID } = req.body // Pending, FicoSet, InsuranceSet, Funded, Rejected
+  if (typeof status != 'string') {
+    res.status(400).json({ error: 'Invalid request.' })
+    return
+  }
+
+  let query = {}
+
+  query.selector = {}
+  if (status != 'any') query.selector.Status = status
+  if (typeof CustID === 'string') query.selector.CustID = CustID
+
   try {
-    let mortgages = await BankPeer.queryString(status)//TODO
+    let mortgages = await BankPeer.queryString(JSON.stringify(query))
     res.json(mortgages)
   } catch (e) {
     res.status(500).json({ error: 'Error accessing blockchain. ' + e })
@@ -139,9 +166,8 @@ router.put('/api/close-mortgage', async (req, res) => {
  *        in: query
  *        description: The Number of Blocks
  *        required: true
- *        schema:
- *          type: integer
- *          format: int64
+ *        type: integer
+ *        format: int64
  *      responses:
  *        '200':
  *          description: Successfully queried blocks
