@@ -18,16 +18,34 @@ router.get('/', (req, res) => {
  *      - 'registry'
  *      summary: Get Registry Records
  *      description: Used to get all registry records
+ *      parameters:
+ *      - name: owner
+ *        in: query
+ *        description: The owner
+ *        required: true
+ *        type: string
  *      responses:
  *        '200':
  *          description: Successfully queried registry records
+ *        '400':
+ *          description: Bad Request
  *        '500':
  *          description: Internal Error
  */
 router.get('/api/records', async (req, res) => {
-  let { status } = req.body //Owned Currently, Previously Owned, All
+  let { owner } = req.query //Owned Currently
+  if (typeof owner != 'string') {
+    res.status(400).json({ error: 'Invalid request.' })
+    return
+  }
+
+  let query = {}
+
+  query.selector = {}
+  query.selector.Owner = owner
+
   try {
-    let records = await RegistryPeer.queryString(status) //TODO
+    let records = await RegistryPeer.queryString(JSON.stringify(query))
     res.json(records)
   } catch (e) {
     res.json({ error: 'Error accessing blockchain. ' + e })
@@ -135,9 +153,8 @@ router.put('/api/record-purchase', async (req, res) => {
  *        in: query
  *        description: The Number of Blocks
  *        required: true
- *        schema:
- *          type: integer
- *          format: int64
+ *        type: integer
+ *        format: int64
  *      responses:
  *        '200':
  *          description: Successfully queried blocks
