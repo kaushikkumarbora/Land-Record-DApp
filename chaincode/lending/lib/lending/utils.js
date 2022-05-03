@@ -1,4 +1,5 @@
 const { Context } = require('fabric-contract-api')
+const { Iterators } = require('fabric-shim-api')
 const { PrefixLending } = require('./prefix')
 
 /**
@@ -95,14 +96,14 @@ function writeToLendingLedger (ctx, mrtg, txnType) {
  *
  * Convert Results in iterator to json
  *
- * @param {Promise<Iterator>} iterator
+ * @param {Promise<Iterators.HistoryQueryIterator>} iterator
  * @param {boolean} isHistory
  * @returns
  */
 async function getAllResults (iterator, isHistory) {
   let allResults = []
-  if (isHistory && isHistory === true) {
-    for await (const { value, TxId, Timestamp } of iterator) {
+  if (isHistory === true) {
+    for await (const { value, txId, timestamp } of iterator) {
       const strValue = Buffer.from(value).toString('utf8')
       let record
       try {
@@ -111,7 +112,7 @@ async function getAllResults (iterator, isHistory) {
         console.log(err)
         record = strValue
       }
-      allResults.push({ TxId, Timestamp, Value: record })
+      allResults.push({ txId, timestamp, Value: record })
     }
   } else {
     for await (const { key, value } of iterator) {
