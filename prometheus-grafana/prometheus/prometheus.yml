@@ -9,13 +9,28 @@ scrape_configs:
       - targets: ["localhost:9090"]
   - job_name: "orderer"
     static_configs:
-      - targets: ["orderer.example.com:9443"]
-  - job_name: "peer0_org1"
+      - targets: ["orderer0:7049"]
+  - job_name: "appraiser-peer"
     static_configs:
-      - targets: ["peer0.org1.example.com:9444"]
-  - job_name: "peer0_org2"
+      - targets: ["appraiser-peer:7053"]
+  - job_name: "audit-peer"
     static_configs:
-      - targets: ["peer0.org2.example.com:9445"]
+      - targets: ["audit-peer:8053"]
+  - job_name: "bank-peer"
+    static_configs:
+      - targets: ["bank-peer:9053"]
+  - job_name: "fico-peer"
+    static_configs:
+      - targets: ["fico-peer:10053"]
+  - job_name: "insurance-peer"
+    static_configs:
+      - targets: ["insurance-peer:11053"]
+  - job_name: "registry-peer"
+    static_configs:
+      - targets: ["registry-peer:12053"]
+  - job_name: "title-peer"
+    static_configs:
+      - targets: ["title-peer:13053"]
   - job_name: cadvisor
     scrape_interval: 5s
     static_configs:
