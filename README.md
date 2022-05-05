@@ -72,7 +72,7 @@ Components:
 2) BackEnd
 3) Blockchain Network
 
-Setup and Start Network:
+## Setup and Start Network:
 ```bash
 git clone https://github.com/kaushikkumarbora/project-8thsem.git
 cd project-8thsem
@@ -81,12 +81,12 @@ sh scripts/docker-images.sh
 sh scripts/start_network.sh
 ```
 
-Create Channel and join channel:
+## Create Channel and join channel:
 ```bash
 sh scripts/createChannels.sh
 ```
 
-Package, Install and Commit Chaincode:
+## Package, Install and Commit Chaincode:
 ```bash
 sh scripts/chaincodeInstallInstantiate.sh
 ```
