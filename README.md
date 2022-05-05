@@ -76,7 +76,7 @@ docker volume rm walletstore
 | books   | bookschaincode   | queryAll, queryHistory, queryID, queryBooks, getQueryResultForQueryString, initiateBooks, getAppraisal, getTitle, changeTitle                  |
 
 ### Land Record System - Orgs
-
+>Legend: R - Read, C - Create, U - Update
 <table class="tg">
 <thead>
   <tr>
