@@ -20,6 +20,42 @@ sh scripts/createChannels.sh
 sh scripts/chaincodeInstallInstantiate.sh
 ```
 
+## Start Moitoring
+```bash
+cd prometheus-grafana
+docker-compose up
+```
+
+## Stop Moitoring
+```bash
+cd prometheus-grafana
+docker-compose down
+docker volume rm prometheus_data
+docker volume rm grafana_storage
+```
+
+## Start WebApp
+```bash
+cd web
+# Delete previously created wallet
+rm -rf wallets
+# Make sure you are on node:lts/dubnium
+npm start
+```
+
+## Start Explorer
+```bash
+cd explorer
+docker-compose up
+```
+
+## Stop Explorer
+```bash
+cd explorer
+docker-compose down
+docker volume rm walletstore
+```
+
 ## About
 ### Ledgers/Channels:
 - Records
