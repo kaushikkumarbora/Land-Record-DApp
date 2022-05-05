@@ -77,68 +77,68 @@ docker volume rm walletstore
 
 ### Land Record System - Orgs
 >Legend: R - Read, C - Create, U - Update
-<table class="tg">
+<table>
 <thead>
   <tr>
-    <th class="tg-fymr" rowspan="2">Organization</th>
-    <th class="tg-fymr" colspan="3">Access and Participation</th>
-    <th class="tg-fymr" rowspan="2">Methods</th>
+    <th rowspan="2">Organization</th>
+    <th colspan="3">Access and Participation</th>
+    <th rowspan="2">Methods</th>
   </tr>
   <tr>
-    <th class="tg-1wig">records</th>
-    <th class="tg-1wig">lending</th>
-    <th class="tg-1wig">books</th>
+    <th>records</th>
+    <th>lending</th>
+    <th>books</th>
   </tr>
 </thead>
 <tbody>
   <tr>
-    <td class="tg-0pky">Land Registry</td>
-    <td class="tg-kndx">RCU</td>
-    <td class="tg-3oug">-</td>
-    <td class="tg-0039">R</td>
-    <td class="tg-0pky">createRealEstate, recordPurchase, queryAll, queryHistory, queryID, getQueryResultForQueryString</td>
+    <td>Land Registry</td>
+    <td>RCU</td>
+    <td>-</td>
+    <td>R</td>
+    <td>createRealEstate, recordPurchase, queryAll, queryHistory, queryID, getQueryResultForQueryString</td>
   </tr>
   <tr>
-    <td class="tg-0pky">Auditors/Regulators</td>
-    <td class="tg-fcno">R</td>
-    <td class="tg-0039">R</td>
-    <td class="tg-0039">R</td>
-    <td class="tg-0pky">queryAll, queryID, queryHistory, getQueryResultForQueryString</td>
+    <td>Auditors/Regulators</td>
+    <td>R</td>
+    <td>R</td>
+    <td>R</td>
+    <td>queryAll, queryID, queryHistory, getQueryResultForQueryString</td>
   </tr>
   <tr>
-    <td class="tg-0pky">Lenders/Bank</td>
-    <td class="tg-fcno">R</td>
-    <td class="tg-k3lo">RCU</td>
-    <td class="tg-0039">R</td>
-    <td class="tg-0pky">queryAll, queryID, queryHistory, getQueryResultForQueryString, initiateMortgage, closeMortgage</td>
+    <td>Lenders/Bank</td>
+    <td>R</td>
+    <td>RCU</td>
+    <td>R</td>
+    <td>queryAll, queryID, queryHistory, getQueryResultForQueryString, initiateMortgage, closeMortgage</td>
   </tr>
   <tr>
-    <td class="tg-0pky">Credit Bureaus</td>
-    <td class="tg-fcno">R</td>
-    <td class="tg-adx7">RU</td>
-    <td class="tg-3oug">-</td>
-    <td class="tg-0pky">queryAll, queryID, queryHistory, getQueryResultForQueryString, getFicoScores</td>
+    <td>Credit Bureaus</td>
+    <td>R</td>
+    <td>RU</td>
+    <td>-</td>
+    <td>queryAll, queryID, queryHistory, getQueryResultForQueryString, getFicoScores</td>
   </tr>
   <tr>
-    <td class="tg-0pky">Insurance Providers</td>
-    <td class="tg-fcno">R</td>
-    <td class="tg-adx7">RU</td>
-    <td class="tg-0039">R</td>
-    <td class="tg-0pky">queryAll, queryID, queryHistory, getQueryResultForQueryString, getInsuranceQuote</td>
+    <td>Insurance Providers</td>
+    <td>R</td>
+    <td>RU</td>
+    <td>R</td>
+    <td>queryAll, queryID, queryHistory, getQueryResultForQueryString, getInsuranceQuote</td>
   </tr>
   <tr>
-    <td class="tg-0pky">Appraisers</td>
-    <td class="tg-fcno">R</td>
-    <td class="tg-3oug">-</td>
-    <td class="tg-k3lo">RCU</td>
-    <td class="tg-0pky">queryAll, queryID, queryHistory, getQueryResultForQueryString, initiateBooks, getAppraisal</td>
+    <td>Appraisers</td>
+    <td>R</td>
+    <td>-</td>
+    <td>RCU</td>
+    <td>queryAll, queryID, queryHistory, getQueryResultForQueryString, initiateBooks, getAppraisal</td>
   </tr>
   <tr>
-    <td class="tg-0pky">Title Companies</td>
-    <td class="tg-fcno">R</td>
-    <td class="tg-0039">R</td>
-    <td class="tg-adx7">RU</td>
-    <td class="tg-0pky">queryAll, queryID, queryHistory, getQueryResultForQueryString, getTitle, changeTitle</td>
+    <td>Title Companies</td>
+    <td>R</td>
+    <td>R</td>
+    <td>RU</td>
+    <td>queryAll, queryID, queryHistory, getQueryResultForQueryString, getTitle, changeTitle</td>
   </tr>
 </tbody>
 </table>
