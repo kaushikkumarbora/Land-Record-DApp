@@ -77,22 +77,6 @@ docker volume rm walletstore
 
 ### Land Record System - Orgs
 
-<style type="text/css">
-.tg  {border-collapse:collapse;border-spacing:0;}
-.tg td{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
-  overflow:hidden;padding:10px 5px;word-break:normal;}
-.tg th{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
-  font-weight:normal;overflow:hidden;padding:10px 5px;word-break:normal;}
-.tg .tg-1wig{font-weight:bold;text-align:left;vertical-align:top}
-.tg .tg-fcno{background-color:#fcff2f;border-color:inherit;text-align:center;vertical-align:top}
-.tg .tg-3oug{background-color:#fd6864;text-align:center;vertical-align:top}
-.tg .tg-kndx{background-color:#34ff34;border-color:inherit;text-align:center;vertical-align:top}
-.tg .tg-0039{background-color:#fcff2f;text-align:center;vertical-align:top}
-.tg .tg-fymr{border-color:inherit;font-weight:bold;text-align:left;vertical-align:top}
-.tg .tg-0pky{border-color:inherit;text-align:left;vertical-align:top}
-.tg .tg-k3lo{background-color:#34ff34;text-align:center;vertical-align:top}
-.tg .tg-adx7{background-color:#ffcc67;text-align:center;vertical-align:top}
-</style>
 <table class="tg">
 <thead>
   <tr>
