@@ -1,7 +1,9 @@
 # project-8thsem
 
 ## Setup and Start Network:
+
 > WARNING: This will stop and remove all running containers and delete all volumes.
+
 ```bash
 git clone https://github.com/kaushikkumarbora/project-8thsem.git
 cd project-8thsem
@@ -11,22 +13,26 @@ sh scripts/start_network.sh
 ```
 
 ## Create Channel and join channel:
+
 ```bash
 sh scripts/createChannels.sh
 ```
 
 ## Package, Install and Commit Chaincode:
+
 ```bash
 sh scripts/chaincodeInstallInstantiate.sh
 ```
 
 ## Start Moitoring
+
 ```bash
 cd prometheus-grafana
 docker-compose up
 ```
 
 ## Stop Moitoring
+
 ```bash
 cd prometheus-grafana
 docker-compose down
@@ -35,6 +41,7 @@ docker volume rm grafana_storage
 ```
 
 ## Start WebApp
+
 ```bash
 cd web
 # Delete previously created wallet
@@ -44,12 +51,14 @@ npm start
 ```
 
 ## Start Explorer
+
 ```bash
 cd explorer
 docker-compose up
 ```
 
 ## Stop Explorer
+
 ```bash
 cd explorer
 docker-compose down
@@ -57,79 +66,74 @@ docker volume rm walletstore
 ```
 
 ## About
+
 ### Ledgers/Channels:
-- Records
-    - createRealEstate
-    - queryAll
-    - recordPurchase
-- Lending
-    - queryAll
-    - initiateMortgage
-    - getFicoScores
-    - getInsuranceQuote
-    - closeMortgage
-- Books
-    - initiateBooks
-    - queryAll
-    - getAppraisal
-    - getTitle
-    - changeTitle
-    
+
+| Channel | Chaincode        | Methods                                                                                                                                |
+| ------- | ---------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| records | recordschaincode | queryAll queryHistory queryID createRealEstate getQueryResultForQueryString recordPurchase                                             |
+| lending | lendingchaincode | queryAll queryHistory queryID queryLending initiateMortgage getFicoScores getInsuranceQuote getQueryResultForQueryString closeMortgage |
+| books   | bookschaincode   | queryAllqueryHistory queryID queryBooks getQueryResultForQueryString initiateBooks getAppraisal getTitle changeTitle                   |
 
 ### Land Record System - Orgs
+
 - Land/Property Record (District/City Registry)
-    - Records Channel - Create & Update
-    - Books Channel - Read Only
-    - Lending Channel - No Participation
-    - createRealEstate
-    - recordPurchase
+  - Records Channel - Create & Update
+  - Books Channel - Read Only
+  - Lending Channel - No Participation
+  - createRealEstate
+  - recordPurchase
 - Audit/Regulators
-    - Records Channel - Read Only
-    - Books Channel - Read Only
-    - Lending Channel - Read Only
-    - queryAll
+  - Records Channel - Read Only
+  - Books Channel - Read Only
+  - Lending Channel - Read Only
+  - queryAll
 - Lenders/Bank
-    - Records Channel - Read Only
-    - Books Channel - Read Only
-    - Lending Channel - Create & Update
-    - initiateMortgage
-    - closeMortgage
+  - Records Channel - Read Only
+  - Books Channel - Read Only
+  - Lending Channel - Create & Update
+  - initiateMortgage
+  - closeMortgage
 - Credit Bureaus
-    - Records Channel - Read Only
-    - Books Channel - No Participation
-    - Lending Channel - Update
-    - getFicoScores
+  - Records Channel - Read Only
+  - Books Channel - No Participation
+  - Lending Channel - Update
+  - getFicoScores
 - Insurance Providers
-    - Records Channel - Read Only
-    - Books Channel - Read Only
-    - Lending Channel - Update
-    - getInsuranceQuote
+  - Records Channel - Read Only
+  - Books Channel - Read Only
+  - Lending Channel - Update
+  - getInsuranceQuote
 - Appraisers
-    - Records Channel - Read Only
-    - Books Channel - Create & Update
-    - Lending Channel - No Participation
-    - initiateBooks
-    - getAppraisal
+  - Records Channel - Read Only
+  - Books Channel - Create & Update
+  - Lending Channel - No Participation
+  - initiateBooks
+  - getAppraisal
 - Title Companies
-    - Records Channel - Read Only
-    - Books Channel - Update
-    - Lending Channel - Read Only
-    - getTitle
-    - changeTitle
+  - Records Channel - Read Only
+  - Books Channel - Update
+  - Lending Channel - Read Only
+  - getTitle
+  - changeTitle
 
 ### Consensus Options:
-1) Raft (Only Crash Fault Tolerant)
-2) pBFT  (Bad Scalability, Byzantine Fault Tolerant)
-3) BFT-SMART
-4) Nakamoto Consensus
 
+1. Raft (Only Crash Fault Tolerant)
+2. pBFT (Bad Scalability, Byzantine Fault Tolerant)
+3. BFT-SMART
+4. Nakamoto Consensus
 
-### Components: 
-1) FrontEnd - SwaggerUI
-2) BackEnd
-3) Blockchain Network
+### Components:
+
+1. FrontEnd - SwaggerUI
+2. BackEnd
+3. Blockchain Network
+4. Monitoring
+5. Explorer
 
 ### Data:
+
 ```js
 /* -------------------------------------------------------------------------------------------------
 Define our struct to store real estates in records Blockchain, start fields upper case for JSON
