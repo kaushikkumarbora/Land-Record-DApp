@@ -1,6 +1,27 @@
 # project-8thsem
 
-Ledgers/Channels:
+## Setup and Start Network:
+> WARNING: This will stop and remove all running containers and delete all volumes.
+```bash
+git clone https://github.com/kaushikkumarbora/project-8thsem.git
+cd project-8thsem
+sh scripts/createArtifacts.sh
+sh scripts/docker-images.sh
+sh scripts/start_network.sh
+```
+
+## Create Channel and join channel:
+```bash
+sh scripts/createChannels.sh
+```
+
+## Package, Install and Commit Chaincode:
+```bash
+sh scripts/chaincodeInstallInstantiate.sh
+```
+
+## About
+### Ledgers/Channels:
 - Records
     - createRealEstate
     - queryAll
@@ -19,7 +40,7 @@ Ledgers/Channels:
     - changeTitle
     
 
-Land Record System - Orgs
+### Land Record System - Orgs
 - Land/Property Record (District/City Registry)
     - Records Channel - Create & Update
     - Books Channel - Read Only
@@ -60,39 +81,19 @@ Land Record System - Orgs
     - getTitle
     - changeTitle
 
-Consensus Options:
+### Consensus Options:
 1) Raft (Only Crash Fault Tolerant)
 2) pBFT  (Bad Scalability, Byzantine Fault Tolerant)
 3) BFT-SMART
 4) Nakamoto Consensus
 
 
-Components: 
+### Components: 
 1) FrontEnd - SwaggerUI
 2) BackEnd
 3) Blockchain Network
 
-## Setup and Start Network:
-> WARNING: This will stop and remove all running containers and delete all volumes.
-```bash
-git clone https://github.com/kaushikkumarbora/project-8thsem.git
-cd project-8thsem
-sh scripts/createArtifacts.sh
-sh scripts/docker-images.sh
-sh scripts/start_network.sh
-```
-
-## Create Channel and join channel:
-```bash
-sh scripts/createChannels.sh
-```
-
-## Package, Install and Commit Chaincode:
-```bash
-sh scripts/chaincodeInstallInstantiate.sh
-```
-
-Data:
+### Data:
 ```js
 /* -------------------------------------------------------------------------------------------------
 Define our struct to store real estates in records Blockchain, start fields upper case for JSON
