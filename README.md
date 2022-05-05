@@ -69,53 +69,95 @@ docker volume rm walletstore
 
 ### Ledgers/Channels:
 
-| Channel | Chaincode        | Methods                                                                                                                                |
-| ------- | ---------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
-| records | recordschaincode | queryAll queryHistory queryID createRealEstate getQueryResultForQueryString recordPurchase                                             |
-| lending | lendingchaincode | queryAll queryHistory queryID queryLending initiateMortgage getFicoScores getInsuranceQuote getQueryResultForQueryString closeMortgage |
-| books   | bookschaincode   | queryAllqueryHistory queryID queryBooks getQueryResultForQueryString initiateBooks getAppraisal getTitle changeTitle                   |
+| Channel | Chaincode        | Methods                                                                                                                                        |
+| ------- | ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| records | recordschaincode | queryAll, queryHistory, queryID, createRealEstate, getQueryResultForQueryString, recordPurchase                                                |
+| lending | lendingchaincode | queryAll, queryHistory, queryID, queryLending, initiateMortgage, getFicoScores, getInsuranceQuote, getQueryResultForQueryString, closeMortgage |
+| books   | bookschaincode   | queryAll, queryHistory, queryID, queryBooks, getQueryResultForQueryString, initiateBooks, getAppraisal, getTitle, changeTitle                  |
 
 ### Land Record System - Orgs
 
-- Land/Property Record (District/City Registry)
-  - Records Channel - Create & Update
-  - Books Channel - Read Only
-  - Lending Channel - No Participation
-  - createRealEstate
-  - recordPurchase
-- Audit/Regulators
-  - Records Channel - Read Only
-  - Books Channel - Read Only
-  - Lending Channel - Read Only
-  - queryAll
-- Lenders/Bank
-  - Records Channel - Read Only
-  - Books Channel - Read Only
-  - Lending Channel - Create & Update
-  - initiateMortgage
-  - closeMortgage
-- Credit Bureaus
-  - Records Channel - Read Only
-  - Books Channel - No Participation
-  - Lending Channel - Update
-  - getFicoScores
-- Insurance Providers
-  - Records Channel - Read Only
-  - Books Channel - Read Only
-  - Lending Channel - Update
-  - getInsuranceQuote
-- Appraisers
-  - Records Channel - Read Only
-  - Books Channel - Create & Update
-  - Lending Channel - No Participation
-  - initiateBooks
-  - getAppraisal
-- Title Companies
-  - Records Channel - Read Only
-  - Books Channel - Update
-  - Lending Channel - Read Only
-  - getTitle
-  - changeTitle
+<style type="text/css">
+.tg  {border-collapse:collapse;border-spacing:0;}
+.tg td{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
+  overflow:hidden;padding:10px 5px;word-break:normal;}
+.tg th{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
+  font-weight:normal;overflow:hidden;padding:10px 5px;word-break:normal;}
+.tg .tg-1wig{font-weight:bold;text-align:left;vertical-align:top}
+.tg .tg-fcno{background-color:#fcff2f;border-color:inherit;text-align:center;vertical-align:top}
+.tg .tg-3oug{background-color:#fd6864;text-align:center;vertical-align:top}
+.tg .tg-kndx{background-color:#34ff34;border-color:inherit;text-align:center;vertical-align:top}
+.tg .tg-0039{background-color:#fcff2f;text-align:center;vertical-align:top}
+.tg .tg-fymr{border-color:inherit;font-weight:bold;text-align:left;vertical-align:top}
+.tg .tg-0pky{border-color:inherit;text-align:left;vertical-align:top}
+.tg .tg-k3lo{background-color:#34ff34;text-align:center;vertical-align:top}
+.tg .tg-adx7{background-color:#ffcc67;text-align:center;vertical-align:top}
+</style>
+<table class="tg">
+<thead>
+  <tr>
+    <th class="tg-fymr" rowspan="2">Organization</th>
+    <th class="tg-fymr" colspan="3">Access and Participation</th>
+    <th class="tg-fymr" rowspan="2">Methods</th>
+  </tr>
+  <tr>
+    <th class="tg-1wig">records</th>
+    <th class="tg-1wig">lending</th>
+    <th class="tg-1wig">books</th>
+  </tr>
+</thead>
+<tbody>
+  <tr>
+    <td class="tg-0pky">Land Registry</td>
+    <td class="tg-kndx">RCU</td>
+    <td class="tg-3oug">-</td>
+    <td class="tg-0039">R</td>
+    <td class="tg-0pky">createRealEstate, recordPurchase, queryAll, queryHistory, queryID, getQueryResultForQueryString</td>
+  </tr>
+  <tr>
+    <td class="tg-0pky">Auditors/Regulators</td>
+    <td class="tg-fcno">R</td>
+    <td class="tg-0039">R</td>
+    <td class="tg-0039">R</td>
+    <td class="tg-0pky">queryAll, queryID, queryHistory, getQueryResultForQueryString</td>
+  </tr>
+  <tr>
+    <td class="tg-0pky">Lenders/Bank</td>
+    <td class="tg-fcno">R</td>
+    <td class="tg-k3lo">RCU</td>
+    <td class="tg-0039">R</td>
+    <td class="tg-0pky">queryAll, queryID, queryHistory, getQueryResultForQueryString, initiateMortgage, closeMortgage</td>
+  </tr>
+  <tr>
+    <td class="tg-0pky">Credit Bureaus</td>
+    <td class="tg-fcno">R</td>
+    <td class="tg-adx7">RU</td>
+    <td class="tg-3oug">-</td>
+    <td class="tg-0pky">queryAll, queryID, queryHistory, getQueryResultForQueryString, getFicoScores</td>
+  </tr>
+  <tr>
+    <td class="tg-0pky">Insurance Providers</td>
+    <td class="tg-fcno">R</td>
+    <td class="tg-adx7">RU</td>
+    <td class="tg-0039">R</td>
+    <td class="tg-0pky">queryAll, queryID, queryHistory, getQueryResultForQueryString, getInsuranceQuote</td>
+  </tr>
+  <tr>
+    <td class="tg-0pky">Appraisers</td>
+    <td class="tg-fcno">R</td>
+    <td class="tg-3oug">-</td>
+    <td class="tg-k3lo">RCU</td>
+    <td class="tg-0pky">queryAll, queryID, queryHistory, getQueryResultForQueryString, initiateBooks, getAppraisal</td>
+  </tr>
+  <tr>
+    <td class="tg-0pky">Title Companies</td>
+    <td class="tg-fcno">R</td>
+    <td class="tg-0039">R</td>
+    <td class="tg-adx7">RU</td>
+    <td class="tg-0pky">queryAll, queryID, queryHistory, getQueryResultForQueryString, getTitle, changeTitle</td>
+  </tr>
+</tbody>
+</table>
 
 ### Consensus Options:
 
