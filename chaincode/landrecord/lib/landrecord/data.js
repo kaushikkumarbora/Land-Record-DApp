@@ -11,23 +11,21 @@ const { GetTimeNow } = require('./utils')
  * @returns
  */
 function dataRealEstate (args) {
-  if (typeof args.RealEstateID != 'string') {
+  if (typeof args.RealEstateID != 'string')
     throw new Error('Need string type RealEstateID')
-  }
-  if (typeof args.Address != 'string') {
+
+  if (typeof args.Address != 'string')
     throw new Error('Need string type Address')
-  }
-  if (typeof args.Value != 'number') {
-    args.Value = parseFloat(args.Value)
-    if (args.Value === NaN) throw new Error('Need number type Value')
-  }
-  if (typeof args.Details != 'string') {
+
+  if (typeof args.Value != 'number') args.Value = parseFloat(args.Value)
+  if (args.Value === NaN) throw new Error('Need number type Value')
+
+  if (typeof args.Details != 'string')
     throw new Error('Need string type Details')
-  }
-  if (typeof args.Owner != 'string') {
-    throw new Error('Need string type Owner')
-  }
-  if (args.TransactionHistory === undefined) {
+
+  if (typeof args.Owner != 'string') throw new Error('Need string type Owner')
+
+  if (typeof args.TransactionHistory === 'undefined') {
     args.TransactionHistory = {}
     args.TransactionHistory['createRealEstate'] = GetTimeNow()
   } else if (typeof args.TransactionHistory != 'object') {
@@ -56,32 +54,30 @@ function dataRealEstate (args) {
  * @returns
  */
 function dataBooks (args) {
-  if (typeof args.RealEstateID != 'string') {
+  if (typeof args.RealEstateID != 'string')
     throw new Error('Need string type RealEstateID')
-  }
-  if (args.Appraisal === undefined) {
-    args.Appraisal = 0.0
-  } else if (typeof args.Appraisal != 'number') {
+
+  if (typeof args.Appraisal === 'undefined') args.Appraisal = 0.0
+  else if (typeof args.Appraisal != 'number') {
     args.Appraisal = parseFloat(args.Appraisal)
     if (args.Appraisal === NaN) throw new Error('Need number type Appraisal')
   }
-  if (args.NewTitleOwner === undefined) {
-    args.NewTitleOwner = ''
-  } else if (typeof args.NewTitleOwner != 'string') {
+
+  if (typeof args.NewTitleOwner === 'undefined') args.NewTitleOwner = ''
+  else if (typeof args.NewTitleOwner != 'string')
     throw new Error('Need string type NewTitleOwner')
-  }
-  if (args.TitleStatus === undefined) {
-    args.TitleStatus = false
-  } else if (typeof args.TitleStatus != 'boolean') {
+
+  if (typeof args.TitleStatus === 'undefined') args.TitleStatus = false
+  else if (typeof args.TitleStatus != 'boolean')
     throw new Error('Need boolean type TitleStatus')
-  }
-  if (args.TransactionHistory === undefined) {
+
+  if (typeof args.TransactionHistory === 'undefined') {
     args.TransactionHistory = {}
     args.TransactionHistory['initiateBooks'] = GetTimeNow()
   } else if (typeof args.TransactionHistory != 'object') {
     throw new Error('Need object type TransactionHistory')
   }
-  var books = {
+  const books = {
     RealEstateID: args.RealEstateID, // This one will be our key
     Appraisal: args.Appraisal,
     NewTitleOwner: args.NewTitleOwner,
