@@ -11,8 +11,8 @@ const { PrefixBook } = require('./prefix')
  * @returns - Current time string
  */
 function getTimeNow () {
-  var formatedTime = ''
-  var t = new Date(Date.now())
+  let formatedTime = ''
+  let t = new Date(Date.now())
   formatedTime = t.toString()
   return formatedTime
 }
@@ -61,7 +61,7 @@ function writeToBooksLedger (ctx, bks, txnType) {
   if (txnType != 'initiateBooks') {
     //add TransactionHistory
     //first check if map has been initialized
-    var history = bks.TransactionHistory['initiateBooks']
+    let history = bks.TransactionHistory['initiateBooks']
     if (history != undefined) {
       bks.TransactionHistory[txnType] = getTimeNow()
     } else {
@@ -76,10 +76,10 @@ function writeToBooksLedger (ctx, bks, txnType) {
   )
 
   // Encode JSON data
-  var bksAsBytes = Buffer.from(JSON.stringify(bks))
+  let bksAsBytes = Buffer.from(JSON.stringify(bks))
 
   // Create Key
-  var bookKey = ctx.stub.createCompositeKey(PrefixBook, [bks.RealEstateID])
+  let bookKey = ctx.stub.createCompositeKey(PrefixBook, [bks.RealEstateID])
 
   // Store in the Blockchain
   ctx.stub.putState(bookKey, bksAsBytes)

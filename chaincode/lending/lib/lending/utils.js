@@ -11,8 +11,8 @@ const { PrefixLending } = require('./prefix')
  * @returns - Current time string
  */
 function getTimeNow () {
-  var formatedTime = ''
-  var t = new Date(Date.now())
+  let formatedTime = ''
+  let t = new Date(Date.now())
   formatedTime = t.toString()
   return formatedTime
 }
@@ -61,8 +61,8 @@ function writeToLendingLedger (ctx, mrtg, txnType) {
   if (txnType != 'initiateMortgage') {
     //add TransactionHistory
     //first check if map has been initialized
-    var history = mrtg.TransactionHistory['initiateMortgage']
-    if (history != undefined) {
+    let history = mrtg.TransactionHistory['initiateMortgage']
+    if (typeof history != 'undefined') {
       mrtg.TransactionHistory[txnType] = getTimeNow()
     } else {
       throw new Error('......Mortgage Transaction history is not initialized')
@@ -80,7 +80,7 @@ function writeToLendingLedger (ctx, mrtg, txnType) {
   mrtgAsBytes = Buffer.from(JSON.stringify(mrtg))
 
   // Create Key
-  var mortgageKey = ctx.stub.createCompositeKey(PrefixLending, [
+  let mortgageKey = ctx.stub.createCompositeKey(PrefixLending, [
     mrtg.CustID,
     mrtg.RealEstateID
   ])
