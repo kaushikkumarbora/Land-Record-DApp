@@ -51,11 +51,11 @@ class BooksContract extends Contract {
    * @returns
    */
   async initiateBooks (ctx, RealEstateID) {
-    if ((CheckProducer(ctx), AppraiserMSPID)) {
+    if (CheckProducer(ctx, AppraiserMSPID)) {
       // A newly created property is available
-      var bookInfo = {}
+      let bookInfo = {}
       bookInfo.RealEstateID = RealEstateID
-      var books = Books(bookInfo)
+      let books = Books(bookInfo)
 
       WriteToBooksLedger(ctx, books, 'initiateBooks')
     } else {
@@ -76,17 +76,17 @@ class BooksContract extends Contract {
    * @returns
    */
   async getAppraisal (ctx, RealEstateID) {
-    if ((CheckProducer(ctx), AppraiserMSPID)) {
+    if (CheckProducer(ctx, AppraiserMSPID)) {
       // Look for the ID first number
-      var bookKey = ctx.stub.createCompositeKey(PrefixBook, [RealEstateID])
+      let bookKey = ctx.stub.createCompositeKey(PrefixBook, [RealEstateID])
 
-      var bookBytes = await ctx.stub.getState(bookKey)
+      let bookBytes = await ctx.stub.getState(bookKey)
       if (!bookBytes || bookBytes.length === 0) {
         throw new Error('RealEstateID ' + RealEstateID + ' not found ')
       }
 
       // Get Information from Blockchain
-      var books
+      let books
       // Decode JSON data
       books = Books(JSON.parse(bookBytes.toString()))
 
@@ -112,17 +112,17 @@ class BooksContract extends Contract {
    * @returns
    */
   async getTitle (ctx, RealEstateID) {
-    if ((CheckProducer(ctx), TitleMSPID)) {
+    if (CheckProducer(ctx, TitleMSPID)) {
       // Look for the ID first number
-      var bookKey = ctx.stub.createCompositeKey(PrefixBook, [RealEstateID])
+      let bookKey = ctx.stub.createCompositeKey(PrefixBook, [RealEstateID])
 
-      var bookBytes = await ctx.stub.getState(bookKey)
+      let bookBytes = await ctx.stub.getState(bookKey)
       if (!bookBytes || bookBytes.length === 0) {
         throw new Error('RealEstateID ' + RealEstateID + ' not found ')
       }
 
       // Get Information from Blockchain
-      var books
+      let books
       // Decode JSON data
       books = Books(JSON.parse(bookBytes.toString()))
 
@@ -149,28 +149,28 @@ class BooksContract extends Contract {
    * @returns
    */
   async changeTitle (ctx, RealEstateID, CustID) {
-    if ((CheckProducer(ctx), TitleMSPID)) {
+    if (CheckProducer(ctx, TitleMSPID)) {
       // Look for the ID first number
-      var bookKey = ctx.stub.createCompositeKey(PrefixBook, [RealEstateID])
+      let bookKey = ctx.stub.createCompositeKey(PrefixBook, [RealEstateID])
 
-      var bookBytes = await ctx.stub.getState(bookKey)
+      let bookBytes = await ctx.stub.getState(bookKey)
       if (!bookBytes || bookBytes.length === 0) {
         throw new Error('RealEstateID ' + RealEstateID + ' not found ')
       }
 
       // Get Information from Blockchain
-      var books
+      let books
       // Decode JSON data
       books = Books(JSON.parse(bookBytes.toString()))
 
       //first check if the mortgage is funded else reject the title change to new owner
-      var callArgs = new Array()
+      let callArgs = new Array()
 
       callArgs[0] = Buffer.from(QueryLendingString)
       callArgs[1] = Buffer.from(CustID) //this is the new customer passed to this function
       callArgs[2] = Buffer.from(RealEstateID)
 
-      var res = await ctx.stub.invokeChaincode(
+      let res = await ctx.stub.invokeChaincode(
         LendingChaincode,
         callArgs,
         LendingChannel
@@ -184,7 +184,7 @@ class BooksContract extends Contract {
             ' not found '
         )
       }
-      var mrtg = Mortgage(JSON.parse(res.payload.toString()))
+      let mrtg = Mortgage(JSON.parse(res.payload.toString()))
 
       // update owner if mortgage is Funded else it stays blank
       if (mrtg.Status === 'Funded') {
@@ -228,7 +228,7 @@ class BooksContract extends Contract {
    * @returns
    */
   async queryHistory (ctx, RealEstateID) {
-    var bookKey = ctx.stub.createCompositeKey(PrefixBook, [RealEstateID])
+    let bookKey = ctx.stub.createCompositeKey(PrefixBook, [RealEstateID])
     let resultsIterator = ctx.stub.getHistoryForKey(bookKey)
     let results = await GetAllResults(resultsIterator, true)
 
@@ -264,15 +264,15 @@ class BooksContract extends Contract {
    * @returns
    */
   async queryID (ctx, ID) {
-    if (ID === undefined) {
+    if (typeof ID === 'undefined') {
       throw new Error('ID not defined')
     } else if (typeof ID != 'string') {
       throw new Error('ID should be of type string')
     }
 
-    var key = ctx.stub.createCompositeKey(PrefixBook, [ID])
+    let key = ctx.stub.createCompositeKey(PrefixBook, [ID])
 
-    var asBytes = await ctx.stub.getState(key)
+    let asBytes = await ctx.stub.getState(key)
 
     if (!asBytes || asBytes.length === 0) {
       throw new Error('RealEstateID ' + ID + ' not found ')
@@ -290,13 +290,13 @@ class BooksContract extends Contract {
    * @returns
    */
   async queryBooks (ctx, RealEstateID) {
-    var bookKey = ctx.stub.createCompositeKey(PrefixBook, [RealEstateID])
+    let bookKey = ctx.stub.createCompositeKey(PrefixBook, [RealEstateID])
 
-    var bookBytes = await ctx.stub.getState(bookKey)
+    let bookBytes = await ctx.stub.getState(bookKey)
     if (!bookBytes || bookBytes.length === 0) {
       throw new Error('RealEstateID ' + RealEstateID + ' not found ')
     } else {
-      var bks
+      let bks
       bks = JSON.parse(bookBytes.toString())
 
       WriteToBooksLedger(ctx, bks, QueryBooksString) //log it for audit

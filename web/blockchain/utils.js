@@ -91,7 +91,7 @@ export class OrganizationClient {
   }
 
   async query (chaincodeName, TransactionName, ...args) {
-    var result
+    let result
     try {
       // setup the gateway instance
       // The user will now be able to create connections to the fabric network and be able to

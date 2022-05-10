@@ -11,8 +11,8 @@ const { PrefixRecord } = require('./prefix')
  * @returns - Current time string
  */
 function getTimeNow () {
-  var formatedTime = ''
-  var t = new Date(Date.now())
+  let formatedTime = ''
+  let t = new Date(Date.now())
   formatedTime = t.toString()
   return formatedTime
 }
@@ -46,7 +46,7 @@ function checkProducer (ctx) {
 function writeToRecordsLedger (ctx, re, txnType) {
   if (txnType != 'createRealEstate') {
     //add TransactionHistory, first check if map has been initialized
-    var history = re.TransactionHistory['createRealEstate']
+    let history = re.TransactionHistory['createRealEstate']
     if (history != undefined) {
       re.TransactionHistory[txnType] = getTimeNow()
     } else {
@@ -54,10 +54,10 @@ function writeToRecordsLedger (ctx, re, txnType) {
     }
   }
   // Encode JSON data
-  var reAsBytes = Buffer.from(JSON.stringify(re))
+  let reAsBytes = Buffer.from(JSON.stringify(re))
 
   // Create Key
-  var realEstateKey = ctx.stub.createCompositeKey(PrefixRecord, [
+  let realEstateKey = ctx.stub.createCompositeKey(PrefixRecord, [
     re.RealEstateID
   ])
 
