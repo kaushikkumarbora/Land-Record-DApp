@@ -50,10 +50,10 @@ class RecordContract extends Contract {
    */
   async createRealEstate (ctx, RealEstateID, Address, Value, Details, Owner) {
     if (CheckProducer(ctx)) {
-      var TransactionHistory = {}
+      let TransactionHistory = {}
       TransactionHistory['createRealEstate'] = GetTimeNow()
 
-      var args = {}
+      let args = {}
       args.RealEstateID = RealEstateID
       args.Address = Address
       args.Value = Value
@@ -61,7 +61,7 @@ class RecordContract extends Contract {
       args.Owner = Owner
       args.TransactionHistory = TransactionHistory
       // A newly created property is available
-      var re = RealEstate(args)
+      let re = RealEstate(args)
 
       WriteToRecordsLedger(ctx, re, 'createRealEstate')
     } else {
@@ -85,23 +85,23 @@ class RecordContract extends Contract {
   async recordPurchase (ctx, RealEstateID) {
     if (CheckProducer(ctx)) {
       // Create Key
-      var recordsKey = ctx.stub.createCompositeKey(PrefixRecord, [RealEstateID])
+      let recordsKey = ctx.stub.createCompositeKey(PrefixRecord, [RealEstateID])
       // Look for the RealEstateID
-      var recordsBytes = await ctx.stub.getState(recordsKey)
+      let recordsBytes = await ctx.stub.getState(recordsKey)
       if (!recordsBytes || recordsBytes.length === 0) {
         throw new Error('RealEstateID ' + RealEstateID + ' not found ')
       }
 
       // Decode JSON data
-      var realEstate = RealEstate(JSON.parse(recordsBytes.toString()))
+      let realEstate = RealEstate(JSON.parse(recordsBytes.toString()))
 
       //first we need to invoke chanincode on books channel to get results value New Owner
-      var callArgs = new Array()
+      let callArgs = new Array()
 
       callArgs[0] = Buffer.from(QueryBooksString)
       callArgs[1] = Buffer.from(realEstate.RealEstateID)
 
-      var res = await ctx.stub.invokeChaincode(
+      let res = await ctx.stub.invokeChaincode(
         BooksChaincode,
         callArgs,
         BooksChannel
@@ -111,7 +111,7 @@ class RecordContract extends Contract {
       if (!res || res.length === 0) {
         throw new Error('RealEstateID ' + RealEstateID + ' not found ')
       }
-      var bks = Books(JSON.parse(res.payload.toString()))
+      let bks = Books(JSON.parse(res.payload.toString()))
 
       if (bks.NewTitleOwner != '') {
         //if the new owner is a non blank field then it means the loan was funded and new owner was populated.
@@ -156,7 +156,7 @@ class RecordContract extends Contract {
    * @returns
    */
   async queryHistory (ctx, RealEstateID) {
-    var recordsKey = ctx.stub.createCompositeKey(PrefixRecord, [RealEstateID])
+    let recordsKey = ctx.stub.createCompositeKey(PrefixRecord, [RealEstateID])
     let resultsIterator = ctx.stub.getHistoryForKey(recordsKey)
     let results = await GetAllResults(resultsIterator, true)
 
@@ -195,15 +195,15 @@ class RecordContract extends Contract {
    * @returns
    */
   async queryID (ctx, ID) {
-    if (ID === undefined) {
+    if (typeof ID === 'undefined') {
       throw new Error('ID not defined')
     } else if (typeof ID != 'string') {
       throw new Error('ID should be of type string')
     }
 
-    var key = ctx.stub.createCompositeKey(PrefixRecord, [ID])
+    let key = ctx.stub.createCompositeKey(PrefixRecord, [ID])
 
-    var asBytes = await ctx.stub.getState(key)
+    let asBytes = await ctx.stub.getState(key)
 
     if (!asBytes || asBytes.length === 0) {
       throw new Error('RealEstateID ' + ID + ' not found ')

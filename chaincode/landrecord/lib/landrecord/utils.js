@@ -47,7 +47,7 @@ function writeToRecordsLedger (ctx, re, txnType) {
   if (txnType != 'createRealEstate') {
     //add TransactionHistory, first check if map has been initialized
     let history = re.TransactionHistory['createRealEstate']
-    if (history != undefined) {
+    if (typeof history != 'undefined') {
       re.TransactionHistory[txnType] = getTimeNow()
     } else {
       throw new Error('......Records Transaction history is not initialized')

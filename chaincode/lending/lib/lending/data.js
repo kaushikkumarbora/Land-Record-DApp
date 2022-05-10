@@ -11,47 +11,40 @@ const { GetTimeNow } = require('./utils')
  * @returns
  */
 function dataMortgage (args) {
-  if (typeof args.CustID != 'string') {
-    throw new Error('Need string type CustID')
-  }
+  if (typeof args.CustID != 'string') throw new Error('Need string type CustID')
 
-  if (typeof args.RealEstateID != 'string') {
+  if (typeof args.RealEstateID != 'string')
     throw new Error('Need string type RealEstateID')
-  }
 
   if (typeof args.LoanAmount != 'number') {
     args.LoanAmount = parseFloat(args.LoanAmount)
     if (args.LoanAmount === NaN) throw new Error('Need number type LoanAmount')
   }
 
-  if (args.Fico === undefined) {
-    args.Fico = 0.0
-  } else if (typeof args.Fico != 'number') {
+  if (typeof args.Fico === 'undefined') args.Fico = 0.0
+  else if (typeof args.Fico != 'number') {
     args.Fico = parseFloat(args.Fico)
     if (args.Fico === NaN) throw new Error('Need number type Fico')
   }
 
-  if (args.Insurance === undefined) {
-    args.Insurance = 0.0
-  } else if (typeof args.Insurance != 'number') {
+  if (typeof args.Insurance === 'undefined') args.Insurance = 0.0
+  else if (typeof args.Insurance != 'number') {
     args.Insurance = parseFloat(args.Insurance)
     if (args.Insurance === NaN) throw new Error('Need number type Insurance')
   }
 
-  if (args.Appraisal === undefined) {
-    args.Appraisal = 0.0
-  } else if (typeof args.Appraisal != 'number') {
+  if (typeof args.Appraisal === 'undefined') args.Appraisal = 0.0
+  else if (typeof args.Appraisal != 'number') {
     args.Appraisal = parseFloat(args.Appraisal)
     if (args.Appraisal === NaN) throw new Error('Need number type Appraisal')
   }
 
-  if (args.Status === undefined) {
-    args.Status = 'Pending'
-  } else if (typeof args.Status != 'string') {
+  if (typeof args.Status === 'undefined') args.Status = 'Pending'
+  else if (typeof args.Status != 'string') {
     throw new Error('Need string type Status')
   }
 
-  if (args.TransactionHistory === undefined) {
+  if (typeof args.TransactionHistory === 'undefined') {
     args.TransactionHistory = {}
     args.TransactionHistory['initiateMortgage'] = GetTimeNow()
   } else if (typeof args.TransactionHistory != 'object') {
@@ -82,32 +75,29 @@ function dataMortgage (args) {
  * @returns
  */
 function dataBooks (args) {
-  if (typeof args.RealEstateID != 'string') {
+  if (typeof args.RealEstateID != 'string')
     throw new Error('Need string type RealEstateID')
-  }
-  if (args.Appraisal === undefined) {
-    args.Appraisal = 0.0
-  } else if (typeof args.Appraisal != 'number') {
+
+  if (typeof args.Appraisal === 'undefined') args.Appraisal = 0.0
+  else if (typeof args.Appraisal != 'number') {
     args.Appraisal = parseFloat(args.Appraisal)
     if (args.Appraisal === NaN) throw new Error('Need number type Appraisal')
   }
-  if (args.NewTitleOwner === undefined) {
-    args.NewTitleOwner = ''
-  } else if (typeof args.NewTitleOwner != 'string') {
+  if (typeof args.NewTitleOwner === 'undefined') args.NewTitleOwner = ''
+  else if (typeof args.NewTitleOwner != 'string')
     throw new Error('Need string type NewTitleOwner')
-  }
-  if (args.TitleStatus === undefined) {
-    args.TitleStatus = false
-  } else if (typeof args.TitleStatus != 'boolean') {
+
+  if (typeof args.TitleStatus === 'undefined') args.TitleStatus = false
+  else if (typeof args.TitleStatus != 'boolean')
     throw new Error('Need boolean type TitleStatus')
-  }
-  if (args.TransactionHistory === undefined) {
+
+  if (typeof args.TransactionHistory === 'undefined') {
     args.TransactionHistory = {}
     args.TransactionHistory['initiateBooks'] = GetTimeNow()
   } else if (typeof args.TransactionHistory != 'object') {
     throw new Error('Need object type TransactionHistory')
   }
-  var books = {
+  const books = {
     RealEstateID: args.RealEstateID, // This one will be our key
     Appraisal: args.Appraisal,
     NewTitleOwner: args.NewTitleOwner,

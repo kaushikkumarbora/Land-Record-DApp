@@ -62,7 +62,7 @@ function writeToBooksLedger (ctx, bks, txnType) {
     //add TransactionHistory
     //first check if map has been initialized
     let history = bks.TransactionHistory['initiateBooks']
-    if (history != undefined) {
+    if (typeof history != 'undefined') {
       bks.TransactionHistory[txnType] = getTimeNow()
     } else {
       throw new Error('......Books Transaction history is not initialized')
