@@ -1,4 +1,4 @@
-port: 13054
+port: 14054
 debug: false
 tls:
   enabled: true
@@ -9,7 +9,7 @@ tls:
     certfiles:
 
 ca:
-  name: registry-org
+  name: revenue-org
   keyfile: ./ca/key.pem
   certfile: ./ca/cert.pem
   chainfile: ./ca/cert.pem
@@ -57,10 +57,10 @@ csr:
     - C: IN
       ST: 'Telangana'
       L: 'Hyderabad'
-      O: 'registry'
+      O: 'revenue'
       OU: ''
   hosts:
-    - registry-ca
+    - revenue-ca
     - localhost
   ca:
     expiry: 131400h

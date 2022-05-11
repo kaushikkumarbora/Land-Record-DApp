@@ -23,7 +23,7 @@ mkdir artifacts/channels
 sleep ${FABRIC_START_WAIT}
 ./binaries/configtxgen -profile LendingChannel -outputCreateChannelTx ./artifacts/channels/Lending.tx -channelID lending
 sleep ${FABRIC_START_WAIT}
-./binaries/configtxgen -profile BooksChannel -outputCreateChannelTx ./artifacts/channels/Books.tx -channelID books
+./binaries/configtxgen -profile RegistrationChannel -outputCreateChannelTx ./artifacts/channels/Registration.tx -channelID registration
 sleep ${FABRIC_START_WAIT}
 
 echo -e "\e[5;32;40mgenerate the anchor peer update transactions\e[m "
@@ -33,7 +33,7 @@ echo -e "\e[5;32;40mgenerate the anchor peer update transactions\e[m "
 sleep ${FABRIC_START_WAIT}
 ./binaries/configtxgen -profile LendingChannel -outputAnchorPeersUpdate ./artifacts/channels/lendinganchor.tx -channelID lending -asOrg BankMSP
 sleep ${FABRIC_START_WAIT}
-./binaries/configtxgen -profile BooksChannel -outputAnchorPeersUpdate ./artifacts/channels/booksanchor.tx -channelID books -asOrg AppraiserMSP
+./binaries/configtxgen -profile RegistrationChannel -outputAnchorPeersUpdate ./artifacts/channels/registrationanchor.tx -channelID registration -asOrg RevenueMSP
 
 cp -r artifacts/crypto-config/ordererOrganizations/orderer-org/ca image/ordererCA
 cp -r artifacts/crypto-config/ordererOrganizations/orderer-org/tlsca image/ordererCA
@@ -102,6 +102,17 @@ mv image/insuranceCA/tlsca/*-cert.pem image/insuranceCA/tlsca/cert.pem
 cp -r artifacts/crypto-config/peerOrganizations/insurance-org/peers/insurance-peer/msp image/insurancePeer
 cp -r artifacts/crypto-config/peerOrganizations/insurance-org/peers/insurance-peer/tls image/insurancePeer
 
+cp -r artifacts/crypto-config/peerOrganizations/municipal-org/ca image/municipalCA
+cp -r artifacts/crypto-config/peerOrganizations/municipal-org/tlsca image/municipalCA
+
+mv image/municipalCA/ca/priv_sk image/municipalCA/ca/key.pem
+mv image/municipalCA/tlsca/priv_sk image/municipalCA/tlsca/key.pem
+mv image/municipalCA/ca/*-cert.pem image/municipalCA/ca/cert.pem
+mv image/municipalCA/tlsca/*-cert.pem image/municipalCA/tlsca/cert.pem
+
+cp -r artifacts/crypto-config/peerOrganizations/municipal-org/peers/municipal-peer/msp image/municipalPeer
+cp -r artifacts/crypto-config/peerOrganizations/municipal-org/peers/municipal-peer/tls image/municipalPeer
+
 cp -r artifacts/crypto-config/peerOrganizations/registry-org/ca image/registryCA
 cp -r artifacts/crypto-config/peerOrganizations/registry-org/tlsca image/registryCA
 
@@ -113,13 +124,13 @@ mv image/registryCA/tlsca/*-cert.pem image/registryCA/tlsca/cert.pem
 cp -r artifacts/crypto-config/peerOrganizations/registry-org/peers/registry-peer/msp image/registryPeer
 cp -r artifacts/crypto-config/peerOrganizations/registry-org/peers/registry-peer/tls image/registryPeer
 
-cp -r artifacts/crypto-config/peerOrganizations/title-org/ca image/titleCA
-cp -r artifacts/crypto-config/peerOrganizations/title-org/tlsca image/titleCA
+cp -r artifacts/crypto-config/peerOrganizations/revenue-org/ca image/revenueCA
+cp -r artifacts/crypto-config/peerOrganizations/revenue-org/tlsca image/revenueCA
 
-mv image/titleCA/ca/priv_sk image/titleCA/ca/key.pem
-mv image/titleCA/tlsca/priv_sk image/titleCA/tlsca/key.pem
-mv image/titleCA/ca/*-cert.pem image/titleCA/ca/cert.pem
-mv image/titleCA/tlsca/*-cert.pem image/titleCA/tlsca/cert.pem
+mv image/revenueCA/ca/priv_sk image/revenueCA/ca/key.pem
+mv image/revenueCA/tlsca/priv_sk image/revenueCA/tlsca/key.pem
+mv image/revenueCA/ca/*-cert.pem image/revenueCA/ca/cert.pem
+mv image/revenueCA/tlsca/*-cert.pem image/revenueCA/tlsca/cert.pem
 
-cp -r artifacts/crypto-config/peerOrganizations/title-org/peers/title-peer/msp image/titlePeer
-cp -r artifacts/crypto-config/peerOrganizations/title-org/peers/title-peer/tls image/titlePeer
+cp -r artifacts/crypto-config/peerOrganizations/revenue-org/peers/revenue-peer/msp image/revenuePeer
+cp -r artifacts/crypto-config/peerOrganizations/revenue-org/peers/revenue-peer/tls image/revenuePeer

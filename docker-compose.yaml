@@ -45,6 +45,14 @@ services:
     networks:
       - landrecord
 
+  municipal-couchdb:
+    container_name: municipal-couchdb
+    extends:
+      file: ./base/db-base.yaml
+      service: db-base
+    networks:
+      - landrecord
+
   registry-couchdb:
     container_name: registry-couchdb
     extends:
@@ -52,9 +60,9 @@ services:
       service: db-base
     networks:
       - landrecord
-
-  title-couchdb:
-    container_name: title-couchdb
+  
+  revenue-couchdb:
+    container_name: revenue-couchdb
     extends:
       file: ./base/db-base.yaml
       service: db-base
@@ -115,6 +123,17 @@ services:
     - 11054:11054
     networks:
       - landrecord
+  
+  municipal-ca:
+    container_name: municipal-ca
+    extends:
+      file: ./base/ca-base.yaml
+      service: ca-base
+    image: municipal-ca
+    ports:
+    - 12054:12054
+    networks:
+      - landrecord
 
   registry-ca:
     container_name: registry-ca
@@ -123,18 +142,18 @@ services:
       service: ca-base
     image: registry-ca
     ports:
-    - 12054:12054
+    - 13054:13054
     networks:
       - landrecord
   
-  title-ca:
-    container_name: title-ca
+  revenue-ca:
+    container_name: revenue-ca
     extends:
       file: ./base/ca-base.yaml
       service: ca-base
-    image: title-ca
+    image: revenue-ca
     ports:
-    - 13054:13054
+    - 14054:14054
     networks:
       - landrecord
 
@@ -145,7 +164,7 @@ services:
       service: ca-base
     image: orderer-ca
     ports:
-    - 14054:14054
+    - 15054:15054
     networks:
       - landrecord
 
@@ -317,6 +336,34 @@ services:
     - insurance-couchdb
     networks:
       - landrecord
+
+  municipal-peer:
+    container_name: municipal-peer
+    extends:
+      file: ./base/peer-base.yaml
+      service: peer-base
+    image: municipal-peer
+    environment:
+    - CORE_PEER_ID=municipal-peer
+    - CORE_PEER_ADDRESS=municipal-peer:12051
+    - CORE_PEER_GOSSIP_EXTERNALENDPOINT=municipal-peer:12051
+    - CORE_PEER_LOCALMSPID=MunicipalMSP
+    - CORE_PEER_GOSSIP_BOOTSTRAP=municipal-peer:12051
+    - CORE_OPERATIONS_LISTENADDRESS=municipal-peer:12053
+    - CORE_PEER_LISTENADDRESS=0.0.0.0:12051
+    - CORE_PEER_CHAINCODEADDRESS=municipal-peer:12052
+    - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:12052
+    - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=municipal-couchdb:5984
+    - CORE_METRICS_PROVIDER=prometheus
+    ports:
+    - 12051:12051
+    - 12053:12053
+    depends_on:
+    - orderer0
+    - municipal-ca
+    - municipal-couchdb
+    networks:
+      - landrecord
   
   registry-peer:
     container_name: registry-peer
@@ -326,19 +373,19 @@ services:
     image: registry-peer
     environment:
     - CORE_PEER_ID=registry-peer
-    - CORE_PEER_ADDRESS=registry-peer:12051
-    - CORE_PEER_GOSSIP_EXTERNALENDPOINT=registry-peer:12051
+    - CORE_PEER_ADDRESS=registry-peer:13051
+    - CORE_PEER_GOSSIP_EXTERNALENDPOINT=registry-peer:13051
     - CORE_PEER_LOCALMSPID=RegistryMSP
-    - CORE_PEER_GOSSIP_BOOTSTRAP=registry-peer:12051
-    - CORE_OPERATIONS_LISTENADDRESS=registry-peer:12053
-    - CORE_PEER_LISTENADDRESS=0.0.0.0:12051
-    - CORE_PEER_CHAINCODEADDRESS=registry-peer:12052
-    - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:12052
+    - CORE_PEER_GOSSIP_BOOTSTRAP=registry-peer:13051
+    - CORE_OPERATIONS_LISTENADDRESS=registry-peer:13053
+    - CORE_PEER_LISTENADDRESS=0.0.0.0:13051
+    - CORE_PEER_CHAINCODEADDRESS=registry-peer:13052
+    - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:13052
     - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=registry-couchdb:5984
     - CORE_METRICS_PROVIDER=prometheus
     ports:
-    - 12051:12051
-    - 12053:12053
+    - 13051:13051
+    - 13053:13053
     depends_on:
     - orderer0
     - registry-ca
@@ -346,118 +393,34 @@ services:
     networks:
       - landrecord
   
-  title-peer:
-    container_name: title-peer
+  revenue-peer:
+    container_name: revenue-peer
     extends:
       file: ./base/peer-base.yaml
       service: peer-base
-    image: title-peer
+    image: revenue-peer
     environment:
-    - CORE_PEER_ID=title-peer
-    - CORE_PEER_ADDRESS=title-peer:13051
-    - CORE_PEER_GOSSIP_EXTERNALENDPOINT=title-peer:13051
-    - CORE_PEER_LOCALMSPID=TitleMSP
-    - CORE_PEER_GOSSIP_BOOTSTRAP=title-peer:13051
-    - CORE_OPERATIONS_LISTENADDRESS=title-peer:13053
-    - CORE_PEER_LISTENADDRESS=0.0.0.0:13051
-    - CORE_PEER_CHAINCODEADDRESS=title-peer:13052
-    - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:13052
-    - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=title-couchdb:5984
+    - CORE_PEER_ID=revenue-peer
+    - CORE_PEER_ADDRESS=revenue-peer:14051
+    - CORE_PEER_GOSSIP_EXTERNALENDPOINT=revenue-peer:14051
+    - CORE_PEER_LOCALMSPID=RevenueMSP
+    - CORE_PEER_GOSSIP_BOOTSTRAP=revenue-peer:14051
+    - CORE_OPERATIONS_LISTENADDRESS=revenue-peer:14053
+    - CORE_PEER_LISTENADDRESS=0.0.0.0:14051
+    - CORE_PEER_CHAINCODEADDRESS=revenue-peer:14052
+    - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:14052
+    - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=revenue-couchdb:5984
     - CORE_METRICS_PROVIDER=prometheus
     ports:
-    - 13051:13051
-    - 13053:13053
+    - 14051:14051
+    - 14053:14053
     depends_on:
     - orderer0
-    - title-ca
-    - title-couchdb
+    - revenue-ca
+    - revenue-couchdb
     networks:
       - landrecord
   
-  bank-cli:
-    extends:
-      file: ./base/cli-base.yaml
-      service: cli-base
-    container_name: bank-cli
-    environment:
-      - CORE_PEER_ID=bank-cli
-      - CORE_PEER_ADDRESS=bank-peer:9051
-      - CORE_PEER_LOCALMSPID=BankMSP
-      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@bank-org/msp
-      - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/msp/users/Admin@bank-org/tls/ca.crt
-      - ORDERER_TLS_CLIENTCERT_FILE=/etc/hyperledger/msp/users/Admin@bank-org/tls/client.crt
-      - ORDERER_TLS_CLIENTKEY_FILE=/etc/hyperledger/msp/users/Admin@bank-org/tls/client.key
-    volumes:
-      - ./artifacts/crypto-config/peerOrganizations/bank-org:/etc/hyperledger/msp
-    depends_on:
-      - orderer0
-      - bank-peer
-    networks:
-      - landrecord
-
-  insurance-cli:
-    extends:
-      file: ./base/cli-base.yaml
-      service: cli-base
-    container_name: insurance-cli
-    environment:
-      - CORE_PEER_ID=insurance-cli
-      - CORE_PEER_ADDRESS=insurance-peer:11051
-      - CORE_PEER_LOCALMSPID=InsuranceMSP
-      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@insurance-org/msp
-      - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/msp/users/Admin@insurance-org/tls/ca.crt
-      - ORDERER_TLS_CLIENTCERT_FILE=/etc/hyperledger/msp/users/Admin@insurance-org/tls/client.crt
-      - ORDERER_TLS_CLIENTKEY_FILE=/etc/hyperledger/msp/users/Admin@insurance-org/tls/client.key
-    volumes:
-      - ./artifacts/crypto-config/peerOrganizations/insurance-org:/etc/hyperledger/msp
-    depends_on:
-      - orderer0
-      - insurance-peer
-    networks:
-      - landrecord
-
-  registry-cli:
-    extends:
-      file: ./base/cli-base.yaml
-      service: cli-base
-    container_name: registry-cli
-    environment:
-      - CORE_PEER_ID=registry-cli
-      - CORE_PEER_ADDRESS=registry-peer:12051
-      - CORE_PEER_LOCALMSPID=RegistryMSP
-      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@registry-org/msp
-      - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/msp/users/Admin@registry-org/tls/ca.crt
-      - ORDERER_TLS_CLIENTCERT_FILE=/etc/hyperledger/msp/users/Admin@registry-org/tls/client.crt
-      - ORDERER_TLS_CLIENTKEY_FILE=/etc/hyperledger/msp/users/Admin@registry-org/tls/client.key
-    volumes:
-      - ./artifacts/crypto-config/peerOrganizations/registry-org:/etc/hyperledger/msp
-    depends_on:
-      - orderer0
-      - registry-peer
-    networks:
-      - landrecord
-
-  title-cli:
-    extends:
-      file: ./base/cli-base.yaml
-      service: cli-base
-    container_name: title-cli
-    environment:
-      - CORE_PEER_ID=title-cli
-      - CORE_PEER_ADDRESS=title-peer:13051
-      - CORE_PEER_LOCALMSPID=TitleMSP
-      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@title-org/msp
-      - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/msp/users/Admin@title-org/tls/ca.crt
-      - ORDERER_TLS_CLIENTCERT_FILE=/etc/hyperledger/msp/users/Admin@title-org/tls/client.crt
-      - ORDERER_TLS_CLIENTKEY_FILE=/etc/hyperledger/msp/users/Admin@title-org/tls/client.key
-    volumes:
-      - ./artifacts/crypto-config/peerOrganizations/title-org:/etc/hyperledger/msp
-    depends_on:
-      - orderer0
-      - title-peer
-    networks:
-      - landrecord
-
   appraiser-cli:
     extends:
       file: ./base/cli-base.yaml
@@ -500,6 +463,27 @@ services:
     networks:
       - landrecord
 
+  bank-cli:
+    extends:
+      file: ./base/cli-base.yaml
+      service: cli-base
+    container_name: bank-cli
+    environment:
+      - CORE_PEER_ID=bank-cli
+      - CORE_PEER_ADDRESS=bank-peer:9051
+      - CORE_PEER_LOCALMSPID=BankMSP
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@bank-org/msp
+      - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/msp/users/Admin@bank-org/tls/ca.crt
+      - ORDERER_TLS_CLIENTCERT_FILE=/etc/hyperledger/msp/users/Admin@bank-org/tls/client.crt
+      - ORDERER_TLS_CLIENTKEY_FILE=/etc/hyperledger/msp/users/Admin@bank-org/tls/client.key
+    volumes:
+      - ./artifacts/crypto-config/peerOrganizations/bank-org:/etc/hyperledger/msp
+    depends_on:
+      - orderer0
+      - bank-peer
+    networks:
+      - landrecord
+
   fico-cli:
     extends:
       file: ./base/cli-base.yaml
@@ -521,19 +505,86 @@ services:
     networks:
       - landrecord
 
+  insurance-cli:
+    extends:
+      file: ./base/cli-base.yaml
+      service: cli-base
+    container_name: insurance-cli
+    environment:
+      - CORE_PEER_ID=insurance-cli
+      - CORE_PEER_ADDRESS=insurance-peer:11051
+      - CORE_PEER_LOCALMSPID=InsuranceMSP
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@insurance-org/msp
+      - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/msp/users/Admin@insurance-org/tls/ca.crt
+      - ORDERER_TLS_CLIENTCERT_FILE=/etc/hyperledger/msp/users/Admin@insurance-org/tls/client.crt
+      - ORDERER_TLS_CLIENTKEY_FILE=/etc/hyperledger/msp/users/Admin@insurance-org/tls/client.key
+    volumes:
+      - ./artifacts/crypto-config/peerOrganizations/insurance-org:/etc/hyperledger/msp
+    depends_on:
+      - orderer0
+      - insurance-peer
+    networks:
+      - landrecord
 
-  # web:
-  #   container_name: web
-  #   image: web
-  #   # TODO
-  #   depends_on:
-  #     - orderer0
-  #     - appraiser-peer
-  #     - audit-peer
-  #     - bank-peer
-  #     - fico-peer
-  #     - insurance-peer
-  #     - registry-peer
-  #     - title-peer
-  #   networks:
-  #     - landrecord
+  municipal-cli:
+    extends:
+      file: ./base/cli-base.yaml
+      service: cli-base
+    container_name: municipal-cli
+    environment:
+      - CORE_PEER_ID=municipal-cli
+      - CORE_PEER_ADDRESS=municipal-peer:12051
+      - CORE_PEER_LOCALMSPID=MunicipalMSP
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@municipal-org/msp
+      - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/msp/users/Admin@municipal-org/tls/ca.crt
+      - ORDERER_TLS_CLIENTCERT_FILE=/etc/hyperledger/msp/users/Admin@municipal-org/tls/client.crt
+      - ORDERER_TLS_CLIENTKEY_FILE=/etc/hyperledger/msp/users/Admin@municipal-org/tls/client.key
+    volumes:
+      - ./artifacts/crypto-config/peerOrganizations/municipal-org:/etc/hyperledger/msp
+    depends_on:
+      - orderer0
+      - municipal-peer
+    networks:
+      - landrecord
+
+  registry-cli:
+    extends:
+      file: ./base/cli-base.yaml
+      service: cli-base
+    container_name: registry-cli
+    environment:
+      - CORE_PEER_ID=registry-cli
+      - CORE_PEER_ADDRESS=registry-peer:13051
+      - CORE_PEER_LOCALMSPID=RegistryMSP
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@registry-org/msp
+      - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/msp/users/Admin@registry-org/tls/ca.crt
+      - ORDERER_TLS_CLIENTCERT_FILE=/etc/hyperledger/msp/users/Admin@registry-org/tls/client.crt
+      - ORDERER_TLS_CLIENTKEY_FILE=/etc/hyperledger/msp/users/Admin@registry-org/tls/client.key
+    volumes:
+      - ./artifacts/crypto-config/peerOrganizations/registry-org:/etc/hyperledger/msp
+    depends_on:
+      - orderer0
+      - registry-peer
+    networks:
+      - landrecord
+
+  revenue-cli:
+    extends:
+      file: ./base/cli-base.yaml
+      service: cli-base
+    container_name: revenue-cli
+    environment:
+      - CORE_PEER_ID=revenue-cli
+      - CORE_PEER_ADDRESS=revenue-peer:14051
+      - CORE_PEER_LOCALMSPID=RevenueMSP
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@revenue-org/msp
+      - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/msp/users/Admin@revenue-org/tls/ca.crt
+      - ORDERER_TLS_CLIENTCERT_FILE=/etc/hyperledger/msp/users/Admin@revenue-org/tls/client.crt
+      - ORDERER_TLS_CLIENTKEY_FILE=/etc/hyperledger/msp/users/Admin@revenue-org/tls/client.key
+    volumes:
+      - ./artifacts/crypto-config/peerOrganizations/revenue-org:/etc/hyperledger/msp
+    depends_on:
+      - orderer0
+      - revenue-peer
+    networks:
+      - landrecord
