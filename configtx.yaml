@@ -475,7 +475,6 @@ Profiles:
                 - *RevenueOrg
                 - *AppraiserOrg
                 - *AuditOrg
-                - *FicoOrg
             Capabilities:
                 <<: *ApplicationCapabilities
     LendingChannel:
