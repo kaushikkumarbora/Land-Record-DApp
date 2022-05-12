@@ -24,13 +24,14 @@ function getTimeNow () {
  * checks whether the Transaction initiator is producer
  *
  * @param {Context} ctx
+ * @param {string} ID
  * @returns
  */
-function checkProducer (ctx) {
-  return ctx.clientIdentity.getMSPID() === 'RegistryMSP'
+function checkProducer (ctx, ID) {
+  return ctx.clientIdentity.getMSPID() === ID
 }
 
-// write to different ledgers- records, books and lending
+// write to different ledgers- records, registration and lending
 
 /**
  *

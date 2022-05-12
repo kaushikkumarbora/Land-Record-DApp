@@ -1,19 +1,14 @@
 'use strict'
 
 const { Contract, Context } = require('fabric-contract-api')
-const { PrefixRecord } = require('./prefix')
+const { PrefixRecord, RegistryMSPID, RevenueMSPID } = require('./prefix')
 const {
   CheckProducer,
   WriteToRecordsLedger,
   GetTimeNow,
   GetAllResults
 } = require('./utils')
-const { RealEstate, Registration } = require('./data')
-const {
-  RegistrationChaincode,
-  RegistrationChannel,
-  QueryRegistrationString
-} = require('./const')
+const { RealEstate } = require('./data')
 
 class RecordContract extends Contract {
   /**
@@ -46,11 +41,11 @@ class RecordContract extends Contract {
    * @param {Context} ctx
    * @param {string} RealEstateID
    * @param {string} Address
-   * @param {string} Latitude
-   * @param {string} Longitude
-   * @param {string} Length
-   * @param {string} Width
-   * @param {string} TotalArea
+   * @param {number} Latitude
+   * @param {number} Longitude
+   * @param {number} Length
+   * @param {number} Width
+   * @param {number} TotalArea
    * @param {string} Owner
    * @returns
    */
@@ -65,13 +60,20 @@ class RecordContract extends Contract {
     TotalArea,
     Owner
   ) {
-    if (CheckProducer(ctx)) {
+    if (CheckProducer(ctx, RegistryMSPID)) {
+      // Check Overwrite
+      // Create Key
+      let recordsKey = ctx.stub.createCompositeKey(PrefixRecord, [RealEstateID])
+      // Look for the RealEstateID
+      let recordsBytes = await ctx.stub.getState(recordsKey)
+      if (recordsBytes && recordsBytes.length != 0)
+        throw new Error('RealEstateID ' + RealEstateID + ' already Exists')
+
       let TransactionHistory = {}
       TransactionHistory['createRealEstate'] = GetTimeNow()
 
       let args = {}
       args.RealEstateID = RealEstateID
-      args = {}
       args.Address = Address
       args.Latitude = Latitude
       args.Longitude = Longitude
@@ -101,14 +103,14 @@ class RecordContract extends Contract {
    * @param {Context} ctx
    * @param {string} RealEstateID
    * @param {string} Address
-   * @param {string} Latitude
-   * @param {string} Longitude
-   * @param {string} Length
-   * @param {string} Width
-   * @param {string} TotalArea
+   * @param {number} Latitude
+   * @param {number} Longitude
+   * @param {number} Length
+   * @param {number} Width
+   * @param {number} TotalArea
    * @returns
    */
-  async createRealEstate (
+  async editRealEstate (
     ctx,
     RealEstateID,
     Address,
@@ -118,14 +120,13 @@ class RecordContract extends Contract {
     Width,
     TotalArea
   ) {
-    if (CheckProducer(ctx)) {
+    if (CheckProducer(ctx, RegistryMSPID)) {
       // Create Key
       let recordsKey = ctx.stub.createCompositeKey(PrefixRecord, [RealEstateID])
       // Look for the RealEstateID
       let recordsBytes = await ctx.stub.getState(recordsKey)
-      if (!recordsBytes || recordsBytes.length === 0) {
+      if (!recordsBytes || recordsBytes.length === 0)
         throw new Error('RealEstateID ' + RealEstateID + ' not found ')
-      }
 
       let record = JSON.parse(recordsBytes.toString())
       record = RealEstate(record)
@@ -157,43 +158,22 @@ class RecordContract extends Contract {
    *
    * @param {Context} ctx
    * @param {string} RealEstateID
+   * @param {string} NewOwner
    * @returns
    */
-  async recordPurchase (ctx, RealEstateID) {
-    if (CheckProducer(ctx)) {
+  async recordPurchase (ctx, RealEstateID, NewOwner) {
+    if (CheckProducer(ctx, RevenueMSPID)) {
       // Create Key
       let recordsKey = ctx.stub.createCompositeKey(PrefixRecord, [RealEstateID])
       // Look for the RealEstateID
       let recordsBytes = await ctx.stub.getState(recordsKey)
-      if (!recordsBytes || recordsBytes.length === 0) {
+      if (!recordsBytes || recordsBytes.length === 0)
         throw new Error('RealEstateID ' + RealEstateID + ' not found ')
-      }
 
       // Decode JSON data
       let realEstate = RealEstate(JSON.parse(recordsBytes.toString()))
 
-      //first we need to invoke chanincode on books channel to get results value New Owner
-      let callArgs = new Array()
-
-      callArgs[0] = Buffer.from(QueryRegistrationString)
-      callArgs[1] = Buffer.from(realEstate.RealEstateID)
-
-      let res = await ctx.stub.invokeChaincode(
-        RegistrationChaincode,
-        callArgs,
-        RegistrationChannel
-      )
-      //console.log("************************ received  from books for realestateID=", mrtg.RealEstateID, " Response status=", res.GetStatus(), "payload=", res.Payload)
-
-      if (!res || res.length === 0) {
-        throw new Error('RealEstateID ' + RealEstateID + ' not found ')
-      }
-      let registration = Registration(JSON.parse(res.payload.toString()))
-
-      if (registration.Status === 'Approved') {
-        //if the new owner is a non blank field then it means the loan was funded and new owner was populated.
-        realEstate.OwnerAadhar = registration.BuyerAadhar
-      } else throw new Error('Deed Not Approved Yet')
+      realEstate.OwnerAadhar = NewOwner
 
       WriteToRecordsLedger(ctx, realEstate, 'recordPurchase')
       return
@@ -282,9 +262,8 @@ class RecordContract extends Contract {
 
     let asBytes = await ctx.stub.getState(key)
 
-    if (!asBytes || asBytes.length === 0) {
+    if (!asBytes || asBytes.length === 0)
       throw new Error('RealEstateID ' + ID + ' not found ')
-    }
 
     let realestate = RealEstate(JSON.parse(asBytes.toString()))
 
@@ -303,19 +282,16 @@ class RecordContract extends Contract {
    * @returns
    */
   async queryID (ctx, ID) {
-    if (typeof ID === 'undefined') {
-      throw new Error('ID not defined')
-    } else if (typeof ID != 'string') {
+    if (typeof ID === 'undefined') throw new Error('ID not defined')
+    else if (typeof ID != 'string')
       throw new Error('ID should be of type string')
-    }
 
     let key = ctx.stub.createCompositeKey(PrefixRecord, [ID])
 
     let asBytes = await ctx.stub.getState(key)
 
-    if (!asBytes || asBytes.length === 0) {
+    if (!asBytes || asBytes.length === 0)
       throw new Error('RealEstateID ' + ID + ' not found ')
-    }
 
     return asBytes.toString()
   }
