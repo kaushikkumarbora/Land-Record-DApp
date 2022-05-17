@@ -414,7 +414,7 @@ class RegistrationContract extends Contract {
           // start Mortgage
           callArgs[0] = Buffer.from(QueryStartMortgage)
           callArgs[1] = Buffer.from(reg.BuyerAadhar)
-          callArgs[0] = Buffer.from(reg.RealEstateID)
+          callArgs[2] = Buffer.from(reg.RealEstateID)
 
           await ctx.stub.invokeChaincode(
             LendingChaincode,
