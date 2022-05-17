@@ -5,7 +5,9 @@ const {
   PrefixLending,
   BankMSPID,
   FicoMSPID,
-  InsuranceMSPID
+  InsuranceMSPID,
+  AppraiserMSPID,
+  RevenueMSPID
 } = require('./prefix')
 const {
   CheckProducer,
@@ -13,18 +15,14 @@ const {
   WriteToLendingLedger,
   GetAllResults
 } = require('./utils')
-const { Mortgage, Books } = require('./data')
+const { Loan, Registration } = require('./data')
 const {
   FicoHigh,
   FicoLow,
   FicoThreshold,
-  InsuranceHigh,
-  InsuranceLow,
-  InsuranceThreshold,
-  BooksChaincode,
-  BooksChannel,
-  QueryBooksString,
-  QueryLendingString
+  QueryRegistrationString,
+  RegistrationChaincode,
+  RegistrationChannel
 } = require('./const')
 
 class LendingContract extends Contract {
@@ -51,24 +49,52 @@ class LendingContract extends Contract {
 
   /**
    *
-   * initiateMortgage
+   * initiateLoan
    *
    * @param {Context} ctx
    * @param {string} CustID
    * @param {string} RealEstateID
-   * @param {Number} LoanAmount
+   * @param {number} LoanAmount
    * @returns
    */
-  async initiateMortgage (ctx, CustID, RealEstateID, LoanAmount) {
+  async initiateLoan (ctx, CustID, RealEstateID, LoanAmount) {
     if (CheckProducer(ctx, BankMSPID)) {
-      let lendingInfo = {}
-      lendingInfo.CustID = CustID
-      lendingInfo.RealEstateID = RealEstateID
-      lendingInfo.LoanAmount = LoanAmount
+      let loan = {}
+      let msg
+      // Check for Duplicate Loan
+      let lendingKey = ctx.stub.createCompositeKey(PrefixLending, [
+        CustID,
+        RealEstateID
+      ])
+      let lendingBytes = await ctx.stub.getState(lendingKey)
 
-      let mrtg = Mortgage(lendingInfo)
+      // Decode JSON data
+      if (lendingBytes && lendingBytes.length != 0)
+        loan = Loan(JSON.parse(lendingBytes.toString()))
 
-      WriteToLendingLedger(ctx, mrtg, 'initiateMortgage')
+      // Check for Previous Mortgage Inforced
+      if (loan.MortgageStatus === 'Inforced')
+        throw new Error('Accepted Loan with Mortgage already Exists')
+      // Check if it is Rejected
+      else if (
+        loan.Status === 'Rejected' ||
+        typeof loan.Status === 'undefined'
+      ) {
+        let lendingInfo = {}
+        lendingInfo.CustID = CustID
+        lendingInfo.RealEstateID = RealEstateID
+        lendingInfo.LoanAmount = LoanAmount
+
+        loan = Loan(lendingInfo)
+        msg = 'initiateLoan'
+      } else {
+        if (loan.Status != 'Pending') loan.Status = 'FicoSet'
+        loan.TopUp.push(LoanAmount)
+        loan = Loan(loan)
+        msg = 'topUpLoan'
+      }
+
+      WriteToLendingLedger(ctx, loan, msg)
     } else {
       throw new Error(
         '+~+~+~+~+No matching chain code function found-- create, initiate, close and record mortgage can only be invoked by chaincode instantiators which are Bank, Registry and Appraiser+~+~+~+~+~+~+~+~'
@@ -95,25 +121,24 @@ class LendingContract extends Contract {
         RealEstateID
       ])
       let lendingBytes = await ctx.stub.getState(lendingKey)
-      if (!lendingBytes || lendingBytes.length === 0) {
+      if (!lendingBytes || lendingBytes.length === 0)
         throw new Error(
-          'CustomerID ' +
-            CustID +
-            ', RealEstateID ' +
+          'Loan on RealEstate ' +
             RealEstateID +
-            ' not found '
+            ' by Customer ' +
+            CustID +
+            ' not found'
         )
-      }
 
       // Get Information from Blockchain
-      let mrtg
+      let loan
       // Decode JSON data
-      mrtg = Mortgage(JSON.parse(lendingBytes.toString()))
+      loan = Loan(JSON.parse(lendingBytes.toString()))
 
       // update FIco  randomly generated betweenn 600-800
-      mrtg.Fico = Random(FicoHigh, FicoLow)
-      mrtg.Status = 'FicoSet'
-      WriteToLendingLedger(ctx, mrtg, 'getFicoScores')
+      loan.Fico = Random(FicoHigh, FicoLow)
+      loan.Status = 'FicoSet'
+      WriteToLendingLedger(ctx, loan, 'getFicoScores')
     } else {
       throw new Error(
         '+~+~+~+~+No matching chain code function found-- create, initiate, close and record mortgage can only be invoked by chaincode instantiators which are Bank, Registry and Appraiser+~+~+~+~+~+~+~+~'
@@ -132,9 +157,21 @@ class LendingContract extends Contract {
    * @param {Context} ctx
    * @param {string} CustID
    * @param {string} RealEstateID
+   * @param {string} ProviderID
+   * @param {number} Premium
+   * @param {number} Summoned
+   * @param {number} Period
    * @returns
    */
-  async getInsuranceQuote (ctx, CustID, RealEstateID) {
+  async getInsuranceQuote (
+    ctx,
+    CustID,
+    RealEstateID,
+    ProviderID,
+    Premium,
+    Summoned,
+    Period
+  ) {
     if (CheckProducer(ctx, InsuranceMSPID)) {
       // Look for the customerID
       let lendingKey = ctx.stub.createCompositeKey(PrefixLending, [
@@ -142,25 +179,255 @@ class LendingContract extends Contract {
         RealEstateID
       ])
       let lendingBytes = await ctx.stub.getState(lendingKey)
-      if (!lendingBytes || lendingBytes.length === 0) {
+      if (!lendingBytes || lendingBytes.length === 0)
         throw new Error(
-          'CustomerID ' +
-            CustID +
-            ', RealEstateID ' +
+          'Loan on RealEstate ' +
             RealEstateID +
-            ' not found '
+            ' by Customer ' +
+            CustID +
+            ' not found'
+        )
+
+      // Get Information from Blockchain
+      let loan
+      // Decode JSON data
+      loan = Loan(JSON.parse(lendingBytes.toString()))
+
+      if (loan.Status != 'FicoSet')
+        throw new Error('Wrong Order! Need to wait for Fico Scores')
+
+      loan.Insurance.Premium = Premium
+      loan.Insurance.ProviderID = ProviderID
+      loan.Insurance.Summoned = Summoned
+      loan.Insurance.Period = Period
+      loan.Status = 'InsuranceSet'
+
+      WriteToLendingLedger(ctx, loan, 'getInsuranceQuote')
+    } else {
+      throw new Error(
+        '+~+~+~+~+No matching chain code function found-- create, initiate, close and record mortgage can only be invoked by chaincode instantiators which are Bank, Registry and Appraiser+~+~+~+~+~+~+~+~'
+      )
+    }
+
+    return
+  }
+
+  /**
+   *
+   * getAppraisal
+   *
+   * generates an Appraisal and updates the lending ledger
+   *
+   * @param {Context} ctx
+   * @param {string} CustID
+   * @param {string} RealEstateID
+   * @param {number} AppraisalAmount
+   * @returns
+   */
+  async getAppraisal (ctx, CustID, RealEstateID, AppraisalAmount) {
+    if (CheckProducer(ctx, AppraiserMSPID)) {
+      let lendingKey = ctx.stub.createCompositeKey(PrefixLending, [
+        CustID,
+        RealEstateID
+      ])
+      let lendingBytes = await ctx.stub.getState(lendingKey)
+      if (!lendingBytes || lendingBytes.length === 0)
+        throw new Error(
+          'Loan on RealEstate ' +
+            RealEstateID +
+            ' by Customer ' +
+            CustID +
+            ' not found'
+        )
+
+      // Get Information from Blockchain
+      let loan
+      // Decode JSON data
+      loan = Loan(JSON.parse(lendingBytes.toString()))
+
+      if (loan.Status != 'InsuranceSet')
+        throw new Error('Wrong Order! Need to wait for Insurance Amounts')
+
+      loan.Appraisal = AppraisalAmount
+      loan.Status = 'Applied'
+      WriteToLendingLedger(ctx, loan, 'getAppraisal')
+    } else {
+      throw new Error(
+        '+~+~+~+~+No matching chain code function found-- create, initiate, close and record mortgage can only be invoked by chaincode instantiators which are Bank, Registry and Appraiser+~+~+~+~+~+~+~+~'
+      )
+    }
+    return
+  }
+
+  /**
+   *
+   * processLoan
+   *
+   * process Loan Request
+   *
+   * @param {Context} ctx
+   * @param {string} CustID
+   * @param {string} RealEstateID
+   * @param {boolean} approve
+   * @returns
+   */
+  async processLoan (ctx, CustID, RealEstateID, approve) {
+    if (CheckProducer(ctx, BankMSPID)) {
+      let lendingKey = ctx.stub.createCompositeKey(PrefixLending, [
+        CustID,
+        RealEstateID
+      ])
+      let lendingBytes = await ctx.stub.getState(lendingKey)
+      if (!lendingBytes || lendingBytes.length === 0)
+        throw new Error(
+          'Loan on RealEstate ' +
+            RealEstateID +
+            ' by Customer ' +
+            CustID +
+            ' not found'
+        )
+
+      // Get Information from Blockchain
+      let loan
+      // Decode JSON data
+      loan = Loan(JSON.parse(lendingBytes.toString()))
+
+      if (loan.Status != 'Applied')
+        throw new Error('Wrong Order! Need to wait for Other Details')
+
+      if (
+        loan.Fico > FicoThreshold &&
+        loan.Appraisal > loan.LoanAmount &&
+        approve
+      ) {
+        loan.Status = 'Approved'
+        console.log('@@@@@@@@@@@@@@@@@@ Loan Approved @@@@@@@@@@@@@@@@@@@@@@')
+      } else {
+        loan.Status = 'Rejected'
+        console.log(
+          '--------------------- Loan Rejected------------------------'
         )
       }
 
-      // Get Information from Blockchain
-      let mrtg
-      // Decode JSON data
-      mrtg = Mortgage(JSON.parse(lendingBytes.toString()))
+      WriteToLendingLedger(ctx, loan, 'processLoan')
+    } else {
+      throw new Error(
+        '+~+~+~+~+No matching chain code function found-- create, initiate, close and record mortgage can only be invoked by chaincode instantiators which are Bank, Registry and Appraiser+~+~+~+~+~+~+~+~'
+      )
+    }
+    return
+  }
 
-      // update insurance  randomly generated betweenn 2500-5000
-      mrtg.Insurance = Random(InsuranceHigh, InsuranceLow)
-      mrtg.Status = 'InsuranceSet'
-      WriteToLendingLedger(ctx, mrtg, 'getInsuranceQuote')
+  /**
+   *
+   * initiateMortgage
+   *
+   * @param {Context} ctx
+   * @param {string} CustID
+   * @param {string} RealEstateID
+   * @returns
+   */
+  async initiateMortgage (ctx, CustID, RealEstateID) {
+    if (CheckProducer(ctx, BankMSPID)) {
+      let lendingKey = ctx.stub.createCompositeKey(PrefixLending, [
+        CustID,
+        RealEstateID
+      ])
+      let lendingBytes = await ctx.stub.getState(lendingKey)
+      if (!lendingBytes || lendingBytes.length === 0)
+        throw new Error(
+          'Loan on RealEstate ' +
+            RealEstateID +
+            ' by Customer ' +
+            CustID +
+            ' not found'
+        )
+
+      // Get Information from Blockchain
+      let loan
+      // Decode JSON data
+      loan = Loan(JSON.parse(lendingBytes.toString()))
+
+      // Check for status of Loan
+      if (loan.Status != 'Approved')
+        throw new Error('Loan Not Approved! Cannot Create Mortgage')
+
+      // Check for Registration
+      let callArgs = new Array()
+
+      callArgs[0] = Buffer.from(QueryRegistrationString)
+      callArgs[1] = Buffer.from(loan.RealEstateID)
+
+      let resBytes = await ctx.stub.invokeChaincode(
+        RegistrationChaincode,
+        callArgs,
+        RegistrationChannel
+      )
+
+      if (!resBytes || resBytes.length === 0) {
+        throw new Error(
+          'Registration RealEstateID ' +
+            RealEstateID +
+            ' not found. Create Registration first'
+        )
+      }
+
+      let reg = Registration(JSON.parse(resBytes.payload.toString()))
+
+      if (reg.Status === 'Approved')
+        throw new Error(
+          'Registration RealEstateID ' +
+            RealEstateID +
+            ' not found. Create Registration first'
+        )
+
+      loan.MortgageStatus = 'Pending'
+
+      WriteToLendingLedger(ctx, loan, 'initiateMortgage')
+    } else {
+      throw new Error(
+        '+~+~+~+~+No matching chain code function found-- create, initiate, close and record mortgage can only be invoked by chaincode instantiators which are Bank, Registry and Appraiser+~+~+~+~+~+~+~+~'
+      )
+    }
+    return
+  }
+
+  /**
+   *
+   * startMortgage
+   *
+   * updates the lending ledger
+   *
+   * @param {Context} ctx
+   * @param {string} CustID
+   * @param {string} RealEstateID
+   * @returns
+   */
+  async startMortgage (ctx, CustID, RealEstateID) {
+    if (CheckProducer(ctx, RevenueMSPID)) {
+      // Look for the serial number
+      let lendingKey = ctx.stub.createCompositeKey(PrefixLending, [
+        CustID,
+        RealEstateID
+      ])
+      let lendingBytes = await ctx.stub.getState(lendingKey)
+      if (!lendingBytes || lendingBytes.length === 0)
+        throw new Error(
+          'Loan on RealEstate ' +
+            RealEstateID +
+            ' by Customer ' +
+            CustID +
+            ' not found'
+        )
+
+      // Get Information from Blockchain
+      let loan
+      // Decode JSON data
+      loan = Loan(JSON.parse(lendingBytes.toString()))
+
+      loan.MortgageStatus = 'Inforced'
+
+      WriteToLendingLedger(ctx, loan, 'startMortgage')
     } else {
       throw new Error(
         '+~+~+~+~+No matching chain code function found-- create, initiate, close and record mortgage can only be invoked by chaincode instantiators which are Bank, Registry and Appraiser+~+~+~+~+~+~+~+~'
@@ -189,77 +456,26 @@ class LendingContract extends Contract {
         RealEstateID
       ])
       let lendingBytes = await ctx.stub.getState(lendingKey)
-      if (!lendingBytes || lendingBytes.length === 0) {
+      if (!lendingBytes || lendingBytes.length === 0)
         throw new Error(
-          'CustomerID ' +
-            CustID +
-            ', RealEstateID ' +
+          'Loan on RealEstate ' +
             RealEstateID +
-            ' not found '
+            ' by Customer ' +
+            CustID +
+            ' not found'
         )
-      }
 
       // Get Information from Blockchain
-      let mrtg
+      let loan
       // Decode JSON data
-      mrtg = Mortgage(JSON.parse(lendingBytes.toString()))
+      loan = Loan(JSON.parse(lendingBytes.toString()))
 
-      //first we need to invoke chanincode on books channel to get appraisal and title search results value of the house provided by Appraiser and Title company
-      let callArgs = new Array()
+      if (loan.MortgageStatus != 'Inforced')
+        throw new Error('Mortgage not inforced')
 
-      callArgs[0] = Buffer.from(QueryBooksString)
-      callArgs[1] = Buffer.from(mrtg.RealEstateID)
+      loan.MortgageStatus = 'Closed'
 
-      let res = await ctx.stub.invokeChaincode(
-        BooksChaincode,
-        callArgs,
-        BooksChannel
-      )
-      if (!res || res.length === 0) {
-        throw new Error('RealEstateID ' + RealEstateID + ' not found ')
-      }
-      let bks = Books(JSON.parse(res.payload.toString()))
-
-      // update status of the mortgage to funded if fico score, Insurance and appraisal meets the criteria
-      console.log(
-        '$^$^$^$^$^$^$^$^$^$^$^$^$^$^$^$^$ Trying to close mortgage loan\n',
-        'FicoScore=',
-        mrtg.Fico,
-        'Fico Threshold=',
-        FicoThreshold,
-        '\n',
-        'Insurance Quote=',
-        mrtg.Insurance,
-        'Insurance Threshold=',
-        InsuranceThreshold,
-        '\n',
-        'Loan Amount=',
-        mrtg.LoanAmount,
-        'Appraised value=',
-        bks.Appraisal,
-        '\n',
-        'Title Status=',
-        bks.TitleStatus,
-        '\n',
-        '$^$^$^$^$^$^$^$^$^$^$^$^$^$^$^$^$'
-      )
-      if (
-        mrtg.Fico > FicoThreshold &&
-        mrtg.Insurance > InsuranceThreshold &&
-        bks.Appraisal > mrtg.LoanAmount &&
-        bks.TitleStatus === true
-      ) {
-        mrtg.Status = 'Funded'
-        console.log('@@@@@@@@@@@@@@@@@@ Loan Funded @@@@@@@@@@@@@@@@@@@@@@')
-      } else {
-        mrtg.Status = 'Rejected'
-        console.log(
-          '--------------------- Loan Rejected------------------------'
-        )
-      }
-      //update lending ledger for appraisal with books appraisal
-      mrtg.Appraisal = bks.Appraisal
-      WriteToLendingLedger(ctx, mrtg, 'closeMortage')
+      WriteToLendingLedger(ctx, loan, 'closeMortage')
     } else {
       throw new Error(
         '+~+~+~+~+No matching chain code function found-- create, initiate, close and record mortgage can only be invoked by chaincode instantiators which are Bank, Registry and Appraiser+~+~+~+~+~+~+~+~'
@@ -267,6 +483,42 @@ class LendingContract extends Contract {
     }
 
     return
+  }
+
+  /**
+   *
+   * getMortgageStatus
+   *
+   * get mortgage Status
+   *
+   * @param {Context} ctx
+   * @param {string} CustID
+   * @param {string} RealEstateID
+   * @returns
+   */
+  async getMortgageStatus (ctx, CustID, RealEstateID) {
+    // Get Information from Blockchain
+    let mort = {}
+    if (CheckProducer(ctx, RevenueMSPID)) {
+      // Look for the serial number
+      let lendingKey = ctx.stub.createCompositeKey(PrefixLending, [
+        CustID,
+        RealEstateID
+      ])
+      let lendingBytes = await ctx.stub.getState(lendingKey)
+      if (lendingBytes && lendingBytes.length != 0)
+        // Decode JSON data
+        mort = Loan(JSON.parse(lendingBytes.toString()))
+
+      return JSON.stringify({
+        Loan: lendingBytes && lendingBytes.length != 0,
+        Status: mort.MortgageStatus
+      })
+    } else {
+      throw new Error(
+        '+~+~+~+~+No matching chain code function found-- create, initiate, close and record mortgage can only be invoked by chaincode instantiators which are Bank, Registry and Appraiser+~+~+~+~+~+~+~+~'
+      )
+    }
   }
 
   /**
@@ -313,7 +565,7 @@ class LendingContract extends Contract {
    *
    * queryAll
    *
-   * queryRecords, Lending or Books gives all stored keys in the  database- ledger needs to be passed in
+   * queryRecords, Lending or Loan gives all stored keys in the  database- ledger needs to be passed in
    *
    * @param {Context} ctx
    * @returns
@@ -337,66 +589,26 @@ class LendingContract extends Contract {
    * ledger needs to be passed in
    *
    * @param {Context} ctx
-   * @param {string} CustID
+   * @param {string} CustID,
    * @param {string} RealEstateID
    * @returns
    */
   async queryID (ctx, CustID, RealEstateID) {
-    if (typeof CustID === 'undefined') {
-      throw new Error('ID not defined')
-    } else if (typeof CustID != 'string') {
-      throw new Error('ID should be of type string')
-    }
-
     let key = ctx.stub.createCompositeKey(PrefixLending, [CustID, RealEstateID])
 
     let asBytes = await ctx.stub.getState(key)
 
     if (!asBytes || asBytes.length === 0) {
       throw new Error(
-        'CustomerID ' +
-          CustID +
-          ', RealEstateID ' +
+        'Loan on RealEstate ' +
           RealEstateID +
-          ' not found '
+          ' by Customer ' +
+          CustID +
+          ' not found'
       )
     }
 
     return asBytes.toString()
-  }
-
-  /**
-   *
-   * queryLending
-   *
-   * @param {Context} ctx
-   * @param {string} CustID
-   * @returns
-   */
-  async queryLending (ctx, CustID, RealEstateID) {
-    // Look for the serial number
-    let lendingKey = ctx.stub.createCompositeKey(PrefixLending, [
-      CustID,
-      RealEstateID
-    ])
-    let lendingBytes = await ctx.stub.getState(lendingKey)
-    if (!lendingBytes || lendingBytes.length === 0) {
-      throw new Error(
-        'CustomerID ' +
-          CustID +
-          ', RealEstateID ' +
-          RealEstateID +
-          ' not found '
-      )
-    } else {
-      // Get Information from Blockchain
-      let mrtg
-      // Decode JSON data
-      mrtg = JSON.parse(lendingBytes.toString())
-
-      WriteToLendingLedger(ctx, mrtg, QueryLendingString) //log it for audit
-      return lendingBytes.toString()
-    }
   }
 }
 module.exports = LendingContract

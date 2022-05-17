@@ -36,7 +36,7 @@ function random (max, min) {
  *
  * checks whether the Transaction initiator is producer
  *
- * @param {Context} ctx
+ * @param {LendingContext} ctx
  * @param {string} ID
  * @returns
  */
@@ -44,7 +44,7 @@ function checkProducer (ctx, ID) {
   return ctx.clientIdentity.getMSPID() === ID
 }
 
-// write to different ledgers- records, books and lending
+// write to different ledgers- records, registration and lending
 
 /**
  *
@@ -52,41 +52,34 @@ function checkProducer (ctx, ID) {
  *
  * wrting to Lending Ledger
  *
- * @param {Context} ctx
- * @param {JSON} mrtg
+ * @param {LendingContext} ctx
+ * @param {JSON} data
  * @param {string} txnType
  * @returns
  */
-function writeToLendingLedger (ctx, mrtg, txnType) {
-  if (txnType != 'initiateMortgage') {
+function writeToLendingLedger (ctx, data, txnType) {
+  if (txnType != 'initiateLoan') {
     //add TransactionHistory
     //first check if map has been initialized
-    let history = mrtg.TransactionHistory['initiateMortgage']
+    let history = data.TransactionHistory['initiateLoan']
     if (typeof history != 'undefined') {
-      mrtg.TransactionHistory[txnType] = getTimeNow()
+      data.TransactionHistory[txnType] = getTimeNow()
     } else {
-      throw new Error('......Mortgage Transaction history is not initialized')
+      throw new Error('......Lending Transaction history is not initialized')
     }
   }
 
-  console.timeLog(
-    '++++++++++++++ writing to lending ledger Mortgage Entry=\n ',
-    txnType,
-    ' \n',
-    mrtg
-  )
-
   // Encode JSON data
-  mrtgAsBytes = Buffer.from(JSON.stringify(mrtg))
+  dataAsBytes = Buffer.from(JSON.stringify(data))
 
   // Create Key
-  let mortgageKey = ctx.stub.createCompositeKey(PrefixLending, [
-    mrtg.CustID,
-    mrtg.RealEstateID
+  let dataKey = ctx.stub.createCompositeKey(PrefixLending, [
+    data.CustID,
+    data.RealEstateID
   ])
 
   // Store in the Blockchain
-  ctx.stub.putState(mortgageKey, mrtgAsBytes)
+  ctx.stub.putState(dataKey, dataAsBytes)
   return
 }
 
