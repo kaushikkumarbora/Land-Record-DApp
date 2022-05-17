@@ -50,15 +50,9 @@ function writeToRegistrationLedger (ctx, regs, txnType) {
     if (typeof history != 'undefined') {
       regs.TransactionHistory[txnType] = getTimeNow()
     } else {
-      throw new Error('......Books Transaction history is not initialized')
+      throw new Error('......Registration Transaction history is not initialized')
     }
   }
-  console.timeLog(
-    '++++++++++++++ writing to registration ledger Books Entry=\n ',
-    txnType,
-    ' \n',
-    regs
-  )
 
   // Encode JSON data
   let regisAsBytes = Buffer.from(JSON.stringify(regs))

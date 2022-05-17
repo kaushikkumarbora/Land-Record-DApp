@@ -7,11 +7,16 @@ const {
   WriteToRegistrationLedger,
   GetAllResults
 } = require('./utils')
-const { Registration } = require('./data')
+const { Registration, Loan } = require('./data')
 const {
   QueryRealEstateString,
   RecordsChaincode,
-  RecordsChannel
+  RecordsChannel,
+  QueryLendingString,
+  LendingChaincode,
+  LendingChannel,
+  QueryRecordPurchase,
+  QueryStartMortgage
 } = require('./const')
 
 class RegistrationContract extends Contract {
@@ -44,7 +49,7 @@ class RegistrationContract extends Contract {
    *
    * @param {Context} ctx
    * @param {string} RealEstateID
-   * @param {string} Amount
+   * @param {number} Amount
    * @param {string} Covenants
    * @param {string} BuyerAadhar
    * @param {string} SellerAadhar
@@ -71,7 +76,7 @@ class RegistrationContract extends Contract {
       if (regBytes && regBytes.length != 0) {
         // Decode JSON data
         reg = Registration(JSON.parse(regBytes.toString()))
-        if (reg.Status != 'Issued')
+        if (reg.Status != 'Approved')
           throw new Error('Previous Registration Under Process')
         else if (reg.BuyerAadhar != SellerAadhar)
           throw new Error(
@@ -85,22 +90,42 @@ class RegistrationContract extends Contract {
       callArgs[0] = Buffer.from(QueryRealEstateString)
       callArgs[1] = Buffer.from(RealEstateID)
 
-      let res = await ctx.stub.invokeChaincode(
+      let resBytes = await ctx.stub.invokeChaincode(
         RecordsChaincode,
         callArgs,
         RecordsChannel
       )
-      if (!res || res.length === 0) {
+      if (!resBytes || resBytes.length === 0) {
         throw new Error('RealEstateID ' + RealEstateID + ' not found ')
       }
-      if (res != SellerAadhar)
+
+      let owner = resBytes.payload.toString()
+      if (owner != SellerAadhar)
         throw new Error(
-          'RealEstate with ID' +
+          'RealEstate with ID ' +
             RealEstateID +
-            'does not belong to Seller according to Registry'
+            ' does not belong to Seller according to Registry'
         )
 
-      // Check Mortgage TODO
+      // Check Mortgage
+      callArgs = new Array()
+
+      callArgs[0] = Buffer.from(QueryLendingString)
+      callArgs[1] = Buffer.from(SellerAadhar)
+      callArgs[2] = Buffer.from(RealEstateID)
+
+      resBytes = await ctx.stub.invokeChaincode(
+        LendingChaincode,
+        callArgs,
+        LendingChannel
+      )
+      if (resBytes && resBytes.length != 0) {
+        resBytes = JSON.parse(resBytes.payload.toString())
+        if (resBytes.Status === 'Inforced')
+          throw new Error(
+            'RealEstate with ID ' + RealEstateID + ' is in Mortgage'
+          )
+      }
 
       // A newly created property is available
       let regInfo = {}
@@ -165,10 +190,10 @@ class RegistrationContract extends Contract {
    * @param {Context} ctx
    * @param {string} RealEstateID
    * @param {string} StampID
-   * @param {string} StampDuty
-   * @param {string} StampCharges
-   * @param {string} RegistrationFee
-   * @param {string} UserFee
+   * @param {number} StampDuty
+   * @param {number} StampCharges
+   * @param {number} RegistrationFee
+   * @param {number} UserFee
    * @returns
    */
   async setDnC (
@@ -242,8 +267,8 @@ class RegistrationContract extends Contract {
       let reg
       // Decode JSON data
       reg = Registration(JSON.parse(regBytes.toString()))
-      reg.BuyerSignature = '' //TODO
-      reg.SellerSignature = '' //TODO
+      if (reg.BuyerSignature === '') reg.BuyerSignature = Signature //TODO
+      if (reg.SellerSignature === '') reg.SellerSignature = Signature //TODO
 
       WriteToRegistrationLedger(ctx, reg, 'Seller/Buyer Sign')
     } else {
@@ -280,7 +305,7 @@ class RegistrationContract extends Contract {
       let reg
       // Decode JSON data
       reg = Registration(JSON.parse(regBytes.toString()))
-      reg.WitnessSignature = '' //TODO
+      reg.WitnessSignature = Signature //TODO
 
       WriteToRegistrationLedger(ctx, reg, 'Witness Signature')
     } else {
@@ -317,10 +342,12 @@ class RegistrationContract extends Contract {
       // Decode JSON data
       reg = Registration(JSON.parse(regBytes.toString()))
 
+      //Check Signatures TODO
       if (
         reg.BuyerSignature != '' &&
         reg.SellerSignature != '' &&
-        reg.WitnessSignature != ''
+        reg.WitnessSignature != '' &&
+        reg.StampID != ''
       )
         reg.Status = 'Submitted'
       else throw new Error('Signatures Not Completed')
@@ -346,6 +373,7 @@ class RegistrationContract extends Contract {
    */
   async approveDeed (ctx, RealEstateID) {
     if (CheckProducer(ctx, RevenueMSPID)) {
+      let callArgs = new Array()
       let regKey = ctx.stub.createCompositeKey(PrefixRegistration, [
         RealEstateID
       ])
@@ -363,7 +391,48 @@ class RegistrationContract extends Contract {
       if (reg.Status === 'Submitted') reg.Status = 'Approved'
       else throw new Error('Deed Not Submitted')
 
+      // Check Mortgage
+      callArgs[0] = Buffer.from(QueryLendingString)
+      callArgs[1] = Buffer.from(reg.BuyerAadhar)
+      callArgs[2] = Buffer.from(reg.RealEstateID)
+
+      let resBytes = await ctx.stub.invokeChaincode(
+        LendingChaincode,
+        callArgs,
+        LendingChannel
+      )
+
+      let res = JSON.parse(resBytes.payload.toString())
+
+      // If Mortgage Exists then Start the Mortgage
+      if (res.Loan) {
+        if (res.Status === 'Inforced') {
+          throw new Error('Mortgage Already Inforced! Wrong flow')
+        } else if (res.Status === '') {
+          throw new Error('Initialize Mortgage First')
+        } else if (res.Status === 'Pending') {
+          // start Mortgage
+          callArgs[0] = Buffer.from(QueryStartMortgage)
+          callArgs[1] = Buffer.from(reg.BuyerAadhar)
+          callArgs[0] = Buffer.from(reg.RealEstateID)
+
+          await ctx.stub.invokeChaincode(
+            LendingChaincode,
+            callArgs,
+            LendingChannel
+          )
+        }
+      }
+
       WriteToRegistrationLedger(ctx, reg, 'Approve')
+
+      // recordPurchase
+      callArgs = new Array()
+      callArgs[0] = Buffer.from(QueryRecordPurchase)
+      callArgs[1] = Buffer.from(RealEstateID)
+      callArgs[2] = Buffer.from(reg.BuyerAadhar)
+
+      await ctx.stub.invokeChaincode(RecordsChaincode, callArgs, RecordsChannel)
     } else {
       throw new Error(
         '+~+~+~+~+No matching chain code function found-- create, initiate, close and record mortgage can only be invoked by chaincode instantiators which are Bank, Registry and Appraiser+~+~+~+~+~+~+~+~'
@@ -412,7 +481,7 @@ class RegistrationContract extends Contract {
    *
    * queryAll
    *
-   * queryRecords, Lending or Registration gives all stored keys in the  database- ledger needs to be passed in
+   * queryRecords, Registration gives all stored keys in the  database- ledger needs to be passed in
    *
    * @param {Context} ctx
    * @returns
