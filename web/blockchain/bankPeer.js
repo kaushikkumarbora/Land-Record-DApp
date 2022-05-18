@@ -3,28 +3,7 @@
 import config from './config'
 import { bankClient as client, isReady } from './setup'
 
-export async function getMortgages (status) {
-  if (!isReady()) {
-    return
-  }
-  try {
-    if (typeof status != 'string') {
-      status = ''
-    }
-    const mortgages = await query('getMortgage', status)
-    return mortgages
-  } catch (e) {
-    let errMessage
-    if (status) {
-      errMessage = `Error getting mortgages with status ${status}: ${e.message}`
-    } else {
-      errMessage = `Error getting all mortgages: ${e.message}`
-    }
-    throw new Error(errMessage, e)
-  }
-}
-
-export async function initiateMortgage (CustID, RealEstateID, LoanAmount) {
+export async function initiateLoan (CustID, RealEstateID, LoanAmount) {
   if (!isReady()) {
     return
   }
@@ -36,16 +15,49 @@ export async function initiateMortgage (CustID, RealEstateID, LoanAmount) {
     ) {
       throw new Error('Error give correct parameters')
     }
-    const mortgages = await invoke(
-      'initiateMortgage',
-      CustID,
-      RealEstateID,
-      LoanAmount
-    )
-    return mortgages
+    const loan = await invoke('initiateLoan', CustID, RealEstateID, LoanAmount)
+    return loan
   } catch (e) {
     let errMessage
-    errMessage = `Error initiating mortgages: ${e.message}`
+    errMessage = `Error initiating Loan: ${e.message}`
+    throw new Error(errMessage, e)
+  }
+}
+
+export async function processLoan (CustID, RealEstateID, Approve) {
+  if (!isReady()) {
+    return
+  }
+  try {
+    if (
+      typeof RealEstateID != 'string' ||
+      typeof CustID != 'string' ||
+      typeof Approve != 'boolean'
+    ) {
+      throw new Error('Error give correct parameters')
+    }
+    const loan = await invoke('processLoan', CustID, RealEstateID, Approve)
+    return loan
+  } catch (e) {
+    let errMessage
+    errMessage = `Error initiating Loan: ${e.message}`
+    throw new Error(errMessage, e)
+  }
+}
+
+export async function initiateMortgage (CustID, RealEstateID) {
+  if (!isReady()) {
+    return
+  }
+  try {
+    if (typeof RealEstateID != 'string' || typeof CustID != 'string') {
+      throw new Error('Error give correct parameters')
+    }
+    const mortgage = await invoke('initiateMortgage', CustID, RealEstateID)
+    return mortgage
+  } catch (e) {
+    let errMessage
+    errMessage = `Error initiating Mortgage: ${e.message}`
     throw new Error(errMessage, e)
   }
 }
@@ -58,8 +70,8 @@ export async function closeMortgage (CustID, RealEstateID) {
     if (typeof RealEstateID != 'string' || typeof CustID != 'string') {
       throw new Error('Error give correct parameters')
     }
-    const mortgages = await invoke('closeMortgage', CustID, RealEstateID)
-    return mortgages
+    const mortgage = await invoke('closeMortgage', CustID, RealEstateID)
+    return mortgage
   } catch (e) {
     let errMessage
     errMessage = `Error initiating mortgages: ${e.message}`

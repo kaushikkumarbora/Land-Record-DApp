@@ -2,7 +2,7 @@
 
 import config from './config'
 import {
-  auditBooksClient as booksclient,
+  auditRegistrationClient as registrationclient,
   auditLendingClient as lendingclient,
   auditRecordsClient as recordsclient,
   isReady
@@ -40,20 +40,20 @@ export async function queryAllRecords () {
   }
 }
 
-export async function queryAllBooks () {
+export async function queryAllRegistration () {
   if (!isReady()) {
     return
   }
   try {
-    const books = await booksclient.query(config.booksChaincodeId, 'queryAll')
-    return books
+    const registration = await registrationclient.query(config.registrationChaincodeId, 'queryAll')
+    return registration
   } catch (e) {
-    let errMessage = `Error getting all Book Records: ${e.message}`
+    let errMessage = `Error getting all Registration Records: ${e.message}`
     throw new Error(errMessage, e)
   }
 }
 
-export async function getBookHistory (RealEstateID) {
+export async function getRegistrationHistory (RealEstateID) {
   if (!isReady()) {
     return
   }
@@ -61,15 +61,15 @@ export async function getBookHistory (RealEstateID) {
     if (typeof RealEstateID != 'string') {
       throw new Error('Error give realestateID')
     }
-    const appraisals = await booksclient.query(
-      config.booksChaincodeId,
+    const appraisals = await registrationclient.query(
+      config.registrationChaincodeId,
       'queryHistory',
       RealEstateID
     )
     return appraisals
   } catch (e) {
     let errMessage
-    errMessage = `Error getting books history for Real Estate with ID ${RealEstateID}: ${e.message}`
+    errMessage = `Error getting registration history for Real Estate with ID ${RealEstateID}: ${e.message}`
     throw new Error(errMessage, e)
   }
 }

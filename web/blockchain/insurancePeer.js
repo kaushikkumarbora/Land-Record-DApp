@@ -3,36 +3,37 @@
 import config from './config'
 import { insuranceClient as client, isReady } from './setup'
 
-export async function getInsurances (status) {
+export async function setInsurance (
+  CustID,
+  RealEstateID,
+  ProviderID,
+  Premium,
+  Summoned,
+  Period
+) {
   if (!isReady()) {
     return
   }
   try {
-    if (typeof status != 'string') {
-      status = ''
-    }
-    const insurance = await query('getInsurance', status)
-    return insurance
-  } catch (e) {
-    let errMessage
-    if (status) {
-      errMessage = `Error getting Insurances with status ${status}: ${e.message}`
-    } else {
-      errMessage = `Error getting all Insurances: ${e.message}`
-    }
-    throw new Error(errMessage, e)
-  }
-}
-
-export async function setInsurance (CustID, RealEstateID) {
-  if (!isReady()) {
-    return
-  }
-  try {
-    if (typeof RealEstateID != 'string' || typeof CustID != 'string') {
+    if (
+      typeof RealEstateID != 'string' ||
+      typeof CustID != 'string' ||
+      typeof ProviderID != 'string' ||
+      typeof Premium != 'number' ||
+      typeof Summoned != 'number' ||
+      typeof Period != 'number'
+    ) {
       throw new Error('Error give realestateID, CustID')
     }
-    const insurance = await invoke('getInsuranceQuote', CustID, RealEstateID)
+    const insurance = await invoke(
+      'getInsuranceQuote',
+      CustID,
+      RealEstateID,
+      ProviderID,
+      Premium,
+      Summoned,
+      Period
+    )
     return insurance
   } catch (e) {
     let errMessage
@@ -49,8 +50,8 @@ export async function queryString (queryString) {
     if (typeof queryString != 'string') {
       throw new Error('Error give queryString')
     }
-    const mortgages = await query('getQueryResultForQueryString', queryString)
-    return mortgages
+    const loans = await query('getQueryResultForQueryString', queryString)
+    return loans
   } catch (e) {
     let errMessage
     errMessage = `Error executing querystring: ${queryString}: ${e.message}`

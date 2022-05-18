@@ -42,7 +42,7 @@ router.get('/api/records', async (req, res) => {
   let query = {}
 
   query.selector = {}
-  query.selector.Owner = owner
+  query.selector.OwnerAadhar = owner
 
   try {
     let records = await RegistryPeer.queryString(JSON.stringify(query))
@@ -66,7 +66,7 @@ router.get('/api/records', async (req, res) => {
  *        description: The Real Estate Details
  *        required: true
  *        schema:
- *          $ref: '#/definitions/RealEstate'
+ *          $ref: '#/definitions/InitiateRealEstate'
  *      responses:
  *        '200':
  *          description: Successfully created Real Estate Entry
@@ -76,13 +76,25 @@ router.get('/api/records', async (req, res) => {
  *          description: Internal Error
  */
 router.post('/api/create-real-estate', async (req, res) => {
-  let { RealEstateID, Address, Value, Details, Owner } = req.body
+  let {
+    RealEstateID,
+    Address,
+    Latitude,
+    Longitude,
+    Length,
+    Width,
+    TotalArea,
+    OwnerAadhar
+  } = req.body
   if (
     typeof RealEstateID != 'string' ||
     typeof Address != 'string' ||
-    typeof Value != 'number' ||
-    typeof Details != 'string' ||
-    typeof Owner != 'string'
+    typeof Latitude != 'number' ||
+    typeof Longitude != 'number' ||
+    typeof Length != 'number' ||
+    typeof Width != 'number' ||
+    typeof TotalArea != 'number' ||
+    typeof OwnerAadhar != 'string'
   ) {
     res.status(400).json({ error: 'Invalid request.' })
     return
@@ -92,9 +104,12 @@ router.post('/api/create-real-estate', async (req, res) => {
     const success = await RegistryPeer.createRealEstate(
       RealEstateID,
       Address,
-      Value,
-      Details,
-      Owner
+      Latitude,
+      Longitude,
+      Length,
+      Width,
+      TotalArea,
+      OwnerAadhar
     )
     res.json({ success })
   } catch (e) {
@@ -116,7 +131,7 @@ router.post('/api/create-real-estate', async (req, res) => {
  *        description: The Real Estate ID against which the Land record exists.
  *        required: true
  *        schema:
- *          $ref: '#/definitions/RecordsKey'
+ *          $ref: '#/definitions/RecordPurchase'
  *      responses:
  *        '200':
  *          description: Successfully purchased real estate
@@ -126,14 +141,14 @@ router.post('/api/create-real-estate', async (req, res) => {
  *          description: Internal Error
  */
 router.put('/api/record-purchase', async (req, res) => {
-  let { RealEstateID } = req.body
-  if (typeof RealEstateID != 'string') {
+  let { RealEstateID, NewOwner } = req.body
+  if (typeof RealEstateID != 'string' || typeof NewOwner != 'string') {
     res.status(400).json({ error: 'Invalid request.' })
     return
   }
 
   try {
-    const success = await RegistryPeer.recordPurchase(RealEstateID)
+    const success = await RegistryPeer.recordPurchase(RealEstateID, NewOwner)
     res.json({ success })
   } catch (e) {
     res.status(500).json({ error: 'Error accessing blockchain. ' + e })

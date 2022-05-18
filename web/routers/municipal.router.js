@@ -1,52 +1,45 @@
 import express from 'express'
 
-import * as FicoPeer from '../blockchain/ficoPeer'
+import * as MinucipalPeer from '../blockchain/municipalPeer'
 
 const router = express.Router()
 
 // Render main page
 router.get('/', (req, res) => {
-  res.render('fico-main', { ficoActive: true })
+  res.render('municipal-main', { municipalActive: true })
 })
 
-// fico Processing
+// registration Processing
 /**
  * @swagger
- * /fico/api/ficos:
+ * /municipal/api/registrations:
  *    get:
  *      tags:
- *      - 'fico'
- *      summary: Get Ficos
- *      description: Used to get all lending states of certain status
+ *      - 'revenue'
+ *      summary: Get Deed Registration Records
+ *      description: Used to get all Deed records
  *      parameters:
- *      - name: status
+ *      - name: permission
  *        in: query
- *        description: Status of Loan.
+ *        description: Status of Permission.
  *        required: true
- *        type: array
- *        items:
- *          type: string
- *          enum:
- *          - "Any"
- *          - "Pending"
- *          default: "Any"
- *        collectionFormat: multi
- *      - name: CustID
+ *        type: boolean
+ *      - name: RealEstateID
  *        in: query
- *        description: ID of Customer.
+ *        description: ID of RealEstate.
  *        required: false
  *        type: string
  *      responses:
  *        '200':
- *          description: Successfully queried Ficos
+ *          description: Successfully queried Deed records
  *        '400':
  *          description: Bad Request
  *        '500':
  *          description: Internal Error
  */
- router.get('/api/ficos', async (req, res) => {
-  let { status, CustID } = req.body // Pending, FicoSet, InsuranceSet, Funded, Rejected
-  if (typeof status != 'string') {
+router.get('/api/registrations', async (req, res) => {
+  let { permission, RealEstateID } = req.query
+  if (typeof permission != 'boolean') {
     res.status(400).json({ error: 'Invalid request.' })
     return
   }
@@ -54,49 +47,50 @@ router.get('/', (req, res) => {
   let query = {}
 
   query.selector = {}
-  if (status != 'Any' && status != '') query.selector.Status = status
-  if (typeof CustID === 'string') query.selector.CustID = CustID
+  query.selector.Permission = permission
+  if (typeof RealEstateID === 'string')
+    query.selector.RealEstateID = RealEstateID
 
   try {
-    let loans = await FicoPeer.queryString(JSON.stringify(query))
-    res.json(loans)
+    let deeds = await RevenuePeer.queryString(JSON.stringify(query))
+    res.json(deeds)
   } catch (e) {
-    res.status(500).json({ error: 'Error accessing blockchain. ' + e })
+    res.json({ error: 'Error accessing blockchain. ' + e })
   }
 })
 
 /**
  * @swagger
- * /fico/api/set-fico:
+ * /municipal/api/set-permission:
  *    put:
  *      tags:
- *      - 'fico'
- *      summary: Set Fico Score
- *      description: The Fico Score of the customer is set by the Credit Bureau
+ *      - 'municipal'
+ *      summary: Set Permissioin to registrations
+ *      description: Permission has to given by the municipal before trade
  *      parameters:
  *      - name: body
  *        in: body
- *        description: The Real Estate ID and Cust ID against which the fico score is to be set.
+ *        description: The Registration Key
  *        required: true
  *        schema:
- *          $ref: '#/definitions/LoanKey'
+ *          $ref: '#/definitions/RegistrationKey'
  *      responses:
  *        '200':
- *          description: Successfully set fico score
+ *          description: Successfully given Permission
  *        '400':
  *          description: Bad Request
  *        '500':
  *          description: Internal Error
  */
-router.put('/api/set-fico', async (req, res) => {
-  let { CustID, RealEstateID } = req.query
-  if (typeof RealEstateID != 'string' || typeof CustID != 'string') {
+router.put('/api/set-permission', async (req, res) => {
+  let { RealEstateID } = req.body
+  if (typeof RealEstateID != 'string') {
     res.status(400).json({ error: 'Invalid request.' })
     return
   }
 
   try {
-    const success = await FicoPeer.setFico(CustID, RealEstateID)
+    const success = await MinucipalPeer.setPermission(RealEstateID)
     res.json({ success })
   } catch (e) {
     res.status(500).json({ error: 'Error accessing blockchain. ' + e })
@@ -105,12 +99,12 @@ router.put('/api/set-fico', async (req, res) => {
 
 /**
  * @swagger
- * /fico/api/blocks:
+ * /municipal/api/blocks:
  *    get:
  *      tags:
- *      - 'fico'
- *      summary: Get Blocks of Lending chain
- *      description: Get N Blocks of the Lending Ledgers
+ *      - 'municipal'
+ *      summary: Get Blocks of Registration chain
+ *      description: Get N Blocks of the Registration Ledgers
  *      parameters:
  *      - name: blocks
  *        in: query
@@ -132,7 +126,7 @@ router.get('/api/blocks', async (req, res) => {
     res.status(400).json({ error: 'Invalid request' })
   }
   try {
-    // const blocks = await FicoPeer.getBlocks(noOfLastBlocks)
+    // const blocks = await MinucipalPeer.getBlocks(noOfLastBlocks)
     res.json()
   } catch (e) {
     res.status(500).json({ error: 'Error accessing blockchain. ' + e })
@@ -141,8 +135,8 @@ router.get('/api/blocks', async (req, res) => {
 
 // Otherwise redirect to the main page
 router.get('*', (req, res) => {
-  res.render('fico', {
-    ficoActive: true,
+  res.render('municipal', {
+    municipalActive: true,
     selfServiceActive: req.originalUrl.includes('self-service'),
     claimProcessingActive: req.originalUrl.includes('claim-processing'),
     contractManagementActive: req.originalUrl.includes('contract-management')

@@ -3,27 +3,6 @@
 import config from './config'
 import { ficoClient as client, isReady } from './setup'
 
-export async function getFicos (status) {
-  if (!isReady()) {
-    return
-  }
-  try {
-    if (typeof status != 'string') {
-      status = ''
-    }
-    const fico = await query('getFico', status)
-    return fico
-  } catch (e) {
-    let errMessage
-    if (status) {
-      errMessage = `Error getting ficos with status ${status}: ${e.message}`
-    } else {
-      errMessage = `Error getting all ficos: ${e.message}`
-    }
-    throw new Error(errMessage, e)
-  }
-}
-
 export async function setFico (CustID, RealEstateID) {
   if (!isReady()) {
     return
@@ -49,8 +28,8 @@ export async function queryString (queryString) {
     if (typeof queryString != 'string') {
       throw new Error('Error give queryString')
     }
-    const mortgages = await query('getQueryResultForQueryString', queryString)
-    return mortgages
+    const loans = await query('getQueryResultForQueryString', queryString)
+    return loans
   } catch (e) {
     let errMessage
     errMessage = `Error executing querystring: ${queryString}: ${e.message}`

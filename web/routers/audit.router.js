@@ -57,22 +57,22 @@ router.get('/api/query-all-records', async (req, res) => {
 
 /**
  * @swagger
- * /audit/api/query-all-books:
+ * /audit/api/query-all-registration:
  *    get:
  *      tags:
  *      - 'audit'
- *      summary: Get Book States
- *      description: Used to get all Book states
+ *      summary: Get Registration States
+ *      description: Used to get all Registration states
  *      responses:
  *        '200':
- *          description: Successfully queried book records
+ *          description: Successfully queried registration records
  *        '500':
  *          description: Internal Error
  */
-router.get('/api/query-all-books', async (req, res) => {
+router.get('/api/query-all-registration', async (req, res) => {
   try {
-    let books = await AuditPeer.queryAllBooks()
-    res.json(books)
+    let registration = await AuditPeer.queryAllRegistration()
+    res.json(registration)
   } catch (e) {
     res.status(500).json({ error: 'Error accessing blockchain. ' + e })
   }
@@ -159,12 +159,12 @@ router.get('/api/query-record-history', async (req, res) => {
 
 /**
  * @swagger
- * /audit/api/query-book-history:
+ * /audit/api/query-registration-history:
  *    get:
  *      tags:
  *      - 'audit'
- *      summary: Get Book History
- *      description: Used to get all Book history
+ *      summary: Get Registration History
+ *      description: Used to get all Registration history
  *      parameters:
  *      - name: RealEstateID
  *        in: query
@@ -173,13 +173,13 @@ router.get('/api/query-record-history', async (req, res) => {
  *        type: string
  *      responses:
  *        '200':
- *          description: Successfully queried book record history
+ *          description: Successfully queried registration record history
  *        '400':
  *          description: Bad Request
  *        '500':
  *          description: Internal Error
  */
-router.get('/api/query-book-history', async (req, res) => {
+router.get('/api/query-registration-history', async (req, res) => {
   let { RealEstateID } = req.query
   if (typeof RealEstateID != 'string') {
     res.status(400).json({ error: 'Invalid request.' })
@@ -187,8 +187,8 @@ router.get('/api/query-book-history', async (req, res) => {
   }
 
   try {
-    let books = await AuditPeer.getBookHistory(RealEstateID)
-    res.json(books)
+    let registration = await AuditPeer.getRegistrationHistory(RealEstateID)
+    res.json(registration)
   } catch (e) {
     res.status(500).json({ error: 'Error accessing blockchain. ' + e })
   }

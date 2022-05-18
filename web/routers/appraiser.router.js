@@ -21,17 +21,19 @@ router.get('/', (req, res) => {
  *      parameters:
  *      - name: status
  *        in: query
- *        description: Status of Appraisal. Keep blank for all.
+ *        description: Status of Loan.
  *        required: true
- *        type: boolean
- *      - name: appraised
+ *        type: array
+ *        items:
+ *          type: string
+ *          enum:
+ *          - "Any"
+ *          - "InsuranceSet"
+ *          default: "Any"
+ *        collectionFormat: multi
+ *      - name: CustID
  *        in: query
- *        description: Has appraisal amount been set?
- *        required: false
- *        type: boolean
- *      - name: RealEstateID
- *        in: query
- *        description: RealEstateID
+ *        description: ID of Customer.
  *        required: false
  *        type: string
  *      responses:
@@ -41,8 +43,8 @@ router.get('/', (req, res) => {
  *          description: Internal Error
  */
 router.get('/api/appraisals', async (req, res) => {
-  let { status, appraised, RealEstateID } = req.query // Appraiser, NewTitleStatus
-  if (typeof status != 'boolean') {
+  let { status, CustID } = req.query
+  if (typeof status != 'string') {
     res.status(400).json({ error: 'Invalid request.' })
     return
   }
@@ -50,12 +52,8 @@ router.get('/api/appraisals', async (req, res) => {
   let query = {}
 
   query.selector = {}
-  query.selector.Status = status
-  if (typeof appraised === 'boolean') {
-  }
-  if (typeof RealEstateID === 'string')
-    query.selector.RealEstateID = RealEstateID
-  // query.selector. TODO
+  if (status != 'Any' && status != '') query.selector.Status = status
+  if (typeof CustID === 'string') query.selector.CustID = CustID
 
   try {
     let appraisals = await AppraiserPeer.queryString(JSON.stringify(query))
@@ -67,57 +65,19 @@ router.get('/api/appraisals', async (req, res) => {
 
 /**
  * @swagger
- * /appraiser/api/initiate-book:
- *    post:
- *      tags:
- *      - 'appraiser'
- *      summary: Create Book Record
- *      description: A Book has to be initiated to appraise the loan amount
- *      parameters:
- *      - name: body
- *        in: body
- *        description: The ID of Real Estate against which the Book record is to be created.
- *        required: true
- *        schema:
- *          $ref: '#/definitions/RecordsKey'
- *      responses:
- *        '200':
- *          description: Successfully initiated Book
- *        '400':
- *          description: Bad Request
- *        '500':
- *          description: Internal Error
- */
-router.post('/api/initiate-book', async (req, res) => {
-  let { RealEstateID } = req.body
-  if (typeof RealEstateID != 'string') {
-    res.status(400).json({ error: 'Invalid request.' })
-    return
-  }
-
-  try {
-    const success = await AppraiserPeer.initiateBook(RealEstateID)
-    res.json({ success })
-  } catch (e) {
-    res.status(500).json({ error: 'Error accessing blockchain. ' + e })
-  }
-})
-
-/**
- * @swagger
  * /appraiser/api/process-appraisal:
  *    put:
  *      tags:
  *      - 'appraiser'
- *      summary: Process Appraisal in Book Record
- *      description: After some info about the Insurance, Fico Scores, Loan Amount and some work by Title Orgs, the Appraisal is processed
+ *      summary: Process Appraisal
+ *      description: After some info about the Insurance, Fico Scores the Appraisal is processed
  *      parameters:
  *      - name: body
  *        in: body
- *        description: The ID of Real Estate against which the Book record is to be appraised.
+ *        description: The Appraisal Details
  *        required: true
  *        schema:
- *          $ref: '#/definitions/RecordsKey'
+ *          $ref: '#/definitions/GetAppraisal'
  *      responses:
  *        '200':
  *          description: Successfully processed appraisal
@@ -127,14 +87,22 @@ router.post('/api/initiate-book', async (req, res) => {
  *          description: Internal Error
  */
 router.put('/api/process-appraisal', async (req, res) => {
-  let { RealEstateID } = req.body
-  if (typeof RealEstateID != 'string') {
+  let { CustID, RealEstateID, AppraisalAmount } = req.body
+  if (
+    typeof RealEstateID != 'string' ||
+    typeof CustID != 'string' ||
+    typeof AppraisalAmount != 'number'
+  ) {
     res.status(400).json({ error: 'Invalid request.' })
     return
   }
 
   try {
-    const success = await AppraiserPeer.setAppraisals(RealEstateID)
+    const success = await AppraiserPeer.setAppraisals(
+      CustID,
+      RealEstateID,
+      AppraisalAmount
+    )
     res.json({ success })
   } catch (e) {
     res.status(500).json({ error: 'Error accessing blockchain. ' + e })
@@ -148,7 +116,7 @@ router.put('/api/process-appraisal', async (req, res) => {
  *      tags:
  *      - 'appraiser'
  *      summary: Get Blocks
- *      description: Get N Blocks of the Books Ledger
+ *      description: Get N Blocks of the Registration Ledger
  *      parameters:
  *      - name: blocks
  *        in: query
