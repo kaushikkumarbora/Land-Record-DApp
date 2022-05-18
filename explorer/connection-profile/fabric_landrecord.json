@@ -24,29 +24,30 @@
 				"bank-peer": {},
 				"insurance-peer": {},
 				"registry-peer": {},
-				"title-peer": {},
+				"municipal-peer": {},
+				"revenue-peer": {},
 				"appraiser-peer": {},
-				"audit-peer": {},
-				"fico-peer": {}
+				"audit-peer": {}
 			}
 		},
 		"lending": {
 			"peers": {
 				"bank-peer": {},
 				"insurance-peer": {},
-				"title-peer": {},
 				"audit-peer": {},
-				"fico-peer": {}
+				"fico-peer": {},
+				"appraiser-peer": {},
+				"revenue-peer": {},
+				"registry-peer": {}
 			}
 		},
-		"books": {
+		"registration": {
 			"peers": {
 				"bank-peer": {},
-				"insurance-peer": {},
-				"registry-peer": {},
-				"title-peer": {},
-				"appraiser-peer": {},
-				"audit-peer": {}
+				"audit-peer": {},
+				"revenue-peer": {},
+				"municipal-peer": {},
+				"registry-peer": {}
 			}
 		}
 	},
@@ -141,19 +142,34 @@
 				"path": "/tmp/crypto/peerOrganizations/registry-org/users/Admin@registry-org/msp/signcerts/Admin@registry-org-cert.pem"
 			}
 		  },
-		  "TitleOrg": {
-			"mspid": "TitleMSP",
+		  "MunicipalOrg": {
+			"mspid": "MunicipalMSP",
 			"peers": [
-			  "title-peer"
+			  "municipal-peer"
 			],
 			"certificateAuthorities": [
-			  "title-ca"
+			  "municipal-ca"
 			],
 			"adminPrivateKey": {
-				"path": "/tmp/crypto/peerOrganizations/title-org/users/Admin@title-org/msp/keystore/priv_sk"
+				"path": "/tmp/crypto/peerOrganizations/municipal-org/users/Admin@municipal-org/msp/keystore/priv_sk"
 			},
 			"signedCert": {
-				"path": "/tmp/crypto/peerOrganizations/title-org/users/Admin@title-org/msp/signcerts/Admin@title-org-cert.pem"
+				"path": "/tmp/crypto/peerOrganizations/municipal-org/users/Admin@municipal-org/msp/signcerts/Admin@municipal-org-cert.pem"
+			}
+		  },
+		  "RevenueOrg": {
+			"mspid": "RevenueMSP",
+			"peers": [
+			  "revenue-peer"
+			],
+			"certificateAuthorities": [
+			  "revenue-ca"
+			],
+			"adminPrivateKey": {
+				"path": "/tmp/crypto/peerOrganizations/revenue-org/users/Admin@revenue-org/msp/keystore/priv_sk"
+			},
+			"signedCert": {
+				"path": "/tmp/crypto/peerOrganizations/revenue-org/users/Admin@revenue-org/msp/signcerts/Admin@revenue-org-cert.pem"
 			}
 		  }
 	},
@@ -208,8 +224,18 @@
 				"path": "/tmp/crypto/peerOrganizations/insurance-org/peers/insurance-peer/msp/tlscacerts/tlsca.insurance-org-cert.pem"
 			}
 		},
+		"municipal-peer": {
+			"url": "grpcs://municipal-peer:12051",
+			"grpcOptions": {
+				"ssl-target-name-override": "municipal-peer",
+				"hostnameOverride": "municipal-peer"
+			},
+			"tlsCACerts": {
+				"path": "/tmp/crypto/peerOrganizations/municipal-org/peers/municipal-peer/msp/tlscacerts/tlsca.municipal-org-cert.pem"
+			}
+		},
 		"registry-peer": {
-			"url": "grpcs://registry-peer:12051",
+			"url": "grpcs://registry-peer:13051",
 			"grpcOptions": {
 				"ssl-target-name-override": "registry-peer",
 				"hostnameOverride": "registry-peer"
@@ -218,14 +244,14 @@
 				"path": "/tmp/crypto/peerOrganizations/registry-org/peers/registry-peer/msp/tlscacerts/tlsca.registry-org-cert.pem"
 			}
 		},
-		"title-peer": {
-			"url": "grpcs://title-peer:13051",
+		"revenue-peer": {
+			"url": "grpcs://revenue-peer:14051",
 			"grpcOptions": {
-				"ssl-target-name-override": "title-peer",
-				"hostnameOverride": "title-peer"
+				"ssl-target-name-override": "revenue-peer",
+				"hostnameOverride": "revenue-peer"
 			},
 			"tlsCACerts": {
-				"path": "/tmp/crypto/peerOrganizations/title-org/peers/title-peer/msp/tlscacerts/tlsca.title-org-cert.pem"
+				"path": "/tmp/crypto/peerOrganizations/revenue-org/peers/revenue-peer/msp/tlscacerts/tlsca.revenue-org-cert.pem"
 			}
 		}
 	}
