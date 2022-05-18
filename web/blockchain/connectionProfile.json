@@ -47,6 +47,15 @@
         "insurance-ca"
       ]
     },
+    "Municipal": {
+      "mspid": "MunicipalMSP",
+      "peers": [
+        "municipal-peer"
+      ],
+      "certificateAuthorities": [
+        "municipal-ca"
+      ]
+    },
     "Registry": {
       "mspid": "RegistryMSP",
       "peers": [
@@ -56,13 +65,13 @@
         "registry-ca"
       ]
     },
-    "Title": {
-      "mspid": "TitleMSP",
+    "Revenue": {
+      "mspid": "RevenueMSP",
       "peers": [
-        "title-peer"
+        "revenue-peer"
       ],
       "certificateAuthorities": [
-        "title-ca"
+        "revenue-ca"
       ]
     }
   },
@@ -128,8 +137,18 @@
         "path": "/home/freegan/Public/INTERNSHIP/Project_fabric/Project/artifacts/crypto-config/peerOrganizations/insurance-org/peers/insurance-peer/msp/tlscacerts/tlsca.insurance-org-cert.pem"
       }
     },
-    "registry-peer": {
+    "municipal-peer": {
       "url": "grpcs://localhost:12051",
+      "grpcOptions": {
+        "ssl-target-name-override": "municipal-peer",
+        "hostnameOverride": "municipal-peer"
+      },
+      "tlsCACerts": {
+        "path": "/home/freegan/Public/INTERNSHIP/Project_fabric/Project/artifacts/crypto-config/peerOrganizations/municipal-org/peers/municipal-peer/msp/tlscacerts/tlsca.municipal-org-cert.pem"
+      }
+    },
+    "registry-peer": {
+      "url": "grpcs://localhost:13051",
       "grpcOptions": {
         "ssl-target-name-override": "registry-peer",
         "hostnameOverride": "registry-peer"
@@ -138,14 +157,14 @@
         "path": "/home/freegan/Public/INTERNSHIP/Project_fabric/Project/artifacts/crypto-config/peerOrganizations/registry-org/peers/registry-peer/msp/tlscacerts/tlsca.registry-org-cert.pem"
       }
     },
-    "title-peer": {
-      "url": "grpcs://localhost:13051",
+    "revenue-peer": {
+      "url": "grpcs://localhost:14051",
       "grpcOptions": {
-        "ssl-target-name-override": "title-peer",
-        "hostnameOverride": "title-peer"
+        "ssl-target-name-override": "revenue-peer",
+        "hostnameOverride": "revenue-peer"
       },
       "tlsCACerts": {
-        "path": "/home/freegan/Public/INTERNSHIP/Project_fabric/Project/artifacts/crypto-config/peerOrganizations/title-org/peers/title-peer/msp/tlscacerts/tlsca.title-org-cert.pem"
+        "path": "/home/freegan/Public/INTERNSHIP/Project_fabric/Project/artifacts/crypto-config/peerOrganizations/revenue-org/peers/revenue-peer/msp/tlscacerts/tlsca.revenue-org-cert.pem"
       }
     }
   },
@@ -200,8 +219,18 @@
         "verify": false
       }
     },
-    "registry-ca": {
+    "municipal-ca": {
       "url": "https://localhost:12054",
+      "caName": "municipal-ca",
+      "tlsCACerts": {
+        "path": "/home/freegan/Public/INTERNSHIP/Project_fabric/Project/artifacts/crypto-config/peerOrganizations/municipal-org/tlsca/tlsca.municipal-org-cert.pem"
+      },
+      "httpOptions": {
+        "verify": false
+      }
+    },
+    "registry-ca": {
+      "url": "https://localhost:13054",
       "caName": "registry-ca",
       "tlsCACerts": {
         "path": "/home/freegan/Public/INTERNSHIP/Project_fabric/Project/artifacts/crypto-config/peerOrganizations/registry-org/tlsca/tlsca.registry-org-cert.pem"
@@ -210,11 +239,11 @@
         "verify": false
       }
     },
-    "title-ca": {
-      "url": "https://localhost:13054",
-      "caName": "title-ca",
+    "revenue-ca": {
+      "url": "https://localhost:14054",
+      "caName": "revenue-ca",
       "tlsCACerts": {
-        "path": "/home/freegan/Public/INTERNSHIP/Project_fabric/Project/artifacts/crypto-config/peerOrganizations/title-org/tlsca/tlsca.title-org-cert.pem"
+        "path": "/home/freegan/Public/INTERNSHIP/Project_fabric/Project/artifacts/crypto-config/peerOrganizations/revenue-org/tlsca/tlsca.revenue-org-cert.pem"
       },
       "httpOptions": {
         "verify": false
