@@ -262,12 +262,12 @@ router.put('/api/sign-deed-w', async (req, res) => {
 
 /**
  * @swagger
- * /revenue/api/approve-deed:
+ * /revenue/api/submit-deed:
  *    put:
  *      tags:
  *      - 'revenue'
- *      summary: Approve Deed
- *      description: Deed is Approved by the Revenue Office
+ *      summary: Submit Deed
+ *      description: Deed is Submitted for Approval by the Revenue Office
  *      parameters:
  *      - name: body
  *        in: body
@@ -277,13 +277,51 @@ router.put('/api/sign-deed-w', async (req, res) => {
  *          $ref: '#/definitions/RegistrationKey'
  *      responses:
  *        '200':
- *          description: Successfully approved registration
+ *          description: Successfully submitted registration
  *        '400':
  *          description: Bad Request
  *        '500':
  *          description: Internal Error
  */
-router.put('/api/approve-deed', async (req, res) => {
+router.put('/api/submit-deed', async (req, res) => {
+  let { RealEstateID } = req.body
+  if (typeof RealEstateID != 'string') {
+    res.status(400).json({ error: 'Invalid request.' })
+    return
+  }
+
+  try {
+    const success = await RevenuePeer.submitDeed(RealEstateID)
+    res.json({ success })
+  } catch (e) {
+    res.status(500).json({ error: 'Error accessing blockchain. ' + e })
+  }
+})
+
+/**
+ * @swagger
+ * /revenue/api/approve-deed:
+ *    put:
+ *      tags:
+ *      - 'revenue'
+ *      summary: approve Deed
+ *      description: Deed is approved
+ *      parameters:
+ *      - name: body
+ *        in: body
+ *        description: The Registration Key
+ *        required: true
+ *        schema:
+ *          $ref: '#/definitions/RegistrationKey'
+ *      responses:
+ *        '200':
+ *          description: Successfully approved
+ *        '400':
+ *          description: Bad Request
+ *        '500':
+ *          description: Internal Error
+ */
+ router.put('/api/approve-deed', async (req, res) => {
   let { RealEstateID } = req.body
   if (typeof RealEstateID != 'string') {
     res.status(400).json({ error: 'Invalid request.' })

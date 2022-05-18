@@ -9,13 +9,13 @@ router.get('/', (req, res) => {
   res.render('municipal-main', { municipalActive: true })
 })
 
-// registration Processing
+// registration Processing //TODO boolean string
 /**
  * @swagger
  * /municipal/api/registrations:
  *    get:
  *      tags:
- *      - 'revenue'
+ *      - 'municipal'
  *      summary: Get Deed Registration Records
  *      description: Used to get all Deed records
  *      parameters:
@@ -23,7 +23,8 @@ router.get('/', (req, res) => {
  *        in: query
  *        description: Status of Permission.
  *        required: true
- *        type: boolean
+ *        type: 'boolean'
+ *        format: 'boolean'
  *      - name: RealEstateID
  *        in: query
  *        description: ID of RealEstate.
@@ -39,6 +40,7 @@ router.get('/', (req, res) => {
  */
 router.get('/api/registrations', async (req, res) => {
   let { permission, RealEstateID } = req.query
+  console.log(typeof permission)
   if (typeof permission != 'boolean') {
     res.status(400).json({ error: 'Invalid request.' })
     return

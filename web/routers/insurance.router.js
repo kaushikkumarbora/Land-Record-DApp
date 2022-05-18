@@ -45,7 +45,7 @@ router.get('/', (req, res) => {
  *          description: Internal Error
  */
 router.get('/api/insurances', async (req, res) => {
-  let { status, CustID } = req.body
+  let { status, CustID } = req.query
   if (typeof status != 'string') {
     res.status(400).json({ error: 'Invalid request.' })
     return

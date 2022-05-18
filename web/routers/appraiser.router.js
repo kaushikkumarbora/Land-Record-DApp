@@ -87,11 +87,11 @@ router.get('/api/appraisals', async (req, res) => {
  *          description: Internal Error
  */
 router.put('/api/process-appraisal', async (req, res) => {
-  let { CustID, RealEstateID, AppraisalAmount } = req.body
+  let { CustID, RealEstateID, Amount } = req.body
   if (
     typeof RealEstateID != 'string' ||
     typeof CustID != 'string' ||
-    typeof AppraisalAmount != 'number'
+    typeof Amount != 'number'
   ) {
     res.status(400).json({ error: 'Invalid request.' })
     return
@@ -101,7 +101,7 @@ router.put('/api/process-appraisal', async (req, res) => {
     const success = await AppraiserPeer.setAppraisals(
       CustID,
       RealEstateID,
-      AppraisalAmount
+      Amount
     )
     res.json({ success })
   } catch (e) {

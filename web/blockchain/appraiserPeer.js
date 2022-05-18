@@ -48,15 +48,15 @@ export async function queryString (queryString) {
 
 //identity to use for submitting transactions to smart contract
 async function invoke (fcn, ...args) {
-  console.log(`args in insurancePeer invoke: ${args}`)
-  console.log(`func in insurancePeer invoke: ${fcn}`)
+  console.log(`args in appraisalPeer invoke: ${args}`)
+  console.log(`func in appraisalPeer invoke: ${fcn}`)
 
   return client.invoke(config.lendingChaincodeId, fcn, ...args)
 }
 
 async function query (fcn, ...args) {
-  console.log(`args in insurancePeer query: ${args}`)
-  console.log(`func in insurancePeer query: ${fcn}`)
+  console.log(`args in appraisalPeer query: ${args}`)
+  console.log(`func in appraisalPeer query: ${fcn}`)
 
   return client.query(config.lendingChaincodeId, fcn, ...args)
 }

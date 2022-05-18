@@ -8,7 +8,7 @@ let statusChangedCallbacks = []
 
 // Setup clients per organization
 const appraiserClient = new OrganizationClient(
-  config.registrationChannel,
+  config.lendingChannel,
   config.orderer0,
   config.appraiserOrg.peer,
   config.appraiserOrg.ca,
@@ -70,8 +70,15 @@ const registryClient = new OrganizationClient(
   config.registryOrg.ca,
   config.registryOrg.admin
 )
-const revenueClient = new OrganizationClient(
+const revenueregClient = new OrganizationClient(
   config.registrationChannel,
+  config.orderer0,
+  config.revenueOrg.peer,
+  config.revenueOrg.ca,
+  config.revenueOrg.admin
+)
+const revenuelendClient = new OrganizationClient(
+  config.lendingChannel,
   config.orderer0,
   config.revenueOrg.peer,
   config.revenueOrg.ca,
@@ -115,5 +122,6 @@ export {
   insuranceClient,
   municipalClient,
   registryClient,
-  revenueClient
+  revenuelendClient,
+  revenueregClient
 }

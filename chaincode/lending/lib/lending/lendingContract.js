@@ -431,6 +431,8 @@ class LendingContract extends Contract {
       if (reg.BuyerAadhar != CustID)
         throw new Error('Deed pertaining to the Customer not found!')
 
+      if (reg.Status != 'Approved') throw new Error('Deed not Approved Yet!')
+
       // Look for the serial number
       let lendingKey = ctx.stub.createCompositeKey(PrefixLending, [
         CustID,

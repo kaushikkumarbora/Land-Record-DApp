@@ -1,7 +1,11 @@
 'use strict'
 
 import config from './config'
-import { revenueClient as client, isReady } from './setup'
+import {
+  revenueregClient as client,
+  revenuelendClient as lendClient,
+  isReady
+} from './setup'
 
 export async function initiateRegistration (
   RealEstateID,
@@ -195,7 +199,7 @@ export async function startMortgage (CustID, RealEstateID) {
     if (typeof RealEstateID != 'string' || typeof CustID != 'string') {
       throw new Error('Error give correct parameters')
     }
-    const loan = await client.invoke(
+    const loan = await lendClient.invoke(
       config.lendingChaincodeId,
       'startMortgage',
       CustID,
@@ -230,5 +234,5 @@ async function query (fcn, ...args) {
   console.log(`args in revenuePeer query: ${args}`)
   console.log(`func in revenuePeer query: ${fcn}`)
 
-  return client.query(config.recordsChaincodeId, fcn, ...args)
+  return client.query(config.registrationChaincodeId, fcn, ...args)
 }
