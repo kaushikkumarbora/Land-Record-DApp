@@ -408,7 +408,7 @@ const swaggerOptions = {
           name: 'RecordPurchase'
         }
       },
-      InitiateLending: {
+      InitiateLoan: {
         type: 'object',
         properties: {
           CustID: {
@@ -425,7 +425,7 @@ const swaggerOptions = {
           }
         },
         xml: {
-          name: 'InitiateLending'
+          name: 'InitiateLoan'
         }
       },
       GetInsuranceQuote: {
