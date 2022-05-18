@@ -489,6 +489,7 @@ Profiles:
                 - *FicoOrg
                 - *AppraiserOrg
                 - *RevenueOrg
+                - *RegistryOrg
             Capabilities:
                 <<: *ApplicationCapabilities
     RegistrationChannel:
@@ -500,6 +501,7 @@ Profiles:
                 - *BankOrg
                 - *AuditOrg
                 - *RevenueOrg
-                - *MunicipalOrg                
+                - *MunicipalOrg
+                - *RegistryOrg
             Capabilities:
                 <<: *ApplicationCapabilities
