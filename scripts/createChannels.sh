@@ -19,7 +19,12 @@ docker exec  revenue-cli bash -c 'peer channel join -b ./channels/registration.b
 
 sleep ${FABRIC_START_WAIT}
 echo -e "-------------------------\e[5;32;40mNow Joining channels\e[m -----------------------------"
-#Registry  joins 1 channels, but we already joined records
+#Registry joins all channels, but we already joined records
+docker exec registry-cli bash -c 'peer channel join -b ./channels/registration.block'
+sleep ${FABRIC_START_WAIT}
+docker exec registry-cli bash -c 'peer channel join -b ./channels/lending.block'
+sleep ${FABRIC_START_WAIT}
+
 #bank  joins all channels, but we already joined lending when we created it,  so join the other two
 docker exec bank-cli bash -c 'peer channel join -b ./channels/records.block'
 sleep ${FABRIC_START_WAIT}
