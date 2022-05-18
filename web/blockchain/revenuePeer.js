@@ -84,19 +84,24 @@ export async function setDnC (
   }
 }
 
-export async function signDeed (RealEstateID, Signature) {
+export async function signDeed (RealEstateID, Signature, Buyer) {
   if (!isReady()) {
     return
   }
   try {
-    if (typeof RealEstateID != 'string' || typeof Signature != 'string') {
+    if (
+      typeof RealEstateID != 'string' ||
+      typeof Signature != 'string' ||
+      typeof Buyer != 'boolean'
+    ) {
       throw new Error('Error give correct parameters')
     }
     const deed = await client.invoke(
       config.registrationChaincodeId,
       'signDeed',
       RealEstateID,
-      Signature
+      Signature,
+      Buyer
     )
     return deed
   } catch (e) {

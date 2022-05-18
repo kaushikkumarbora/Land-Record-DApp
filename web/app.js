@@ -570,10 +570,30 @@ const swaggerOptions = {
           Signature: {
             type: 'string',
             format: 'string'
+          },
+          Buyer: {
+            type: 'boolean',
+            format: 'boolean'
           }
         },
         xml: {
           name: 'SignDeed'
+        }
+      },
+      SignDeedW: {
+        type: 'object',
+        properties: {
+          RealEstateID: {
+            type: 'string',
+            format: 'string'
+          },
+          Signature: {
+            type: 'string',
+            format: 'string'
+          }
+        },
+        xml: {
+          name: 'SignDeedW'
         }
       },
       TopUp: {

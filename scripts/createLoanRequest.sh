@@ -87,7 +87,7 @@ docker exec audit-cli bash -c "peer chaincode query -C registration -n registrat
 sleep ${FABRIC_START_WAIT}
 
 echo -e "................\e[5;32;40msign the Deed \e[m..................................."
-docker exec revenue-cli bash -c "peer chaincode invoke -C registration -n registrationchaincode -c '{\"Args\":[\"signDeed\", \"12131415\", \"Signature\"]}' --tls --cafile \$ORDERER_TLS_ROOTCERT_FILE"
+docker exec revenue-cli bash -c "peer chaincode invoke -C registration -n registrationchaincode -c '{\"Args\":[\"signDeed\", \"12131415\", \"Signature\", true]}' --tls --cafile \$ORDERER_TLS_ROOTCERT_FILE"
 sleep ${FABRIC_START_WAIT}
 
 echo -e "................\e[5;32;40mAudit query registration ledger for registration status \e[m..............................."
@@ -95,7 +95,7 @@ docker exec audit-cli bash -c "peer chaincode query -C registration -n registrat
 sleep ${FABRIC_START_WAIT}
 
 echo -e "................\e[5;32;40msign the Deed \e[m..................................."
-docker exec revenue-cli bash -c "peer chaincode invoke -C registration -n registrationchaincode -c '{\"Args\":[\"signDeed\", \"12131415\", \"Signature\"]}' --tls --cafile \$ORDERER_TLS_ROOTCERT_FILE"
+docker exec revenue-cli bash -c "peer chaincode invoke -C registration -n registrationchaincode -c '{\"Args\":[\"signDeed\", \"12131415\", \"Signature\", false]}' --tls --cafile \$ORDERER_TLS_ROOTCERT_FILE"
 sleep ${FABRIC_START_WAIT}
 
 echo -e "................\e[5;32;40mAudit query registration ledger for registration status \e[m..............................."

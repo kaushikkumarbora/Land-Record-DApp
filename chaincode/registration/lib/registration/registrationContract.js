@@ -16,6 +16,8 @@ const {
   LendingChaincode,
   LendingChannel
 } = require('./const')
+const fs = require('fs')
+const crypto = require('crypto')
 
 class RegistrationContract extends Contract {
   /**
@@ -248,9 +250,10 @@ class RegistrationContract extends Contract {
    * @param {Context} ctx
    * @param {string} RealEstateID
    * @param {string} Signature
+   * @param {boolean} buyer
    * @returns
    */
-  async signDeed (ctx, RealEstateID, Signature) {
+  async signDeed (ctx, RealEstateID, Signature, buyer) {
     if (CheckProducer(ctx, RevenueMSPID)) {
       let regKey = ctx.stub.createCompositeKey(PrefixRegistration, [
         RealEstateID
@@ -265,8 +268,8 @@ class RegistrationContract extends Contract {
       let reg
       // Decode JSON data
       reg = Registration(JSON.parse(regBytes.toString()))
-      if (reg.BuyerSignature === '') reg.BuyerSignature = Signature //TODO
-      if (reg.SellerSignature === '') reg.SellerSignature = Signature //TODO
+      if (buyer) reg.BuyerSignature = Signature
+      else reg.SellerSignature = Signature
 
       WriteToRegistrationLedger(ctx, reg, 'Seller/Buyer Sign')
     } else {
@@ -303,7 +306,7 @@ class RegistrationContract extends Contract {
       let reg
       // Decode JSON data
       reg = Registration(JSON.parse(regBytes.toString()))
-      reg.WitnessSignature = Signature //TODO
+      reg.WitnessSignature = Signature
 
       WriteToRegistrationLedger(ctx, reg, 'Witness Signature')
     } else {
@@ -340,14 +343,45 @@ class RegistrationContract extends Contract {
       // Decode JSON data
       reg = Registration(JSON.parse(regBytes.toString()))
 
-      //Check Signatures TODO
+      let data = reg
+      delete data.BuyerSignature
+      delete data.SellerSignature
+
+      //Check Signatures
+      let buyerKey = fs.readFileSync('keys/buyer.pem', 'utf-8')
+      let sellerKey = fs.readFileSync('keys/seller.pem', 'utf-8')
+      let witnessKey = fs.readFileSync('keys/witness.pem', 'utf-8')
+      const verify = crypto.createVerify('SHA256')
+      verify.update(data)
+      verify.end()
+
+      let publicKey = crypto.createPublicKey({
+        key: Buffer.from(buyerKey, 'base64'),
+        type: 'spki',
+        format: 'pem'
+      })
+      if (!verify.verify(publicKey, Buffer.from(reg.BuyerSignature, 'base64')))
+        throw new Error('Signatures Not Completed')
+
+      publicKey = crypto.createPublicKey({
+        key: Buffer.from(sellerKey, 'base64'),
+        type: 'spki',
+        format: 'pem'
+      })
+      if (!verify.verify(publicKey, Buffer.from(reg.SellerSignature, 'base64')))
+        throw new Error('Signatures Not Completed')
+
+      publicKey = crypto.createPublicKey({
+        key: Buffer.from(witnessKey, 'base64'),
+        type: 'spki',
+        format: 'pem'
+      })
       if (
-        reg.BuyerSignature != '' &&
-        reg.SellerSignature != '' &&
-        reg.WitnessSignature != '' &&
-        reg.StampID != ''
+        !verify.verify(publicKey, Buffer.from(reg.WitnessSignature, 'base64'))
       )
-        reg.Status = 'Submitted'
+        throw new Error('Signatures Not Completed')
+
+      if (reg.StampID != '') reg.Status = 'Submitted'
       else throw new Error('Signatures Not Completed')
 
       WriteToRegistrationLedger(ctx, reg, 'Submit')

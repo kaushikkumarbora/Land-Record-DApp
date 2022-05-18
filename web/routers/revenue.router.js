@@ -208,14 +208,18 @@ router.put('/api/set-dnc', async (req, res) => {
  *          description: Internal Error
  */
 router.put('/api/sign-deed', async (req, res) => {
-  let { RealEstateID, Signature } = req.body
-  if (typeof RealEstateID != 'string' || typeof Signature != 'string') {
+  let { RealEstateID, Signature, Buyer } = req.body
+  if (
+    typeof RealEstateID != 'string' ||
+    typeof Signature != 'string' ||
+    typeof Buyer != 'boolean'
+  ) {
     res.status(400).json({ error: 'Invalid request.' })
     return
   }
 
   try {
-    const success = await RevenuePeer.signDeed(RealEstateID, Signature)
+    const success = await RevenuePeer.signDeed(RealEstateID, Signature, Buyer)
     res.json({ success })
   } catch (e) {
     res.status(500).json({ error: 'Error accessing blockchain. ' + e })
@@ -236,7 +240,7 @@ router.put('/api/sign-deed', async (req, res) => {
  *        description: The Signature Request
  *        required: true
  *        schema:
- *          $ref: '#/definitions/SignDeed'
+ *          $ref: '#/definitions/SignDeedW'
  *      responses:
  *        '200':
  *          description: Successfully signed Deed
@@ -321,7 +325,7 @@ router.put('/api/submit-deed', async (req, res) => {
  *        '500':
  *          description: Internal Error
  */
- router.put('/api/approve-deed', async (req, res) => {
+router.put('/api/approve-deed', async (req, res) => {
   let { RealEstateID } = req.body
   if (typeof RealEstateID != 'string') {
     res.status(400).json({ error: 'Invalid request.' })
