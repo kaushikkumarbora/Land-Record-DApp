@@ -14,9 +14,7 @@ const {
   RecordsChannel,
   QueryLendingString,
   LendingChaincode,
-  LendingChannel,
-  QueryRecordPurchase,
-  QueryStartMortgage
+  LendingChannel
 } = require('./const')
 
 class RegistrationContract extends Contract {
@@ -76,7 +74,7 @@ class RegistrationContract extends Contract {
       if (regBytes && regBytes.length != 0) {
         // Decode JSON data
         reg = Registration(JSON.parse(regBytes.toString()))
-        if (reg.Status != 'Approved')
+        if (reg.Status != 'Complete')
           throw new Error('Previous Registration Under Process')
         else if (reg.BuyerAadhar != SellerAadhar)
           throw new Error(
@@ -410,29 +408,63 @@ class RegistrationContract extends Contract {
           throw new Error('Mortgage Already Inforced! Wrong flow')
         } else if (res.Status === '') {
           throw new Error('Initialize Mortgage First')
-        } else if (res.Status === 'Pending') {
-          // start Mortgage
-          callArgs[0] = Buffer.from(QueryStartMortgage)
-          callArgs[1] = Buffer.from(reg.BuyerAadhar)
-          callArgs[2] = Buffer.from(reg.RealEstateID)
-
-          await ctx.stub.invokeChaincode(
-            LendingChaincode,
-            callArgs,
-            LendingChannel
-          )
         }
       }
 
       WriteToRegistrationLedger(ctx, reg, 'Approve')
+    } else {
+      throw new Error(
+        '+~+~+~+~+No matching chain code function found-- create, initiate, close and record mortgage can only be invoked by chaincode instantiators which are Bank, Registry and Appraiser+~+~+~+~+~+~+~+~'
+      )
+    }
+    return
+  }
 
-      // recordPurchase
-      callArgs = new Array()
-      callArgs[0] = Buffer.from(QueryRecordPurchase)
-      callArgs[1] = Buffer.from(RealEstateID)
-      callArgs[2] = Buffer.from(reg.BuyerAadhar)
+  /**
+   *
+   * completeDeed
+   *
+   * complete Deed
+   *
+   * @param {Context} ctx
+   * @param {string} RealEstateID
+   * @returns
+   */
+  async completeDeed (ctx, RealEstateID) {
+    if (CheckProducer(ctx, RevenueMSPID)) {
+      let callArgs = new Array()
+      let regKey = ctx.stub.createCompositeKey(PrefixRegistration, [
+        RealEstateID
+      ])
 
-      await ctx.stub.invokeChaincode(RecordsChaincode, callArgs, RecordsChannel)
+      let regBytes = await ctx.stub.getState(regKey)
+      if (!regBytes || regBytes.length === 0) {
+        throw new Error('RealEstateID ' + RealEstateID + ' not found ')
+      }
+
+      // Get Information from Blockchain
+      let reg
+      // Decode JSON data
+      reg = Registration(JSON.parse(regBytes.toString()))
+
+      if (reg.Status === 'Approved') reg.Status = 'Complete'
+      else throw new Error('Wrong Flow')
+
+      // Check Records
+      callArgs[0] = Buffer.from(QueryRealEstateString)
+      callArgs[1] = Buffer.from(reg.RealEstateID)
+
+      let resBytes = await ctx.stub.invokeChaincode(
+        RecordsChaincode,
+        callArgs,
+        RecordsChannel
+      )
+
+      let res = resBytes.payload.toString()
+
+      if (res != reg.BuyerAadhar) throw new Error('Update Records First')
+
+      WriteToRegistrationLedger(ctx, reg, 'Complete')
     } else {
       throw new Error(
         '+~+~+~+~+No matching chain code function found-- create, initiate, close and record mortgage can only be invoked by chaincode instantiators which are Bank, Registry and Appraiser+~+~+~+~+~+~+~+~'

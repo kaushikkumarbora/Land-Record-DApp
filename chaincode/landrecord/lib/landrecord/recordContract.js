@@ -8,7 +8,15 @@ const {
   GetTimeNow,
   GetAllResults
 } = require('./utils')
-const { RealEstate } = require('./data')
+const { RealEstate, Registration } = require('./data')
+const {
+  RegistrationChannel,
+  RegistrationChaincode,
+  QueryRegistrationString,
+  LendingChaincode,
+  LendingChannel,
+  QueryLendingString
+} = require('./const')
 
 class RecordContract extends Contract {
   /**
@@ -162,7 +170,58 @@ class RecordContract extends Contract {
    * @returns
    */
   async recordPurchase (ctx, RealEstateID, NewOwner) {
-    if (CheckProducer(ctx, RevenueMSPID)) {
+    if (CheckProducer(ctx, RegistryMSPID)) {
+      // Check Deed
+      let callArgs = new Array()
+
+      callArgs[0] = Buffer.from(QueryRegistrationString)
+      callArgs[1] = Buffer.from(RealEstateID)
+
+      let resBytes = await ctx.stub.invokeChaincode(
+        RegistrationChaincode,
+        callArgs,
+        RegistrationChannel
+      )
+
+      if (!resBytes || resBytes.length === 0) {
+        throw new Error(
+          'Registration RealEstateID ' +
+            RealEstateID +
+            ' not found. Create Registration first'
+        )
+      }
+
+      let reg = Registration(JSON.parse(resBytes.payload.toString()))
+
+      if (reg.BuyerAadhar != NewOwner)
+        throw new Error('Deed pertaining to the New Owner not found!')
+
+      // Check Mortgage
+      callArgs[0] = Buffer.from(QueryLendingString)
+      callArgs[1] = Buffer.from(NewOwner)
+      callArgs[2] = Buffer.from(RealEstateID)
+
+      resBytes = await ctx.stub.invokeChaincode(
+        LendingChaincode,
+        callArgs,
+        LendingChannel
+      )
+
+      let res = JSON.parse(resBytes.payload.toString())
+
+      console.log(
+        res,
+        NewOwner,
+        res.Status != 'Inforced' && res.Status != 'Closed'
+      )
+
+      // If Mortgage Exists then it must be inforced/Closed
+      if (res.Loan) {
+        if (res.Status != 'Inforced' && res.Status != 'Closed') {
+          throw new Error('Inforce Loan')
+        }
+      }
+
       // Create Key
       let recordsKey = ctx.stub.createCompositeKey(PrefixRecord, [RealEstateID])
       // Look for the RealEstateID
@@ -174,6 +233,8 @@ class RecordContract extends Contract {
       let realEstate = RealEstate(JSON.parse(recordsBytes.toString()))
 
       realEstate.OwnerAadhar = NewOwner
+
+      console.log(realEstate)
 
       WriteToRecordsLedger(ctx, realEstate, 'recordPurchase')
       return

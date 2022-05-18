@@ -7,7 +7,8 @@ const {
   FicoMSPID,
   InsuranceMSPID,
   AppraiserMSPID,
-  RevenueMSPID
+  RevenueMSPID,
+  RegistryMSPID
 } = require('./prefix')
 const {
   CheckProducer,
@@ -374,7 +375,7 @@ class LendingContract extends Contract {
 
       let reg = Registration(JSON.parse(resBytes.payload.toString()))
 
-      if (reg.Status === 'Approved')
+      if (reg.Status === 'Approved' || reg.Status === 'Complete')
         throw new Error(
           'Registration RealEstateID ' +
             RealEstateID +
@@ -405,6 +406,31 @@ class LendingContract extends Contract {
    */
   async startMortgage (ctx, CustID, RealEstateID) {
     if (CheckProducer(ctx, RevenueMSPID)) {
+      // Check Deed
+      let callArgs = new Array()
+
+      callArgs[0] = Buffer.from(QueryRegistrationString)
+      callArgs[1] = Buffer.from(RealEstateID)
+
+      let resBytes = await ctx.stub.invokeChaincode(
+        RegistrationChaincode,
+        callArgs,
+        RegistrationChannel
+      )
+
+      if (!resBytes || resBytes.length === 0) {
+        throw new Error(
+          'Registration RealEstateID ' +
+            RealEstateID +
+            ' not found. Create Registration first'
+        )
+      }
+
+      let reg = Registration(JSON.parse(resBytes.payload.toString()))
+
+      if (reg.BuyerAadhar != CustID)
+        throw new Error('Deed pertaining to the Customer not found!')
+
       // Look for the serial number
       let lendingKey = ctx.stub.createCompositeKey(PrefixLending, [
         CustID,
@@ -424,6 +450,12 @@ class LendingContract extends Contract {
       let loan
       // Decode JSON data
       loan = Loan(JSON.parse(lendingBytes.toString()))
+
+      if (loan.MortgageStatus === 'Inforced') {
+        throw new Error('Mortgage Already Inforced! Wrong flow')
+      } else if (loan.MortgageStatus === '') {
+        throw new Error('Initialize Mortgage First')
+      }
 
       loan.MortgageStatus = 'Inforced'
 
@@ -499,7 +531,7 @@ class LendingContract extends Contract {
   async getMortgageStatus (ctx, CustID, RealEstateID) {
     // Get Information from Blockchain
     let mort = {}
-    if (CheckProducer(ctx, RevenueMSPID)) {
+    if (CheckProducer(ctx, RevenueMSPID) || CheckProducer(ctx, RegistryMSPID)) {
       // Look for the serial number
       let lendingKey = ctx.stub.createCompositeKey(PrefixLending, [
         CustID,

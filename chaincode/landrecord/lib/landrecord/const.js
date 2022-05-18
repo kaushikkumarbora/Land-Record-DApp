@@ -1,0 +1,6 @@
+module.exports.RegistrationChaincode = 'registrationchaincode'
+module.exports.RegistrationChannel = 'registration'
+module.exports.QueryRegistrationString = 'queryID'
+module.exports.LendingChaincode = 'lendingchaincode'
+module.exports.LendingChannel = 'lending'
+module.exports.QueryLendingString = 'getMortgageStatus'
