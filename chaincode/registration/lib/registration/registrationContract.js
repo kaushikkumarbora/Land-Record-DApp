@@ -127,7 +127,7 @@ class RegistrationContract extends Contract {
           )
       }
 
-      // A newly created property is available
+      // A new registration is created
       let regInfo = {}
       regInfo.RealEstateID = RealEstateID
       regInfo.Amount = Amount
@@ -137,6 +137,91 @@ class RegistrationContract extends Contract {
       reg = Registration(regInfo)
 
       WriteToRegistrationLedger(ctx, reg, 'initiateRegistration')
+    } else {
+      throw new Error(
+        '+~+~+~+~+No matching chain code function found-- create, initiate, close and record mortgage can only be invoked by chaincode instantiators which are Bank, Registry and Appraiser+~+~+~+~+~+~+~+~'
+      )
+    }
+    return
+  }
+
+  /**
+   *
+   * editRegistration
+   *
+   * edit current registration
+   *
+   * @param {Context} ctx
+   * @param {string} RealEstateID
+   * @param {number} Amount
+   * @param {string} Covenants
+   * @param {string} BuyerAadhar
+   * @returns
+   */
+  async editRegistration (ctx, RealEstateID, Amount, Covenants, BuyerAadhar) {
+    if (CheckProducer(ctx, RevenueMSPID)) {
+      // Check status of current Registration
+      let regKey = ctx.stub.createCompositeKey(PrefixRegistration, [
+        RealEstateID
+      ])
+
+      let regBytes = await ctx.stub.getState(regKey)
+      // Get Information from Blockchain
+      let reg
+
+      if (regBytes && regBytes.length != 0) {
+        // Decode JSON data
+        reg = Registration(JSON.parse(regBytes.toString()))
+        if (reg.Status != 'Pending')
+          throw new Error('Cannot Edit Registration at this Stage')
+
+        // Edit Registration
+        reg.Amount = Amount
+        reg.Covenants = Covenants
+        reg.BuyerAadhar = BuyerAadhar
+
+        WriteToRegistrationLedger(ctx, reg, 'editRegistration')
+      } else throw new Error('No Registration Under Process')
+    } else {
+      throw new Error(
+        '+~+~+~+~+No matching chain code function found-- create, initiate, close and record mortgage can only be invoked by chaincode instantiators which are Bank, Registry and Appraiser+~+~+~+~+~+~+~+~'
+      )
+    }
+    return
+  }
+
+  /**
+   *
+   * cancelRegistration
+   *
+   * cancel current registration
+   *
+   * @param {Context} ctx
+   * @param {string} RealEstateID
+   * @returns
+   */
+  async cancelRegistration (ctx, RealEstateID) {
+    if (CheckProducer(ctx, RevenueMSPID)) {
+      // Check status of current Registration
+      let regKey = ctx.stub.createCompositeKey(PrefixRegistration, [
+        RealEstateID
+      ])
+
+      let regBytes = await ctx.stub.getState(regKey)
+      // Get Information from Blockchain
+      let reg
+
+      if (regBytes && regBytes.length != 0) {
+        // Decode JSON data
+        reg = Registration(JSON.parse(regBytes.toString()))
+        if (reg.Status != 'Pending')
+          throw new Error('Cannot Edit Registration at this Stage')
+
+        // Cancel Registration
+        reg.Status = 'Cancelled'
+
+        WriteToRegistrationLedger(ctx, reg, 'cancelRegistration')
+      } else throw new Error('No Registration Under Process')
     } else {
       throw new Error(
         '+~+~+~+~+No matching chain code function found-- create, initiate, close and record mortgage can only be invoked by chaincode instantiators which are Bank, Registry and Appraiser+~+~+~+~+~+~+~+~'
@@ -343,6 +428,8 @@ class RegistrationContract extends Contract {
       // Decode JSON data
       reg = Registration(JSON.parse(regBytes.toString()))
 
+      if (reg.Status != 'Pending') throw new Error('Wrong Flow')
+
       let data = reg
       delete data.BuyerSignature
       delete data.SellerSignature
@@ -481,22 +568,25 @@ class RegistrationContract extends Contract {
       // Decode JSON data
       reg = Registration(JSON.parse(regBytes.toString()))
 
-      if (reg.Status === 'Approved') reg.Status = 'Complete'
+      if (reg.Status === 'Approved' || reg.Status === 'Cancelled')
+        reg.Status = 'Complete'
       else throw new Error('Wrong Flow')
 
       // Check Records
-      callArgs[0] = Buffer.from(QueryRealEstateString)
-      callArgs[1] = Buffer.from(reg.RealEstateID)
+      if (reg.Status != 'Cancelled') {
+        callArgs[0] = Buffer.from(QueryRealEstateString)
+        callArgs[1] = Buffer.from(reg.RealEstateID)
 
-      let resBytes = await ctx.stub.invokeChaincode(
-        RecordsChaincode,
-        callArgs,
-        RecordsChannel
-      )
+        let resBytes = await ctx.stub.invokeChaincode(
+          RecordsChaincode,
+          callArgs,
+          RecordsChannel
+        )
 
-      let res = resBytes.payload.toString()
+        let res = resBytes.payload.toString()
 
-      if (res != reg.BuyerAadhar) throw new Error('Update Records First')
+        if (res != reg.BuyerAadhar) throw new Error('Update Records First')
+      }
 
       WriteToRegistrationLedger(ctx, reg, 'Complete')
     } else {
