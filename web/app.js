@@ -528,6 +528,30 @@ const swaggerOptions = {
           name: 'InitiateRegistration'
         }
       },
+      EditRegistration: {
+        type: 'object',
+        properties: {
+          RealEstateID: {
+            type: 'string',
+            format: 'string'
+          },
+          Amount: {
+            type: 'number',
+            format: 'double'
+          },
+          Covenants: {
+            type: 'string',
+            format: 'string'
+          },
+          BuyerAadhar: {
+            type: 'string',
+            format: 'string'
+          }
+        },
+        xml: {
+          name: 'EditRegistration'
+        }
+      },
       SetDnC: {
         type: 'object',
         properties: {

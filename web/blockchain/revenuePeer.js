@@ -39,7 +39,62 @@ export async function initiateRegistration (
     return registration
   } catch (e) {
     let errMessage
-    errMessage = `Error starting Mortgage: ${e.message}`
+    errMessage = `Error initiating Registration: ${e.message}`
+    throw new Error(errMessage, e)
+  }
+}
+
+export async function editRegistration (
+  RealEstateID,
+  Amount,
+  Covenants,
+  BuyerAadhar
+) {
+  if (!isReady()) {
+    return
+  }
+  try {
+    if (
+      typeof RealEstateID != 'string' ||
+      typeof Amount != 'number' ||
+      typeof Covenants != 'string' ||
+      typeof BuyerAadhar != 'string'
+    ) {
+      throw new Error('Error give correct parameters')
+    }
+    const registration = await client.invoke(
+      config.registrationChaincodeId,
+      'editRegistration',
+      RealEstateID,
+      Amount,
+      Covenants,
+      BuyerAadhar
+    )
+    return registration
+  } catch (e) {
+    let errMessage
+    errMessage = `Error editing Registration: ${e.message}`
+    throw new Error(errMessage, e)
+  }
+}
+
+export async function cancelRegistration (RealEstateID) {
+  if (!isReady()) {
+    return
+  }
+  try {
+    if (typeof RealEstateID != 'string') {
+      throw new Error('Error give correct parameters')
+    }
+    const registration = await client.invoke(
+      config.registrationChaincodeId,
+      'cancelRegistration',
+      RealEstateID
+    )
+    return registration
+  } catch (e) {
+    let errMessage
+    errMessage = `Error cancelling Registration: ${e.message}`
     throw new Error(errMessage, e)
   }
 }

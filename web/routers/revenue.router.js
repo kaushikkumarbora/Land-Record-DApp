@@ -127,6 +127,92 @@ router.post('/api/initiate-registration', async (req, res) => {
 
 /**
  * @swagger
+ * /revenue/api/edit-registration:
+ *    put:
+ *      tags:
+ *      - 'revenue'
+ *      summary: Edit Registration
+ *      description: Registration is edited in case of a mistake
+ *      parameters:
+ *      - name: body
+ *        in: body
+ *        description: Registration Edit Details
+ *        required: true
+ *        schema:
+ *          $ref: '#/definitions/EditRegistration'
+ *      responses:
+ *        '200':
+ *          description: Successfully edited Registration
+ *        '400':
+ *          description: Bad Request
+ *        '500':
+ *          description: Internal Error
+ */
+router.post('/api/edit-registration', async (req, res) => {
+  let { RealEstateID, Amount, Covenants, BuyerAadhar } = req.body
+  if (
+    typeof RealEstateID != 'string' ||
+    typeof Amount != 'number' ||
+    typeof Covenants != 'string' ||
+    typeof BuyerAadhar != 'string'
+  ) {
+    res.status(400).json({ error: 'Invalid request.' })
+    return
+  }
+
+  try {
+    const success = await RevenuePeer.editRegistration(
+      RealEstateID,
+      Amount,
+      Covenants,
+      BuyerAadhar
+    )
+    res.json({ success })
+  } catch (e) {
+    res.status(500).json({ error: 'Error accessing blockchain. ' + e })
+  }
+})
+
+/**
+ * @swagger
+ * /revenue/api/cancel-registration:
+ *    put:
+ *      tags:
+ *      - 'revenue'
+ *      summary: Cancel Registration
+ *      description: Registration is cancelled in case of change of plans
+ *      parameters:
+ *      - name: body
+ *        in: body
+ *        description: Registration Key
+ *        required: true
+ *        schema:
+ *          $ref: '#/definitions/RegistrationKey'
+ *      responses:
+ *        '200':
+ *          description: Successfully cancelled Registration
+ *        '400':
+ *          description: Bad Request
+ *        '500':
+ *          description: Internal Error
+ */
+router.post('/api/cancel-registration', async (req, res) => {
+  let { RealEstateID } = req.body
+  if (typeof RealEstateID != 'string') {
+    res.status(400).json({ error: 'Invalid request.' })
+    return
+  }
+
+  try {
+    const success = await RevenuePeer.cancelRegistration(RealEstateID)
+    res.json({ success })
+  } catch (e) {
+    res.status(500).json({ error: 'Error accessing blockchain. ' + e })
+  }
+})
+
+/**
+ * @swagger
  * /revenue/api/set-dnc:
  *    put:
  *      tags:
