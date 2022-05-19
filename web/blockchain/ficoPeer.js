@@ -9,13 +9,13 @@ export async function setFico (CustID, RealEstateID) {
   }
   try {
     if (typeof RealEstateID != 'string' || typeof CustID != 'string') {
-      throw new Error('Error give realestateID, CustID')
+      throw new Error('Error give correct parameters')
     }
     const fico = await invoke('getFicoScores', CustID, RealEstateID)
     return fico
   } catch (e) {
     let errMessage
-    errMessage = `Error setting fico Score for Real Estate with ID ${RealEstateID} and CustID ${CustID}: ${e.message}`
+    errMessage = `Error setting fico Score for Loan with Real Estate with ID ${RealEstateID} and CustID ${CustID}: ${e.message}`
     throw new Error(errMessage, e)
   }
 }

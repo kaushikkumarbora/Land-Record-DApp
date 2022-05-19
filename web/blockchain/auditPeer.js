@@ -59,7 +59,7 @@ export async function getRegistrationHistory (RealEstateID) {
   }
   try {
     if (typeof RealEstateID != 'string') {
-      throw new Error('Error give realestateID')
+      throw new Error('Error give correct parameters')
     }
     const appraisals = await registrationclient.query(
       config.registrationChaincodeId,

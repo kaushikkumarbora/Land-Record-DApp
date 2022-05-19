@@ -40,7 +40,7 @@ export async function processLoan (CustID, RealEstateID, Approve) {
     return loan
   } catch (e) {
     let errMessage
-    errMessage = `Error initiating Loan: ${e.message}`
+    errMessage = `Error processing Loan: ${e.message}`
     throw new Error(errMessage, e)
   }
 }
@@ -74,7 +74,7 @@ export async function closeMortgage (CustID, RealEstateID) {
     return mortgage
   } catch (e) {
     let errMessage
-    errMessage = `Error initiating mortgages: ${e.message}`
+    errMessage = `Error closing mortgages: ${e.message}`
     throw new Error(errMessage, e)
   }
 }

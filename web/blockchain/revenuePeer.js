@@ -134,7 +134,7 @@ export async function setDnC (
     return registration
   } catch (e) {
     let errMessage
-    errMessage = `Error starting Mortgage: ${e.message}`
+    errMessage = `Error setting Duties and Charges: ${e.message}`
     throw new Error(errMessage, e)
   }
 }
@@ -268,7 +268,7 @@ export async function startMortgage (CustID, RealEstateID) {
     return loan
   } catch (e) {
     let errMessage
-    errMessage = `Error recording Purchase: ${e.message}`
+    errMessage = `Error starting Mortgage: ${e.message}`
     throw new Error(errMessage, e)
   }
 }

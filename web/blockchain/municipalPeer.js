@@ -15,7 +15,7 @@ export async function setPermission (RealEstateID) {
     return registration
   } catch (e) {
     let errMessage
-    errMessage = `Error getting Title: ${e.message}`
+    errMessage = `Error setting Permission: ${e.message}`
     throw new Error(errMessage, e)
   }
 }

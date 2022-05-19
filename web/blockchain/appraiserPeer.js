@@ -13,7 +13,7 @@ export async function setAppraisals (CustID, RealEstateID, AppraisalAmount) {
       typeof CustID != 'string' ||
       typeof AppraisalAmount != 'number'
     ) {
-      throw new Error('Error give correct Types')
+      throw new Error('Error give correct parameters')
     }
     const appraisals = await invoke(
       'getAppraisal',

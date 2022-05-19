@@ -23,7 +23,7 @@ export async function setInsurance (
       typeof Summoned != 'number' ||
       typeof Period != 'number'
     ) {
-      throw new Error('Error give realestateID, CustID')
+      throw new Error('Error give correct parameters')
     }
     const insurance = await invoke(
       'getInsuranceQuote',
@@ -37,7 +37,7 @@ export async function setInsurance (
     return insurance
   } catch (e) {
     let errMessage
-    errMessage = `Error setting Insurance Quote for Real Estate with ID ${RealEstateID} and CustID ${CustID}: ${e.message}`
+    errMessage = `Error setting Insurance Quote for Loan with Real Estate with ID ${RealEstateID} and CustID ${CustID}: ${e.message}`
     throw new Error(errMessage, e)
   }
 }

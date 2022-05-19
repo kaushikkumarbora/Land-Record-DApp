@@ -3,20 +3,6 @@
 import config from './config'
 import { registryClient as client, isReady } from './setup'
 
-export async function getRecords () {
-  if (!isReady()) {
-    return
-  }
-  try {
-    const record = await query('getRecords')
-    return record
-  } catch (e) {
-    let errMessage
-    errMessage = `Error getting all Real Estates: ${e.message}`
-    throw new Error(errMessage, e)
-  }
-}
-
 export async function createRealEstate (
   RealEstateID,
   Address,
@@ -99,7 +85,7 @@ export async function editRealEstate (
     return record
   } catch (e) {
     let errMessage
-    errMessage = `Error creating Real Estate: ${e.message}`
+    errMessage = `Error editing Real Estate: ${e.message}`
     throw new Error(errMessage, e)
   }
 }

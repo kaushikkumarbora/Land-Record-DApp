@@ -39,7 +39,7 @@ router.get('/', (req, res) => {
  *      - name: mortgagestatus
  *        in: query
  *        description: Status of Mortgage.
- *        required: true
+ *        required: false
  *        type: array
  *        items:
  *          type: string
