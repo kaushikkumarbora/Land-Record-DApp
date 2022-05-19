@@ -148,6 +148,30 @@ Organizations:
             - Host: insurance-peer
               Port: 11051
 
+    - &MunicipalOrg
+        Name: MunicipalMSP
+        ID: MunicipalMSP
+
+        MSPDir: artifacts/crypto-config/peerOrganizations/municipal-org/msp
+
+        Policies:
+            Readers:
+                Type: Signature
+                Rule: "OR('MunicipalMSP.admin', 'MunicipalMSP.peer', 'MunicipalMSP.client')"
+            Writers:
+                Type: Signature
+                Rule: "OR('MunicipalMSP.admin', 'MunicipalMSP.client')"
+            Admins:
+                Type: Signature
+                Rule: "OR('MunicipalMSP.admin')"
+            Endorsement:
+                Type: Signature
+                Rule: "OR('MunicipalMSP.peer')"
+        
+        AnchorPeers:
+            - Host: municipal-peer
+              Port: 12051
+
     - &RegistryOrg
         Name: RegistryMSP
         ID: RegistryMSP
@@ -170,31 +194,31 @@ Organizations:
 
         AnchorPeers:
             - Host: registry-peer
-              Port: 12051
+              Port: 13051
 
-    - &TitleOrg
-        Name: TitleMSP
-        ID: TitleMSP
+    - &RevenueOrg
+        Name: RevenueMSP
+        ID: RevenueMSP
 
-        MSPDir: artifacts/crypto-config/peerOrganizations/title-org/msp
+        MSPDir: artifacts/crypto-config/peerOrganizations/revenue-org/msp
 
         Policies:
             Readers:
                 Type: Signature
-                Rule: "OR('TitleMSP.admin', 'TitleMSP.peer', 'TitleMSP.client')"
+                Rule: "OR('RevenueMSP.admin', 'RevenueMSP.peer', 'RevenueMSP.client')"
             Writers:
                 Type: Signature
-                Rule: "OR('TitleMSP.admin', 'TitleMSP.client')"
+                Rule: "OR('RevenueMSP.admin', 'RevenueMSP.client')"
             Admins:
                 Type: Signature
-                Rule: "OR('TitleMSP.admin')"
+                Rule: "OR('RevenueMSP.admin')"
             Endorsement:
                 Type: Signature
-                Rule: "OR('TitleMSP.peer')"
+                Rule: "OR('RevenueMSP.peer')"
         
         AnchorPeers:
-            - Host: title-peer
-              Port: 13051
+            - Host: revenue-peer
+              Port: 14051
 
 
 
@@ -432,7 +456,8 @@ Profiles:
                     - *BankOrg
                     - *InsuranceOrg
                     - *RegistryOrg
-                    - *TitleOrg
+                    - *RevenueOrg
+                    - *MunicipalOrg
                     - *AppraiserOrg
                     - *AuditOrg
                     - *FicoOrg
@@ -446,10 +471,10 @@ Profiles:
                 - *BankOrg
                 - *InsuranceOrg
                 - *RegistryOrg
-                - *TitleOrg
+                - *MunicipalOrg
+                - *RevenueOrg
                 - *AppraiserOrg
                 - *AuditOrg
-                - *FicoOrg
             Capabilities:
                 <<: *ApplicationCapabilities
     LendingChannel:
@@ -462,20 +487,21 @@ Profiles:
                 - *InsuranceOrg
                 - *AuditOrg
                 - *FicoOrg
-                - *TitleOrg
+                - *AppraiserOrg
+                - *RevenueOrg
+                - *RegistryOrg
             Capabilities:
                 <<: *ApplicationCapabilities
-    BooksChannel:
+    RegistrationChannel:
         Consortium: LANDREC
         <<: *ChannelDefaults
         Application:
             <<: *ApplicationDefaults
             Organizations:
                 - *BankOrg
-                - *InsuranceOrg
-                - *TitleOrg
-                - *AppraiserOrg
                 - *AuditOrg
+                - *RevenueOrg
+                - *MunicipalOrg
                 - *RegistryOrg
             Capabilities:
                 <<: *ApplicationCapabilities

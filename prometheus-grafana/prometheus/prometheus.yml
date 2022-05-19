@@ -25,12 +25,15 @@ scrape_configs:
   - job_name: "insurance-peer"
     static_configs:
       - targets: ["insurance-peer:11053"]
+  - job_name: "municipal-peer"
+    static_configs:
+      - targets: ["municipal-peer:12053"]
   - job_name: "registry-peer"
     static_configs:
-      - targets: ["registry-peer:12053"]
-  - job_name: "title-peer"
+      - targets: ["registry-peer:13053"]
+  - job_name: "revenue-peer"
     static_configs:
-      - targets: ["title-peer:13053"]
+      - targets: ["revenue-peer:14053"]
   - job_name: cadvisor
     scrape_interval: 5s
     static_configs:

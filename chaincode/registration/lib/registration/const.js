@@ -1,0 +1,6 @@
+module.exports.LendingChaincode = 'lendingchaincode'
+module.exports.RecordsChaincode = 'recordschaincode'
+module.exports.LendingChannel = 'lending'
+module.exports.RecordsChannel = 'records'
+module.exports.QueryLendingString = 'getMortgageStatus'
+module.exports.QueryRealEstateString = 'queryOwner'

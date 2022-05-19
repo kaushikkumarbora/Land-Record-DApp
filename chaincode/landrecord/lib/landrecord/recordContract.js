@@ -1,15 +1,22 @@
 'use strict'
 
 const { Contract, Context } = require('fabric-contract-api')
-const { PrefixRecord } = require('./prefix')
+const { PrefixRecord, RegistryMSPID, RevenueMSPID } = require('./prefix')
 const {
   CheckProducer,
   WriteToRecordsLedger,
   GetTimeNow,
   GetAllResults
 } = require('./utils')
-const { RealEstate, Books } = require('./data')
-const { BooksChaincode, BooksChannel, QueryBooksString } = require('./const')
+const { RealEstate, Registration } = require('./data')
+const {
+  RegistrationChannel,
+  RegistrationChaincode,
+  QueryRegistrationString,
+  LendingChaincode,
+  LendingChannel,
+  QueryLendingString
+} = require('./const')
 
 class RecordContract extends Contract {
   /**
@@ -35,7 +42,6 @@ class RecordContract extends Contract {
 
   /**
    *
-   * /**
    * createRealEstate
    *
    * puts  real estate in the records Blockchain
@@ -43,27 +49,107 @@ class RecordContract extends Contract {
    * @param {Context} ctx
    * @param {string} RealEstateID
    * @param {string} Address
-   * @param {string} Value
-   * @param {string} Details
+   * @param {number} Latitude
+   * @param {number} Longitude
+   * @param {number} Length
+   * @param {number} Width
+   * @param {number} TotalArea
    * @param {string} Owner
    * @returns
    */
-  async createRealEstate (ctx, RealEstateID, Address, Value, Details, Owner) {
-    if (CheckProducer(ctx)) {
+  async createRealEstate (
+    ctx,
+    RealEstateID,
+    Address,
+    Latitude,
+    Longitude,
+    Length,
+    Width,
+    TotalArea,
+    Owner
+  ) {
+    if (CheckProducer(ctx, RegistryMSPID)) {
+      // Check Overwrite
+      // Create Key
+      let recordsKey = ctx.stub.createCompositeKey(PrefixRecord, [RealEstateID])
+      // Look for the RealEstateID
+      let recordsBytes = await ctx.stub.getState(recordsKey)
+      if (recordsBytes && recordsBytes.length != 0)
+        throw new Error('RealEstateID ' + RealEstateID + ' already Exists')
+
       let TransactionHistory = {}
       TransactionHistory['createRealEstate'] = GetTimeNow()
 
       let args = {}
       args.RealEstateID = RealEstateID
       args.Address = Address
-      args.Value = Value
-      args.Details = Details
-      args.Owner = Owner
+      args.Latitude = Latitude
+      args.Longitude = Longitude
+      args.Length = Length
+      args.Width = Width
+      args.TotalArea = TotalArea
+      args.OwnerAadhar = Owner
       args.TransactionHistory = TransactionHistory
       // A newly created property is available
       let re = RealEstate(args)
 
       WriteToRecordsLedger(ctx, re, 'createRealEstate')
+    } else {
+      throw new Error(
+        '+~+~+~+~+No matching chain code function found-- create, initiate, close and record mortgage can only be invoked by chaincode instantiators which are Bank, Registry and Appraiser+~+~+~+~+~+~+~+~'
+      )
+    }
+    return
+  }
+
+  /**
+   *
+   * editRealEstate
+   *
+   * puts  real estate in the records Blockchain
+   *
+   * @param {Context} ctx
+   * @param {string} RealEstateID
+   * @param {string} Address
+   * @param {number} Latitude
+   * @param {number} Longitude
+   * @param {number} Length
+   * @param {number} Width
+   * @param {number} TotalArea
+   * @returns
+   */
+  async editRealEstate (
+    ctx,
+    RealEstateID,
+    Address,
+    Latitude,
+    Longitude,
+    Length,
+    Width,
+    TotalArea
+  ) {
+    if (CheckProducer(ctx, RegistryMSPID)) {
+      // Create Key
+      let recordsKey = ctx.stub.createCompositeKey(PrefixRecord, [RealEstateID])
+      // Look for the RealEstateID
+      let recordsBytes = await ctx.stub.getState(recordsKey)
+      if (!recordsBytes || recordsBytes.length === 0)
+        throw new Error('RealEstateID ' + RealEstateID + ' not found ')
+
+      let record = JSON.parse(recordsBytes.toString())
+      record = RealEstate(record)
+
+      if (Address != '') record.GeoData.Address = Address
+      if (Latitude != '') record.GeoData.Latitude = Latitude
+      if (Longitude != '') record.GeoData.Longitude = Longitude
+      if (Length != 0) record.GeoData.Length = Length
+      if (Width != 0) record.GeoData.Width = Width
+      if (TotalArea != 0) record.GeoData.TotalArea = TotalArea
+      // A newly created property is available
+
+      record = RealEstate(record)
+
+      WriteToRecordsLedger(ctx, record, 'editRealEstate')
     } else {
       throw new Error(
         '+~+~+~+~+No matching chain code function found-- create, initiate, close and record mortgage can only be invoked by chaincode instantiators which are Bank, Registry and Appraiser+~+~+~+~+~+~+~+~'
@@ -80,43 +166,76 @@ class RecordContract extends Contract {
    *
    * @param {Context} ctx
    * @param {string} RealEstateID
+   * @param {string} NewOwner
    * @returns
    */
-  async recordPurchase (ctx, RealEstateID) {
-    if (CheckProducer(ctx)) {
+  async recordPurchase (ctx, RealEstateID, NewOwner) {
+    if (CheckProducer(ctx, RegistryMSPID)) {
+      // Check Deed
+      let callArgs = new Array()
+
+      callArgs[0] = Buffer.from(QueryRegistrationString)
+      callArgs[1] = Buffer.from(RealEstateID)
+
+      let resBytes = await ctx.stub.invokeChaincode(
+        RegistrationChaincode,
+        callArgs,
+        RegistrationChannel
+      )
+
+      if (!resBytes || resBytes.length === 0) {
+        throw new Error(
+          'Registration RealEstateID ' +
+            RealEstateID +
+            ' not found. Create Registration first'
+        )
+      }
+
+      let reg = Registration(JSON.parse(resBytes.payload.toString()))
+
+      if (reg.BuyerAadhar != NewOwner)
+        throw new Error('Deed pertaining to the New Owner not found!')
+
+      // Check Mortgage
+      callArgs[0] = Buffer.from(QueryLendingString)
+      callArgs[1] = Buffer.from(NewOwner)
+      callArgs[2] = Buffer.from(RealEstateID)
+
+      resBytes = await ctx.stub.invokeChaincode(
+        LendingChaincode,
+        callArgs,
+        LendingChannel
+      )
+
+      let res = JSON.parse(resBytes.payload.toString())
+
+      console.log(
+        res,
+        NewOwner,
+        res.Status != 'Inforced' && res.Status != 'Closed'
+      )
+
+      // If Mortgage Exists then it must be inforced/Closed
+      if (res.Loan) {
+        if (res.Status != 'Inforced' && res.Status != 'Closed') {
+          throw new Error('Inforce Loan')
+        }
+      }
+
       // Create Key
       let recordsKey = ctx.stub.createCompositeKey(PrefixRecord, [RealEstateID])
       // Look for the RealEstateID
       let recordsBytes = await ctx.stub.getState(recordsKey)
-      if (!recordsBytes || recordsBytes.length === 0) {
+      if (!recordsBytes || recordsBytes.length === 0)
         throw new Error('RealEstateID ' + RealEstateID + ' not found ')
-      }
 
       // Decode JSON data
       let realEstate = RealEstate(JSON.parse(recordsBytes.toString()))
 
-      //first we need to invoke chanincode on books channel to get results value New Owner
-      let callArgs = new Array()
+      realEstate.OwnerAadhar = NewOwner
 
-      callArgs[0] = Buffer.from(QueryBooksString)
-      callArgs[1] = Buffer.from(realEstate.RealEstateID)
+      console.log(realEstate)
 
-      let res = await ctx.stub.invokeChaincode(
-        BooksChaincode,
-        callArgs,
-        BooksChannel
-      )
-      //console.log("************************ received  from books for realestateID=", mrtg.RealEstateID, " Response status=", res.GetStatus(), "payload=", res.Payload)
-
-      if (!res || res.length === 0) {
-        throw new Error('RealEstateID ' + RealEstateID + ' not found ')
-      }
-      let bks = Books(JSON.parse(res.payload.toString()))
-
-      if (bks.NewTitleOwner != '') {
-        //if the new owner is a non blank field then it means the loan was funded and new owner was populated.
-        realEstate.Owner = bks.NewTitleOwner
-      }
       WriteToRecordsLedger(ctx, realEstate, 'recordPurchase')
       return
     } else {
@@ -167,7 +286,7 @@ class RecordContract extends Contract {
    *
    * queryAll
    *
-   * queryRecords, Lending or Books gives all stored keys in the  database- ledger needs to be passed in
+   * queryRecords, Lending or Registration gives all stored keys in the  database- ledger needs to be passed in
    *
    * @param {Context} ctx
    * @returns
@@ -185,16 +304,15 @@ class RecordContract extends Contract {
 
   /**
    *
-   * queryID
+   * queryOwner
    *
-   * queryDetail gives all fields of stored data and needs the key
-   * ledger needs to be passed in
+   * queryOwner Gives Owner Aadhaar
    *
    * @param {Context} ctx
    * @param {string} ID
    * @returns
    */
-  async queryID (ctx, ID) {
+  async queryOwner (ctx, ID) {
     if (typeof ID === 'undefined') {
       throw new Error('ID not defined')
     } else if (typeof ID != 'string') {
@@ -205,9 +323,36 @@ class RecordContract extends Contract {
 
     let asBytes = await ctx.stub.getState(key)
 
-    if (!asBytes || asBytes.length === 0) {
+    if (!asBytes || asBytes.length === 0)
       throw new Error('RealEstateID ' + ID + ' not found ')
-    }
+
+    let realestate = RealEstate(JSON.parse(asBytes.toString()))
+
+    return realestate.OwnerAadhar
+  }
+
+  /**
+   *
+   * queryID
+   *
+   * queryID gives all fields of stored data and needs the key
+   * ledger needs to be passed in
+   *
+   * @param {Context} ctx
+   * @param {string} ID
+   * @returns
+   */
+  async queryID (ctx, ID) {
+    if (typeof ID === 'undefined') throw new Error('ID not defined')
+    else if (typeof ID != 'string')
+      throw new Error('ID should be of type string')
+
+    let key = ctx.stub.createCompositeKey(PrefixRecord, [ID])
+
+    let asBytes = await ctx.stub.getState(key)
+
+    if (!asBytes || asBytes.length === 0)
+      throw new Error('RealEstateID ' + ID + ' not found ')
 
     return asBytes.toString()
   }

@@ -1,50 +1,47 @@
 import express from 'express'
 
-import * as AppraiserPeer from '../blockchain/appraiserPeer'
+import * as MinucipalPeer from '../blockchain/municipalPeer'
 
 const router = express.Router()
 
 // Render main page
 router.get('/', (req, res) => {
-  res.render('appraiser-main', { appraiserActive: true })
+  res.render('municipal-main', { municipalActive: true })
 })
 
-// Appraisal Processing
+// registration Processing //TODO boolean string
 /**
  * @swagger
- * /appraiser/api/appraisals:
+ * /municipal/api/registrations:
  *    get:
  *      tags:
- *      - 'appraiser'
- *      summary: Get Appraisals
- *      description: Use to get all appraisals of certain status
+ *      - 'municipal'
+ *      summary: Get Deed Registration Records
+ *      description: Used to get all Deed records
  *      parameters:
- *      - name: status
+ *      - name: permission
  *        in: query
- *        description: Status of Loan.
+ *        description: Status of Permission.
  *        required: true
- *        type: array
- *        items:
- *          type: string
- *          enum:
- *          - "Any"
- *          - "InsuranceSet"
- *          default: "Any"
- *        collectionFormat: multi
- *      - name: CustID
+ *        type: 'boolean'
+ *        format: 'boolean'
+ *      - name: RealEstateID
  *        in: query
- *        description: ID of Customer.
+ *        description: ID of RealEstate.
  *        required: false
  *        type: string
  *      responses:
  *        '200':
- *          description: Successfully queried appraisals
+ *          description: Successfully queried Deed records
+ *        '400':
+ *          description: Bad Request
  *        '500':
  *          description: Internal Error
  */
-router.get('/api/appraisals', async (req, res) => {
-  let { status, CustID } = req.query
-  if (typeof status != 'string') {
+router.get('/api/registrations', async (req, res) => {
+  let { permission, RealEstateID } = req.query
+  console.log(typeof permission)
+  if (typeof permission != 'boolean') {
     res.status(400).json({ error: 'Invalid request.' })
     return
   }
@@ -52,57 +49,50 @@ router.get('/api/appraisals', async (req, res) => {
   let query = {}
 
   query.selector = {}
-  if (status != 'Any' && status != '') query.selector.Status = status
-  if (typeof CustID === 'string') query.selector.CustID = CustID
+  query.selector.Permission = permission
+  if (typeof RealEstateID === 'string')
+    query.selector.RealEstateID = RealEstateID
 
   try {
-    let appraisals = await AppraiserPeer.queryString(JSON.stringify(query))
-    res.json(appraisals)
+    let deeds = await RevenuePeer.queryString(JSON.stringify(query))
+    res.json(deeds)
   } catch (e) {
-    res.status(500).json({ error: 'Error accessing blockchain. ' + e })
+    res.json({ error: 'Error accessing blockchain. ' + e })
   }
 })
 
 /**
  * @swagger
- * /appraiser/api/process-appraisal:
+ * /municipal/api/set-permission:
  *    put:
  *      tags:
- *      - 'appraiser'
- *      summary: Process Appraisal
- *      description: After some info about the Insurance, Fico Scores the Appraisal is processed
+ *      - 'municipal'
+ *      summary: Set Permissioin to registrations
+ *      description: Permission has to given by the municipal before trade
  *      parameters:
  *      - name: body
  *        in: body
- *        description: The Appraisal Details
+ *        description: The Registration Key
  *        required: true
  *        schema:
- *          $ref: '#/definitions/GetAppraisal'
+ *          $ref: '#/definitions/RegistrationKey'
  *      responses:
  *        '200':
- *          description: Successfully processed appraisal
+ *          description: Successfully given Permission
  *        '400':
  *          description: Bad Request
  *        '500':
  *          description: Internal Error
  */
-router.put('/api/process-appraisal', async (req, res) => {
-  let { CustID, RealEstateID, Amount } = req.body
-  if (
-    typeof RealEstateID != 'string' ||
-    typeof CustID != 'string' ||
-    typeof Amount != 'number'
-  ) {
+router.put('/api/set-permission', async (req, res) => {
+  let { RealEstateID } = req.body
+  if (typeof RealEstateID != 'string') {
     res.status(400).json({ error: 'Invalid request.' })
     return
   }
 
   try {
-    const success = await AppraiserPeer.setAppraisals(
-      CustID,
-      RealEstateID,
-      Amount
-    )
+    const success = await MinucipalPeer.setPermission(RealEstateID)
     res.json({ success })
   } catch (e) {
     res.status(500).json({ error: 'Error accessing blockchain. ' + e })
@@ -111,12 +101,12 @@ router.put('/api/process-appraisal', async (req, res) => {
 
 /**
  * @swagger
- * /appraiser/api/blocks:
+ * /municipal/api/blocks:
  *    get:
  *      tags:
- *      - 'appraiser'
- *      summary: Get Blocks
- *      description: Get N Blocks of the Registration Ledger
+ *      - 'municipal'
+ *      summary: Get Blocks of Registration chain
+ *      description: Get N Blocks of the Registration Ledgers
  *      parameters:
  *      - name: blocks
  *        in: query
@@ -138,7 +128,7 @@ router.get('/api/blocks', async (req, res) => {
     res.status(400).json({ error: 'Invalid request' })
   }
   try {
-    // const blocks = await AppraiserPeer.getBlocks(noOfLastBlocks)
+    // const blocks = await MinucipalPeer.getBlocks(noOfLastBlocks)
     res.json()
   } catch (e) {
     res.status(500).json({ error: 'Error accessing blockchain. ' + e })
@@ -147,8 +137,8 @@ router.get('/api/blocks', async (req, res) => {
 
 // Otherwise redirect to the main page
 router.get('*', (req, res) => {
-  res.render('appraiser', {
-    appraiserActive: true,
+  res.render('municipal', {
+    municipalActive: true,
     selfServiceActive: req.originalUrl.includes('self-service'),
     claimProcessingActive: req.originalUrl.includes('claim-processing'),
     contractManagementActive: req.originalUrl.includes('contract-management')

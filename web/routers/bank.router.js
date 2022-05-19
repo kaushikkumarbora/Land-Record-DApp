@@ -12,16 +12,16 @@ router.get('/', (req, res) => {
 // Bank Processing
 /**
  * @swagger
- * /bank/api/mortgages:
+ * /bank/api/loans:
  *    get:
  *      tags:
  *      - 'bank'
- *      summary: Get Mortgages
+ *      summary: Get Loans
  *      description: Used to get all lending states of certain status
  *      parameters:
  *      - name: status
  *        in: query
- *        description: Status of Mortgage. Keep blank for all.
+ *        description: Status of Loan.
  *        required: true
  *        type: array
  *        items:
@@ -31,7 +31,25 @@ router.get('/', (req, res) => {
  *          - "Pending"
  *          - "FicoSet"
  *          - "InsuranceSet"
- *          - "Funded"
+ *          - "Applied"
+ *          - "Approved"
+ *          - "Rejected"
+ *          default: "Any"
+ *        collectionFormat: multi
+ *      - name: mortgagestatus
+ *        in: query
+ *        description: Status of Mortgage.
+ *        required: false
+ *        type: array
+ *        items:
+ *          type: string
+ *          enum:
+ *          - "Any"
+ *          - "Pending"
+ *          - "FicoSet"
+ *          - "InsuranceSet"
+ *          - "Applied"
+ *          - "Approved"
  *          - "Rejected"
  *          default: "Any"
  *        collectionFormat: multi
@@ -42,14 +60,14 @@ router.get('/', (req, res) => {
  *        type: string
  *      responses:
  *        '200':
- *          description: Successfully queried mortgages
+ *          description: Successfully queried Loans
  *        '400':
  *          description: Bad Request
  *        '500':
  *          description: Internal Error
  */
-router.get('/api/mortgages', async (req, res) => {
-  let { status, CustID } = req.body // Pending, FicoSet, InsuranceSet, Funded, Rejected
+router.get('/api/loans', async (req, res) => {
+  let { status, mortgagestatus, CustID } = req.query
   if (typeof status != 'string') {
     res.status(400).json({ error: 'Invalid request.' })
     return
@@ -58,7 +76,10 @@ router.get('/api/mortgages', async (req, res) => {
   let query = {}
 
   query.selector = {}
-  if (status != 'any') query.selector.Status = status
+  if (status != 'Any' && status != '') query.selector.Status = status
+  if (typeof mortgagestatus === 'string')
+    if (mortgagestatus != 'Any' && mortgagestatus != '')
+      query.selector.MortgageStatus = mortgagestatus
   if (typeof CustID === 'string') query.selector.CustID = CustID
 
   try {
@@ -71,28 +92,28 @@ router.get('/api/mortgages', async (req, res) => {
 
 /**
  * @swagger
- * /bank/api/initiate-mortgage:
+ * /bank/api/initiate-loan:
  *    post:
  *      tags:
  *      - 'bank'
- *      summary: Create Mortgage Record
- *      description: A Mortgage has to be initiated if the Customer wants to get a loan
+ *      summary: Create Loan Record
+ *      description: A Loan has to be initiated if the Customer wants to get a loan
  *      parameters:
  *      - name: body
  *        in: body
- *        description: The Real Estate ID, Cust ID and Amount against which the Mortgage record is to be created.
+ *        description: The Real Estate ID, Cust ID and Amount against which the Loan record is to be created.
  *        required: true
  *        schema:
- *          $ref: '#/definitions/InitiateMortgage'
+ *          $ref: '#/definitions/InitiateLoan'
  *      responses:
  *        '200':
- *          description: Successfully inititated mortgages
+ *          description: Successfully inititated Loan
  *        '400':
  *          description: Bad Request
  *        '500':
  *          description: Internal Error
  */
-router.post('/api/initiate-mortgage', async (req, res) => {
+router.post('/api/initiate-loan', async (req, res) => {
   let { CustID, RealEstateID, LoanAmount } = req.body
   if (
     typeof RealEstateID != 'string' ||
@@ -104,11 +125,91 @@ router.post('/api/initiate-mortgage', async (req, res) => {
   }
 
   try {
-    const success = await BankPeer.initiateMortgage(
+    const success = await BankPeer.initiateLoan(
       CustID,
       RealEstateID,
       LoanAmount
     )
+    res.json({ success })
+  } catch (e) {
+    res.status(500).json({ error: 'Error accessing blockchain. ' + e })
+  }
+})
+
+/**
+ * @swagger
+ * /bank/api/process-loan:
+ *    put:
+ *      tags:
+ *      - 'bank'
+ *      summary: Process Loan Application
+ *      description: A Loan has to be processed if the Customer wants to get a loan
+ *      parameters:
+ *      - name: body
+ *        in: body
+ *        description: Loan Process Details
+ *        required: true
+ *        schema:
+ *          $ref: '#/definitions/ProcessLoan'
+ *      responses:
+ *        '200':
+ *          description: Successfully processed Loan
+ *        '400':
+ *          description: Bad Request
+ *        '500':
+ *          description: Internal Error
+ */
+router.put('/api/process-loan', async (req, res) => {
+  let { CustID, RealEstateID, Approve } = req.body
+  if (
+    typeof RealEstateID != 'string' ||
+    typeof CustID != 'string' ||
+    typeof Approve != 'boolean'
+  ) {
+    res.status(400).json({ error: 'Invalid request.' })
+    return
+  }
+
+  try {
+    const success = await BankPeer.processLoan(CustID, RealEstateID, Approve)
+    res.json({ success })
+  } catch (e) {
+    res.status(500).json({ error: 'Error accessing blockchain. ' + e })
+  }
+})
+
+/**
+ * @swagger
+ * /bank/api/initiate-mortgage:
+ *    put:
+ *      tags:
+ *      - 'bank'
+ *      summary: Initialize Mortgage
+ *      description: A Mortgage has to be initialized before the deed gets through
+ *      parameters:
+ *      - name: body
+ *        in: body
+ *        description: The Loan Key
+ *        required: true
+ *        schema:
+ *          $ref: '#/definitions/LoanKey'
+ *      responses:
+ *        '200':
+ *          description: Successfully inititated Mortgage
+ *        '400':
+ *          description: Bad Request
+ *        '500':
+ *          description: Internal Error
+ */
+router.put('/api/initiate-mortgage', async (req, res) => {
+  let { CustID, RealEstateID } = req.body
+  if (typeof RealEstateID != 'string' || typeof CustID != 'string') {
+    res.status(400).json({ error: 'Invalid request.' })
+    return
+  }
+
+  try {
+    const success = await BankPeer.initiateMortgage(CustID, RealEstateID)
     res.json({ success })
   } catch (e) {
     res.status(500).json({ error: 'Error accessing blockchain. ' + e })

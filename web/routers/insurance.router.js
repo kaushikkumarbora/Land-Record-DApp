@@ -16,23 +16,19 @@ router.get('/', (req, res) => {
  *    get:
  *      tags:
  *      - 'insurance'
- *      summary: Get Mortgages
+ *      summary: Get Loans where Insurance is to be set
  *      description: Used to get all lending states of certain status
  *      parameters:
  *      - name: status
  *        in: query
- *        description: Status of Mortgage. Keep blank for all.
+ *        description: Status of Loan.
  *        required: true
  *        type: array
  *        items:
  *          type: string
  *          enum:
  *          - "Any"
- *          - "Pending"
  *          - "FicoSet"
- *          - "InsuranceSet"
- *          - "Funded"
- *          - "Rejected"
  *          default: "Any"
  *        collectionFormat: multi
  *      - name: CustID
@@ -42,14 +38,14 @@ router.get('/', (req, res) => {
  *        type: string
  *      responses:
  *        '200':
- *          description: Successfully queried mortgages
+ *          description: Successfully queried Loans
  *        '400':
  *          description: Bad Request
  *        '500':
  *          description: Internal Error
  */
 router.get('/api/insurances', async (req, res) => {
-  let { status, CustID } = req.body // Pending, FicoSet, InsuranceSet, Funded, Rejected
+  let { status, CustID } = req.query
   if (typeof status != 'string') {
     res.status(400).json({ error: 'Invalid request.' })
     return
@@ -58,7 +54,7 @@ router.get('/api/insurances', async (req, res) => {
   let query = {}
 
   query.selector = {}
-  if (status != 'any') query.selector.Status = status
+  if (status != 'Any' && status != '') query.selector.Status = status
   if (typeof CustID === 'string') query.selector.CustID = CustID
 
   try {
@@ -80,10 +76,10 @@ router.get('/api/insurances', async (req, res) => {
  *      parameters:
  *      - name: body
  *        in: body
- *        description: The Real Estate ID and Cust ID against which the Mortgage record is to be created.
+ *        description: The details required to set the insurance quote
  *        required: true
  *        schema:
- *          $ref: '#/definitions/MortgageKey'
+ *          $ref: '#/definitions/GetInsuranceQuote'
  *      responses:
  *        '200':
  *          description: Successfully set Insurance Details
@@ -93,14 +89,28 @@ router.get('/api/insurances', async (req, res) => {
  *          description: Internal Error
  */
 router.put('/api/process-insurance', async (req, res) => {
-  let { CustID, RealEstateID } = req.body
-  if (typeof RealEstateID != 'string' || typeof CustID != 'string') {
+  let { CustID, RealEstateID, ProviderID, Premium, Summoned, Period } = req.body
+  if (
+    typeof RealEstateID != 'string' ||
+    typeof CustID != 'string' ||
+    typeof ProviderID != 'string' ||
+    typeof Premium != 'number' ||
+    typeof Summoned != 'number' ||
+    typeof Period != 'number'
+  ) {
     res.json({ error: 'Invalid request.' })
     return
   }
 
   try {
-    const success = await InsurancePeer.setInsurance(CustID, RealEstateID)
+    const success = await InsurancePeer.setInsurance(
+      CustID,
+      RealEstateID,
+      ProviderID,
+      Premium,
+      Summoned,
+      Period
+    )
     res.json({ success })
   } catch (e) {
     res.json({ error: 'Error accessing blockchain. ' + e })

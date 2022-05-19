@@ -1,4 +1,4 @@
-port: 13054
+port: 12054
 debug: false
 tls:
   enabled: true
@@ -9,7 +9,7 @@ tls:
     certfiles:
 
 ca:
-  name: title-org
+  name: municipal-org
   keyfile: ./ca/key.pem
   certfile: ./ca/cert.pem
   chainfile: ./ca/cert.pem
@@ -57,10 +57,10 @@ csr:
     - C: IN
       ST: 'Telangana'
       L: 'Hyderabad'
-      O: 'title'
+      O: 'municipal'
       OU: ''
   hosts:
-    - title-ca
+    - municipal-ca
     - localhost
   ca:
     expiry: 131400h

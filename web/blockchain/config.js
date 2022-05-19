@@ -8,14 +8,14 @@ const config = {
   isCloud: false,
   isUbuntu: true,
   recordsChannel: 'records',
-  booksChannel: 'books',
+  registrationChannel: 'registration',
   lendingChannel: 'lending',
   recordsChannelConfig: readCryptoFile('channels/Records.tx'),
   lendingChannelConfig: readCryptoFile('channels/Lending.tx'),
-  booksChannelConfig: readCryptoFile('channels/Books.tx'),
+  registrationChannelConfig: readCryptoFile('channels/Registration.tx'),
   recordsChaincodeId: 'recordschaincode',
   lendingChaincodeId: 'lendingchaincode',
-  booksChaincodeId: 'bookschaincode',
+  registrationChaincodeId: 'registrationchaincode',
   chaincodeVersion: 'v0.0',
   orderer0: {
     hostname: 'orderer0',
@@ -144,19 +144,43 @@ const config = {
       )
     }
   },
+  municipalOrg: {
+    peer: {
+      hostname: 'municipal-peer',
+      orgname: 'municipal-peer',
+      url: 'grpcs://municipal-peer:12051',
+      eventHubUrl: 'grpcs://municipal-peer:12053',
+      pem: readCryptoFile(
+        'crypto-config/peerOrganizations/municipal-org/peers/municipal-peer/tls/ca.crt'
+      )
+    },
+    ca: {
+      hostname: 'municipal-ca',
+      url: 'https://municipal-ca:12054',
+      mspId: 'MunicipalMSP'
+    },
+    admin: {
+      key: readCryptoFile(
+        'crypto-config/peerOrganizations/municipal-org/users/Admin@municipal-org/msp/keystore/priv_sk'
+      ),
+      cert: readCryptoFile(
+        'crypto-config/peerOrganizations/municipal-org/users/Admin@municipal-org/msp/signcerts/Admin@municipal-org-cert.pem'
+      )
+    }
+  },
   registryOrg: {
     peer: {
       hostname: 'registry-peer',
       orgname: 'registry-peer',
-      url: 'grpcs://registry-peer:12051',
-      eventHubUrl: 'grpcs://registry-peer:12053',
+      url: 'grpcs://registry-peer:13051',
+      eventHubUrl: 'grpcs://registry-peer:13053',
       pem: readCryptoFile(
         'crypto-config/peerOrganizations/registry-org/peers/registry-peer/tls/ca.crt'
       )
     },
     ca: {
       hostname: 'registry-ca',
-      url: 'https://registry-ca:12054',
+      url: 'https://registry-ca:13054',
       mspId: 'RegistryMSP'
     },
     admin: {
@@ -168,27 +192,27 @@ const config = {
       )
     }
   },
-  titleOrg: {
+  revenueOrg: {
     peer: {
-      hostname: 'title-peer',
-      orgname: 'title-peer',
-      url: 'grpcs://title-peer:13051',
-      eventHubUrl: 'grpcs://title-peer:13053',
+      hostname: 'revenue-peer',
+      orgname: 'revenue-peer',
+      url: 'grpcs://revenue-peer:14051',
+      eventHubUrl: 'grpcs://revenue-peer:14053',
       pem: readCryptoFile(
-        'crypto-config/peerOrganizations/title-org/peers/title-peer/tls/ca.crt'
+        'crypto-config/peerOrganizations/revenue-org/peers/revenue-peer/tls/ca.crt'
       )
     },
     ca: {
-      hostname: 'title-ca',
-      url: 'https://title-ca:13054',
-      mspId: 'TitleMSP'
+      hostname: 'revenue-ca',
+      url: 'https://revenue-ca:14054',
+      mspId: 'RevenueMSP'
     },
     admin: {
       key: readCryptoFile(
-        'crypto-config/peerOrganizations/title-org/users/Admin@title-org/msp/keystore/priv_sk'
+        'crypto-config/peerOrganizations/revenue-org/users/Admin@revenue-org/msp/keystore/priv_sk'
       ),
       cert: readCryptoFile(
-        'crypto-config/peerOrganizations/title-org/users/Admin@title-org/msp/signcerts/Admin@title-org-cert.pem'
+        'crypto-config/peerOrganizations/revenue-org/users/Admin@revenue-org/msp/signcerts/Admin@revenue-org-cert.pem'
       )
     }
   }
@@ -217,13 +241,17 @@ if (process.env.LOCALCONFIG) {
   config.insuranceOrg.peer.eventHubUrl = 'grpcs://localhost:11053'
   config.insuranceOrg.ca.url = 'https://localhost:11054'
 
-  config.registryOrg.peer.url = 'grpcs://localhost:12051'
-  config.registryOrg.peer.eventHubUrl = 'grpcs://localhost:12053'
-  config.registryOrg.ca.url = 'https://localhost:12054'
+  config.municipalOrg.peer.url = 'grpcs://localhost:12051'
+  config.municipalOrg.peer.eventHubUrl = 'grpcs://localhost:12053'
+  config.municipalOrg.ca.url = 'https://localhost:12054'
 
-  config.titleOrg.peer.url = 'grpcs://localhost:13051'
-  config.titleOrg.peer.eventHubUrl = 'grpcs://localhost:13053'
-  config.titleOrg.ca.url = 'https://localhost:13054'
+  config.registryOrg.peer.url = 'grpcs://localhost:13051'
+  config.registryOrg.peer.eventHubUrl = 'grpcs://localhost:13053'
+  config.registryOrg.ca.url = 'https://localhost:13054'
+
+  config.revenueOrg.peer.url = 'grpcs://localhost:14051'
+  config.revenueOrg.peer.eventHubUrl = 'grpcs://localhost:14053'
+  config.revenueOrg.ca.url = 'https://localhost:14054'
 }
 
 export default config

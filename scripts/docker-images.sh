@@ -56,19 +56,21 @@ if [ $BUILD ];
     echo '############################################################'
     docker build -t orderer:latest image/orderer/
     docker build -t insurance-peer:latest image/insurancePeer/
+    docker build -t municipal-peer:latest image/municipalPeer/
     docker build -t appraiser-peer:latest image/appraiserPeer/
     docker build -t audit-peer:latest image/auditPeer/
     docker build -t bank-peer:latest image/bankPeer/
     docker build -t fico-peer:latest image/ficoPeer/
     docker build -t registry-peer:latest image/registryPeer/
-    docker build -t title-peer:latest image/titlePeer/
+    docker build -t revenue-peer:latest image/revenuePeer/
     # docker build -t web:latest web/
     docker build -t orderer-ca:latest image/ordererCA/
     docker build -t insurance-ca:latest image/insuranceCA/
+    docker build -t municipal-ca:latest image/municipalCA/
     docker build -t appraiser-ca:latest image/appraiserCA/
     docker build -t audit-ca:latest image/auditCA/
     docker build -t bank-ca:latest image/bankCA/
-    docker build -t title-ca:latest image/titleCA/
+    docker build -t revenue-ca:latest image/revenueCA/
     docker build -t registry-ca:latest image/registryCA/
     docker build -t fico-ca:latest image/ficoCA/
 fi

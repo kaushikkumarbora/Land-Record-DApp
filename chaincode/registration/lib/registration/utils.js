@@ -1,6 +1,6 @@
 const { Context } = require('fabric-contract-api')
 const { Iterators } = require('fabric-shim-api')
-const { PrefixBook } = require('./prefix')
+const { PrefixRegistration } = require('./prefix')
 
 /**
  *
@@ -15,19 +15,6 @@ function getTimeNow () {
   let t = new Date(Date.now())
   formatedTime = t.toString()
   return formatedTime
-}
-/**
- *
- * random
- *
- * creates a random number in a range
- *
- * @param {number} max
- * @param {number} min
- * @returns
- */
-function random (max, min) {
-  return Math.floor(Math.random() * (max - min + 1)) + min
 }
 
 /**
@@ -44,45 +31,37 @@ function checkProducer (ctx, ID) {
   return ctx.clientIdentity.getMSPID() === ID
 }
 
-// write to different ledgers- records, books and lending
-
 /**
  *
- * writeToBooksLedger
+ * writeToRegistrationLedger
  *
- * wrting to Book Ledger
+ * wrting to Registration Ledger
  *
  * @param {Context} ctx
- * @param {JSON} bks
+ * @param {JSON} regs
  * @param {string} txnType
  * @returns
  */
-function writeToBooksLedger (ctx, bks, txnType) {
-  if (txnType != 'initiateBooks') {
+function writeToRegistrationLedger (ctx, regs, txnType) {
+  if (txnType != 'initiateRegistration') {
     //add TransactionHistory
     //first check if map has been initialized
-    let history = bks.TransactionHistory['initiateBooks']
+    let history = regs.TransactionHistory['initiateRegistration']
     if (typeof history != 'undefined') {
-      bks.TransactionHistory[txnType] = getTimeNow()
+      regs.TransactionHistory[txnType] = getTimeNow()
     } else {
-      throw new Error('......Books Transaction history is not initialized')
+      throw new Error('......Registration Transaction history is not initialized')
     }
   }
-  console.timeLog(
-    '++++++++++++++ writing to books ledger Books Entry=\n ',
-    txnType,
-    ' \n',
-    bks
-  )
 
   // Encode JSON data
-  let bksAsBytes = Buffer.from(JSON.stringify(bks))
+  let regisAsBytes = Buffer.from(JSON.stringify(regs))
 
   // Create Key
-  let bookKey = ctx.stub.createCompositeKey(PrefixBook, [bks.RealEstateID])
+  let regisKey = ctx.stub.createCompositeKey(PrefixRegistration, [regs.RealEstateID])
 
   // Store in the Blockchain
-  ctx.stub.putState(bookKey, bksAsBytes)
+  ctx.stub.putState(regisKey, regisAsBytes)
   return
 }
 
@@ -128,8 +107,7 @@ async function getAllResults (iterator, isHistory) {
 
 module.exports = {
   CheckProducer: checkProducer,
-  WriteToBooksLedger: writeToBooksLedger,
+  WriteToRegistrationLedger: writeToRegistrationLedger,
   GetTimeNow: getTimeNow,
-  Random: random,
   GetAllResults: getAllResults
 }

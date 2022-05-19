@@ -2,94 +2,6 @@ const { GetTimeNow } = require('./utils')
 
 /**
  *
- * dataGeo
- *
- * Defind our structure to store Geographic Details
- *
- * @param {JSON} args
- * @returns
- */
-function dataGeo (args) {
-  if (typeof args.Latitude != 'number') {
-    args.Latitude = parseFloat(args.Latitude)
-    if (args.Latitude === NaN) throw new Error('Need float Latitude')
-  }
-
-  if (typeof args.Longitude != 'number') {
-    args.Longitude = parseFloat(args.Longitude)
-    if (args.Longitude === NaN) throw new Error('Need float Longitude')
-  }
-
-  if (typeof args.Length != 'number') {
-    args.Length = parseFloat(args.Length)
-    if (args.Length === NaN) throw new Error('Need float Length')
-  }
-  if (typeof args.Width != 'number') {
-    args.Width = parseFloat(args.Width)
-    if (args.Width === NaN) throw new Error('Need float Width')
-  }
-  if (typeof args.TotalArea != 'number') {
-    args.TotalArea = parseFloat(args.TotalArea)
-    if (args.TotalArea === NaN) throw new Error('Need float TotalArea')
-  }
-  if (typeof args.Address != 'string')
-    throw new Error('Need string type Address')
-
-  const geodata = {
-    Latitude: args.Latitude,
-    Longitude: args.Longitude,
-    Length: args.Length,
-    Width: args.Width,
-    TotalArea: args.TotalArea,
-    Address: args.Address
-  }
-  return geodata
-}
-
-/**
- *
- * dataRealEstate
- *
- * Define our struct to store real estates in records Blockchain, start fields upper case for JSON
- * only Registry can write to the blockchain, all others are readonly
- *
- * @param {JSON} args
- * @returns
- */
-function dataRealEstate (args) {
-  if (typeof args.RealEstateID != 'string')
-    throw new Error('Need string type RealEstateID')
-
-  if (typeof args.AreaCode === 'undefined') args.AreaCode = 'AR1'
-  else if (typeof args.AreaCode != 'string')
-    throw new Error('Need string type AreaCode')
-
-  if (typeof args.GeoData === 'undefined') args.GeoData = dataGeo(args)
-  else if (typeof args.GeoData === 'object')
-    args.GeoData = dataGeo(args.GeoData)
-  else if (typeof args.GeoData != 'object')
-    throw new Error('Need object type GeoData')
-
-  if (typeof args.OwnerAadhar != 'string') throw new Error('Need Owner Details')
-
-  if (typeof args.TransactionHistory === 'undefined') {
-    args.TransactionHistory = {}
-    args.TransactionHistory['createRealEstate'] = GetTimeNow()
-  } else if (typeof args.TransactionHistory != 'object')
-    throw new Error('Need object type TransactionHistory')
-
-  const realestate = {
-    RealEstateID: args.RealEstateID, // This one will be our key
-    AreaCode: args.AreaCode,
-    GeoData: args.GeoData,
-    OwnerAadhar: args.OwnerAadhar,
-    TransactionHistory: args.TransactionHistory
-  }
-  return realestate
-}
-
-/**
- *
  * dataDnC
  *
  * Define our struct to store Stamp & registration charges
@@ -208,7 +120,122 @@ function dataRegistration (args) {
   return regis
 }
 
+/**
+ *
+ * dataInsurance
+ *
+ * Define our struct to store Insurance Details
+ *
+ * @param {JSON} args
+ * @returns
+ */
+function dataInsurance (args) {
+  if (typeof args.ProviderID === 'undefined') args.ProviderID = '-'
+  else if (typeof args.ProviderID != 'string')
+    throw new Error('Need string type ProviderID')
+
+  if (typeof args.Premium === 'undefined') args.Premium = 0.0
+  else if (typeof args.Premium != 'number') {
+    args.Premium = parseFloat(args.Premium)
+    if (args.Premium === NaN) throw new Error('Need number type Premium')
+  }
+
+  if (typeof args.Summoned === 'undefined') args.Summoned = 0.0
+  else if (typeof args.Summoned != 'number') {
+    args.Summoned = parseFloat(args.Summoned)
+    if (args.Summoned === NaN) throw new Error('Need number type Summoned')
+  }
+
+  if (typeof args.Period === 'undefined') args.Period = 0.0
+  else if (typeof args.Period != 'number') {
+    args.Period = parseFloat(args.Period)
+    if (args.Period === NaN) throw new Error('Need number type Period')
+  }
+
+  const insurance = {
+    ProviderID: args.ProviderID,
+    Premium: args.Premium,
+    Summoned: args.Summoned,
+    Period: args.Period
+  }
+  return insurance
+}
+
+/**
+ *
+ * dataLoan
+ *
+ * Define our struct to store Loan Details
+ *
+ * @param {JSON} args
+ * @returns
+ */
+function dataLoan (args) {
+  if (typeof args.CustID != 'string') throw new Error('Need string type CustID')
+
+  if (typeof args.RealEstateID != 'string')
+    throw new Error('Need string type RealEstateID')
+
+  if (typeof args.LoanAmount != 'number') {
+    args.LoanAmount = parseFloat(args.LoanAmount)
+    if (args.LoanAmount === NaN) throw new Error('Need number type LoanAmount')
+  }
+
+  if (typeof args.TopUp === 'undefined') args.TopUp = dataTopUp(args)
+  else if (typeof args.TopUp === 'object') args.TopUp = dataTopUp(args)
+  else throw new Error('Need array type TopUp')
+
+  if (typeof args.Fico === 'undefined') args.Fico = 0.0
+  else if (typeof args.Fico != 'number') {
+    args.Fico = parseFloat(args.Fico)
+    if (args.Fico === NaN) throw new Error('Need number type Fico')
+  }
+
+  if (typeof args.Insurance === 'undefined')
+    args.Insurance = dataInsurance(args)
+  else if (typeof args.Insurance === 'object')
+    args.Insurance = dataInsurance(args.Insurance)
+  else throw new Error('Need object type Insurance')
+
+  if (typeof args.Appraisal === 'undefined') args.Appraisal = 0.0
+  else if (typeof args.Appraisal != 'number') {
+    args.Appraisal = parseFloat(args.Appraisal)
+    if (args.Appraisal === NaN) throw new Error('Need number type Appraisal')
+  }
+
+  if (typeof args.Status === 'undefined') args.Status = 'Pending'
+  else if (typeof args.Status != 'string') {
+    throw new Error('Need string type Status')
+  }
+
+  if (typeof args.MortgageStatus === 'undefined') args.MortgageStatus = ''
+  else if (typeof args.MortgageStatus != 'string') {
+    throw new Error('Need string type Status')
+  }
+
+  if (typeof args.TransactionHistory === 'undefined') {
+    args.TransactionHistory = {}
+    args.TransactionHistory['initiateLoan'] = GetTimeNow()
+  } else if (typeof args.TransactionHistory != 'object') {
+    throw new Error('Need object type TransactionHistory')
+  }
+  const loan = {
+    CustID: args.CustID,
+    RealEstateID: args.RealEstateID, //
+    LoanAmount: args.LoanAmount,
+    TopUp: args.TopUp,
+    Fico: args.Fico,
+    Insurance: args.Insurance,
+    Appraisal: args.Appraisal, //this we will get from registration ledger
+    Status: args.Status, //status of the mortgage Pending -> FicoSet -> InsuranceSet -> Funded -> Rejected
+    MortgageStatus: args.MortgageStatus,
+    TransactionHistory: args.TransactionHistory //to hold details for auditing - includes the function called and timestamp
+  }
+  return loan
+}
+
 module.exports = {
-  RealEstate: dataRealEstate,
-  Registration: dataRegistration
+  Registration: dataRegistration,
+  DnC: dataDnC,
+  Loan: dataLoan
 }

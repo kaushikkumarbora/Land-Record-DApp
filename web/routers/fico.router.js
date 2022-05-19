@@ -16,12 +16,12 @@ router.get('/', (req, res) => {
  *    get:
  *      tags:
  *      - 'fico'
- *      summary: Get Mortgages
+ *      summary: Get Ficos
  *      description: Used to get all lending states of certain status
  *      parameters:
  *      - name: status
  *        in: query
- *        description: Status of Mortgage. Keep blank for all.
+ *        description: Status of Loan.
  *        required: true
  *        type: array
  *        items:
@@ -29,10 +29,6 @@ router.get('/', (req, res) => {
  *          enum:
  *          - "Any"
  *          - "Pending"
- *          - "FicoSet"
- *          - "InsuranceSet"
- *          - "Funded"
- *          - "Rejected"
  *          default: "Any"
  *        collectionFormat: multi
  *      - name: CustID
@@ -42,13 +38,13 @@ router.get('/', (req, res) => {
  *        type: string
  *      responses:
  *        '200':
- *          description: Successfully queried mortgages
+ *          description: Successfully queried Ficos
  *        '400':
  *          description: Bad Request
  *        '500':
  *          description: Internal Error
  */
-router.get('/api/ficos', async (req, res) => {
+ router.get('/api/ficos', async (req, res) => {
   let { status, CustID } = req.body // Pending, FicoSet, InsuranceSet, Funded, Rejected
   if (typeof status != 'string') {
     res.status(400).json({ error: 'Invalid request.' })
@@ -58,12 +54,12 @@ router.get('/api/ficos', async (req, res) => {
   let query = {}
 
   query.selector = {}
-  if (status != 'any') query.selector.Status = status
+  if (status != 'Any' && status != '') query.selector.Status = status
   if (typeof CustID === 'string') query.selector.CustID = CustID
 
   try {
-    let mortgages = await FicoPeer.queryString(JSON.stringify(query))
-    res.json(mortgages)
+    let loans = await FicoPeer.queryString(JSON.stringify(query))
+    res.json(loans)
   } catch (e) {
     res.status(500).json({ error: 'Error accessing blockchain. ' + e })
   }
@@ -83,7 +79,7 @@ router.get('/api/ficos', async (req, res) => {
  *        description: The Real Estate ID and Cust ID against which the fico score is to be set.
  *        required: true
  *        schema:
- *          $ref: '#/definitions/MortgageKey'
+ *          $ref: '#/definitions/LoanKey'
  *      responses:
  *        '200':
  *          description: Successfully set fico score
@@ -93,7 +89,7 @@ router.get('/api/ficos', async (req, res) => {
  *          description: Internal Error
  */
 router.put('/api/set-fico', async (req, res) => {
-  let { CustID, RealEstateID } = req.body
+  let { CustID, RealEstateID } = req.query
   if (typeof RealEstateID != 'string' || typeof CustID != 'string') {
     res.status(400).json({ error: 'Invalid request.' })
     return
