@@ -9,15 +9,15 @@ function App () {
       <header class={styles.header}>
         <img src={logo} class={styles.logo} alt='logo' />
         <p>
-          Edit <code>src/App.jsx</code> and save to reload.
+          Digitisation of real estate records with <code>Blockchain</code>
         </p>
         <a
           class={styles.link}
-          href='https://github.com/solidjs/solid'
+          href='https://github.com/kaushikkumarbora/project-8thsem'
           target='_blank'
           rel='noopener noreferrer'
         >
-          Learn Solid
+          Checkout the Project
         </a>
       </header>
     </div>
