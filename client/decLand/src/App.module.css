@@ -19,6 +19,21 @@
   color: white;
 }
 
+.other {
+  background-color:#F7F7F7;
+  display: flex;
+  min-height: 100vh;
+  flex-direction: column;
+  justify-content: center;
+  color: #1a1a1a;
+}
+
+.bodyfont {
+  font-size: 1.25rem;
+  font-weight: 300;
+  font-family: system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans","Liberation Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";
+}
+
 .link {
   color: #b318f0;
 }
