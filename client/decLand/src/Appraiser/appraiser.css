@@ -1,0 +1,38 @@
+.appraisalwin {  display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr 1fr;
+    gap: 0px 0px;
+    height: fit-content;
+    grid-auto-flow: row;
+    row-gap: 1em;
+    column-gap: 1em;
+    grid-template-areas:
+      "loan insurance"
+      "topup appraisal";
+}
+
+.loan { grid-area: loan; height: fit-content; grid-row-start: 1; grid-row-end: 2;}
+
+.insurance { grid-area: insurance; height: fit-content; grid-row-start: 1; grid-row-end: 2;}
+
+.topup { grid-area: topup; height: fit-content; grid-row-start: 2; grid-row-end: 3;}
+
+.appraisal { grid-area: appraisal; height: fit-content; grid-row-start: 2; grid-row-end: 4;}
+
+.flex-container {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  align-items: stretch;
+  align-content: flex-start;
+}
+
+.flex-items{
+  display: block;
+  flex-grow: 0;
+  flex-shrink: 1;
+  flex-basis: auto;
+  align-self: auto;
+  order: 0;
+}

@@ -3,7 +3,7 @@ import { NavDecLand } from './NavDecLand'
 
 function App () {
   return (
-    <div class={styles.App}>
+    <div>
       <NavDecLand />
     </div>
   )

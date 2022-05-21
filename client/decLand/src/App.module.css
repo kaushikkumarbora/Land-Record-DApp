@@ -21,9 +21,7 @@
 
 .other {
   background-color:#F7F7F7;
-  display: flex;
   min-height: 100vh;
-  flex-direction: column;
   justify-content: center;
   color: #1a1a1a;
 }
