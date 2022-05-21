@@ -10,19 +10,19 @@ import {
 } from 'solid-bootstrap'
 import { createSignal } from 'solid-js'
 
-export function ProcessAppraisal (props) {
+export function ProcessFico (props) {
   const [processing, setProcessing] = createSignal(false)
   const [showSmS, setShowS] = createSignal(false)
   const [showSmF, setShowF] = createSignal(false)
   const handleCloseSmS = () => setShowS(false)
   const handleCloseSmF = () => setShowF(false)
 
-  async function appraise (CustID, RealEstateID, Amount) {
+  async function setFico (CustID, RealEstateID) {
     setProcessing(true)
-    fetch('/appraiser/api/process-appraisal', {
+    fetch('/fico/api/set-fico', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ CustID, RealEstateID, Amount })
+      body: JSON.stringify({ CustID, RealEstateID })
     }).then(response => {
       if (response.status === 200) {
         setShowS(true)
@@ -78,13 +78,6 @@ export function ProcessAppraisal (props) {
                   RealEstateID: <code>{props.item.RealEstateID}</code>
                 </Form.Label>
               </Show>
-              <br />
-              <Form.Label>Amount</Form.Label>
-              <Form.Control
-                type='number'
-                placeholder='Enter Aadhar Number'
-                disabled={typeof props.item.CustID === 'undefined'}
-              />
             </Form.Group>
           </Row>
           <Show
@@ -105,15 +98,11 @@ export function ProcessAppraisal (props) {
             <Button
               variant='primary'
               onClick={event => {
-                appraise(
-                  props.item.CustID,
-                  props.item.RealEstateID,
-                  event.target.form[0].value
-                )
+                setFico(props.item.CustID, props.item.RealEstateID)
               }}
-              disabled={props.item.Status != 'InsuranceSet'}
+              disabled={props.item.Status != 'Pending'}
             >
-              Appraise
+              Set Fico
             </Button>
           </Show>
         </Form>

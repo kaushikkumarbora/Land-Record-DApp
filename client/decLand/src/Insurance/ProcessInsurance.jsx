@@ -10,16 +10,16 @@ import {
 } from 'solid-bootstrap'
 import { createSignal } from 'solid-js'
 
-export function ProcessAppraisal (props) {
+export function ProcessInsurance (props) {
   const [processing, setProcessing] = createSignal(false)
   const [showSmS, setShowS] = createSignal(false)
   const [showSmF, setShowF] = createSignal(false)
   const handleCloseSmS = () => setShowS(false)
   const handleCloseSmF = () => setShowF(false)
 
-  async function appraise (CustID, RealEstateID, Amount) {
+  async function insure (CustID, RealEstateID, Amount) {
     setProcessing(true)
-    fetch('/appraiser/api/process-appraisal', {
+    fetch('/insurance/api/process-insurance', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ CustID, RealEstateID, Amount })
@@ -105,15 +105,15 @@ export function ProcessAppraisal (props) {
             <Button
               variant='primary'
               onClick={event => {
-                appraise(
+                insure(
                   props.item.CustID,
                   props.item.RealEstateID,
                   event.target.form[0].value
                 )
               }}
-              disabled={props.item.Status != 'InsuranceSet'}
+              disabled={props.item.Status != 'FicoSet'}
             >
-              Appraise
+              Process Insurance
             </Button>
           </Show>
         </Form>

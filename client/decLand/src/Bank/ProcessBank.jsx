@@ -10,16 +10,61 @@ import {
 } from 'solid-bootstrap'
 import { createSignal } from 'solid-js'
 
-export function ProcessAppraisal (props) {
+export function ProcessBank (props) {
   const [processing, setProcessing] = createSignal(false)
   const [showSmS, setShowS] = createSignal(false)
   const [showSmF, setShowF] = createSignal(false)
   const handleCloseSmS = () => setShowS(false)
   const handleCloseSmF = () => setShowF(false)
 
-  async function appraise (CustID, RealEstateID, Amount) {
+  async function todo___ (CustID, RealEstateID, Amount) {
     setProcessing(true)
-    fetch('/appraiser/api/process-appraisal', {
+    fetch('/bank/api/initiate-loan', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ CustID, RealEstateID, Amount })
+    }).then(response => {
+      if (response.status === 200) {
+        setShowS(true)
+      } else {
+        setShowF(true)
+      }
+    })
+  }
+
+  async function todo___1 (CustID, RealEstateID, Amount) {
+    setProcessing(true)
+    fetch('/bank/api/process-loan', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ CustID, RealEstateID, Amount })
+    }).then(response => {
+      if (response.status === 200) {
+        setShowS(true)
+      } else {
+        setShowF(true)
+      }
+    })
+  }
+
+  async function todo___2 (CustID, RealEstateID, Amount) {
+    setProcessing(true)
+    fetch('/bank/api/initiate-mortgage', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ CustID, RealEstateID, Amount })
+    }).then(response => {
+      if (response.status === 200) {
+        setShowS(true)
+      } else {
+        setShowF(true)
+      }
+    })
+  }
+
+  async function todo___3 (CustID, RealEstateID, Amount) {
+    setProcessing(true)
+    fetch('/bank/api/close-mortgage', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ CustID, RealEstateID, Amount })
@@ -105,7 +150,7 @@ export function ProcessAppraisal (props) {
             <Button
               variant='primary'
               onClick={event => {
-                appraise(
+                todo___(
                   props.item.CustID,
                   props.item.RealEstateID,
                   event.target.form[0].value
@@ -113,7 +158,7 @@ export function ProcessAppraisal (props) {
               }}
               disabled={props.item.Status != 'InsuranceSet'}
             >
-              Appraise
+              Initiate
             </Button>
           </Show>
         </Form>

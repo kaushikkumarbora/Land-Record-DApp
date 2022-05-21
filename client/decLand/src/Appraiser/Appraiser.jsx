@@ -1,7 +1,7 @@
 import styles from '../App.module.css'
 import { getLoans, Loan } from '../dataLoan/Loan'
 import { onMount, createSignal, Show } from 'solid-js'
-import { Alert, Card, Placeholder } from 'solid-bootstrap'
+import { Alert } from 'solid-bootstrap'
 import { SearchField } from './Search'
 import { FullLoan } from '../dataLoan/FullLoan'
 import { FullInsurance } from '../dataLoan/FullInsurance'
@@ -65,10 +65,7 @@ export function Appraiser () {
             <div class='appraisal flex-container'>
               <Alert variant='light'>
                 <Alert.Heading>Actions</Alert.Heading>
-                <ProcessAppraisal
-                  class='flex-items'
-                  item={selectedLoan()}
-                />
+                <ProcessAppraisal class='flex-items' item={selectedLoan()} />
               </Alert>
             </div>
           </div>
