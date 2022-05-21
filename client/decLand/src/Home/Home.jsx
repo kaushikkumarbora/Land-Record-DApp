@@ -1,5 +1,5 @@
-import styles from './App.module.css'
-import logo from './logo.svg'
+import styles from '../App.module.css'
+import logo from '../logo.svg'
 
 export function Home () {
   return (
