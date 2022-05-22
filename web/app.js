@@ -11,6 +11,7 @@ import insuranceRouter from './routers/insurance.router'
 import municipalRouter from './routers/municipal.router'
 import registryRouter from './routers/registry.router'
 import revenueRouter from './routers/revenue.router'
+const path = require('path');
 const swaggerJsDoc = require('swagger-jsdoc')
 const swaggerUi = require('swagger-ui-express')
 
@@ -647,6 +648,10 @@ const app = express()
 const httpServer = new Server(app)
 
 configureExpress(app)
+
+const filepath = path.join(__dirname, 'dist/')
+
+app.use(express.static(filepath))
 
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs))
 
