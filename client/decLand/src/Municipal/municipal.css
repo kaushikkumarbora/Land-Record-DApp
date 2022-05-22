@@ -1,0 +1,38 @@
+.municipalwin {  display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr 1fr 1fr;
+    gap: 0px 0px;
+    height: fit-content;
+    grid-auto-flow: row;
+    row-gap: 1em;
+    column-gap: 1em;
+    grid-template-areas:
+      "registration dnc"
+      "covenants municipal";
+}
+
+.registration { grid-area: registration; height: fit-content; grid-row-start: 1; grid-row-end: 2;}
+
+.dnc { grid-area: dnc; height: fit-content; grid-row-start: 1; grid-row-end: 2;}
+
+.covenants { grid-area: covenants; height: fit-content; grid-row-start: 2; grid-row-end: 5;}
+
+.municipal { grid-area: municipal; height: fit-content; grid-row-start: 2; grid-row-end: 5;}
+
+.flex-container {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  align-items: stretch;
+  align-content: flex-start;
+}
+
+.flex-items{
+  display: block;
+  flex-grow: 0;
+  flex-shrink: 1;
+  flex-basis: auto;
+  align-self: auto;
+  order: 0;
+}
