@@ -77,7 +77,7 @@ router.get('/api/loans', async (req, res) => {
   if (typeof mortgagestatus === 'string')
     if (mortgagestatus != 'Any' && mortgagestatus != '')
       query.selector.MortgageStatus = mortgagestatus
-  if (typeof CustID === 'string') query.selector.CustID = CustID
+  if (typeof CustID === 'string' && CustID != '') query.selector.CustID = CustID
 
   try {
     let mortgages = await BankPeer.queryString(JSON.stringify(query))

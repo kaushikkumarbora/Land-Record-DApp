@@ -45,7 +45,7 @@ router.get('/', (req, res) => {
  *          description: Internal Error
  */
 router.get('/api/ficos', async (req, res) => {
-  let { status, CustID } = req.body // Pending, FicoSet, InsuranceSet, Funded, Rejected
+  let { status, CustID } = req.query // Pending, FicoSet, InsuranceSet, Funded, Rejected
   if (typeof status != 'string') {
     res.status(400).json({ error: 'Invalid request.' })
     return
@@ -89,7 +89,7 @@ router.get('/api/ficos', async (req, res) => {
  *          description: Internal Error
  */
 router.put('/api/set-fico', async (req, res) => {
-  let { CustID, RealEstateID } = req.query
+  let { CustID, RealEstateID } = req.body
   if (typeof RealEstateID != 'string' || typeof CustID != 'string') {
     res.status(400).json({ error: 'Invalid request.' })
     return
