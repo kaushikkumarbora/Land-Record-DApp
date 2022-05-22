@@ -31,6 +31,7 @@ router.get('/', (req, res) => {
  *          - "Pending"
  *          - "Submitted"
  *          - "Approved"
+ *          - "Cancelled"
  *          - "Complete"
  *          default: "Any"
  *        collectionFormat: multi
@@ -64,7 +65,7 @@ router.get('/api/registrations', async (req, res) => {
   query.selector = {}
   if (status != 'Any' && status != '') query.selector.Status = status
   if (typeof permission === 'boolean') query.selector.Permission = permission
-  if (typeof RealEstateID === 'string')
+  if (typeof RealEstateID === 'string' && RealEstateID != '')
     query.selector.RealEstateID = RealEstateID
 
   try {

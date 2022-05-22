@@ -44,7 +44,7 @@ router.get('/', (req, res) => {
  *        '500':
  *          description: Internal Error
  */
- router.get('/api/ficos', async (req, res) => {
+router.get('/api/ficos', async (req, res) => {
   let { status, CustID } = req.body // Pending, FicoSet, InsuranceSet, Funded, Rejected
   if (typeof status != 'string') {
     res.status(400).json({ error: 'Invalid request.' })
@@ -55,7 +55,7 @@ router.get('/', (req, res) => {
 
   query.selector = {}
   if (status != 'Any' && status != '') query.selector.Status = status
-  if (typeof CustID === 'string') query.selector.CustID = CustID
+  if (typeof CustID === 'string' && CustID != '') query.selector.CustID = CustID
 
   try {
     let loans = await FicoPeer.queryString(JSON.stringify(query))

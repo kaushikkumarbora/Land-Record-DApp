@@ -43,9 +43,10 @@ router.get('/api/records', async (req, res) => {
   let query = {}
 
   query.selector = {}
-  if (typeof RealEstateID === 'string')
+  if (typeof RealEstateID === 'string' && RealEstateID != '')
     query.selector.RealEstateID = RealEstateID
-  if (typeof owner === 'string') query.selector.OwnerAadhar = owner
+  if (typeof owner === 'string' && owner != '')
+    query.selector.OwnerAadhar = owner
 
   try {
     let records = await RegistryPeer.queryString(JSON.stringify(query))

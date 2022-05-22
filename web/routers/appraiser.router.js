@@ -55,7 +55,7 @@ router.get('/api/appraisals', async (req, res) => {
 
   query.selector = {}
   if (status != 'Any' && status != '') query.selector.Status = status
-  if (typeof CustID === 'string') query.selector.CustID = CustID
+  if (typeof CustID === 'string' && CustID != '') query.selector.CustID = CustID
 
   try {
     let appraisals = await AppraiserPeer.queryString(JSON.stringify(query))

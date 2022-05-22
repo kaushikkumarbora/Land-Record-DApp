@@ -50,7 +50,7 @@ router.get('/api/registrations', async (req, res) => {
 
   query.selector = {}
   query.selector.Permission = permission
-  if (typeof RealEstateID === 'string')
+  if (typeof RealEstateID === 'string' && RealEstateID != '')
     query.selector.RealEstateID = RealEstateID
 
   try {
