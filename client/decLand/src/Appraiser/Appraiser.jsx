@@ -38,10 +38,14 @@ export function Appraiser () {
   return (
     <div class='container-fluid'>
       <div class='row'>
-        <div class={'col-sm-3 col-md-6 col-lg-4 ' + styles.other}>
+        <div
+          class={
+            'col-sm-3 col-md-6 col-lg-4 ' + styles.other + ' ' + styles.splits
+          }
+        >
           <br />
           <SearchField getLoans={searchLoans} />
-          <Alert class='scrollbar scrollbar-primary' variant='secondary'>
+          <Alert variant='secondary'>
             <Show
               when={loans().length != 0}
               fallback={<div class={styles.bodyfont}>No Entries</div>}
@@ -50,7 +54,7 @@ export function Appraiser () {
             </Show>
           </Alert>
         </div>
-        <div class='col-sm-9 col-md-6 col-lg-8' style='min-height: 100vh'>
+        <div class={'col-sm-9 col-md-6 col-lg-8 ' + styles.splits}>
           <br />
           <div class='appraisalwin'>
             <div class='loan'>

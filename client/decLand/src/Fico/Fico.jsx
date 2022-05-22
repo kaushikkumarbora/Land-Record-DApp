@@ -38,7 +38,11 @@ export function Fico () {
   return (
     <div class='container-fluid'>
       <div class='row'>
-        <div class={'col-sm-3 col-md-6 col-lg-4 ' + styles.other}>
+        <div
+          class={
+            'col-sm-3 col-md-6 col-lg-4 ' + styles.other + ' ' + styles.splits
+          }
+        >
           <br />
           <SearchField getLoans={searchLoans} />
           <Alert class='scrollbar scrollbar-primary' variant='secondary'>
@@ -50,7 +54,7 @@ export function Fico () {
             </Show>
           </Alert>
         </div>
-        <div class='col-sm-9 col-md-6 col-lg-8' style='min-height: 100vh'>
+        <div class={'col-sm-9 col-md-6 col-lg-8 ' + styles.splits}>
           <br />
           <div class='ficowin'>
             <div class='loan'>
@@ -65,10 +69,7 @@ export function Fico () {
             <div class='fico flex-container'>
               <Alert variant='light'>
                 <Alert.Heading>Actions</Alert.Heading>
-                <ProcessFico
-                  class='flex-items'
-                  item={selectedLoan()}
-                />
+                <ProcessFico class='flex-items' item={selectedLoan()} />
               </Alert>
             </div>
           </div>

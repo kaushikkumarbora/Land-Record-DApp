@@ -8,6 +8,7 @@ import { FullInsurance } from '../dataLoan/FullInsurance'
 import { FullTopUp } from '../dataLoan/FullTopUp'
 import './bank.css'
 import { ProcessBank } from './ProcessBank'
+import { ProcessBankMortgage } from './ProcessBankMortgage'
 
 export function Bank () {
   const [loans, setLoans] = createSignal([])
@@ -38,10 +39,14 @@ export function Bank () {
   return (
     <div class='container-fluid'>
       <div class='row'>
-        <div class={'col-sm-3 col-md-6 col-lg-4 ' + styles.other}>
+        <div
+          class={
+            'col-sm-3 col-md-6 col-lg-4 ' + styles.other + ' ' + styles.splits
+          }
+        >
           <br />
           <SearchField getLoans={searchLoans} />
-          <Alert class='scrollbar scrollbar-primary' variant='secondary'>
+          <Alert variant='secondary'>
             <Show
               when={loans().length != 0}
               fallback={<div class={styles.bodyfont}>No Entries</div>}
@@ -50,7 +55,7 @@ export function Bank () {
             </Show>
           </Alert>
         </div>
-        <div class='col-sm-9 col-md-6 col-lg-8' style='min-height: 100vh'>
+        <div class={'col-sm-9 col-md-6 col-lg-8 ' + styles.splits}>
           <br />
           <div class='bankwin'>
             <div class='loan'>
@@ -66,6 +71,12 @@ export function Bank () {
               <Alert variant='light'>
                 <Alert.Heading>Actions</Alert.Heading>
                 <ProcessBank class='flex-items' item={selectedLoan()} />
+              </Alert>
+            </div>
+            <div class='mortgage flex-container'>
+              <Alert variant='light'>
+                <Alert.Heading>Actions</Alert.Heading>
+                <ProcessBankMortgage class='flex-items' item={selectedLoan()} />
               </Alert>
             </div>
           </div>
