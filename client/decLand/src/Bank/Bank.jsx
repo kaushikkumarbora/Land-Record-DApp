@@ -1,7 +1,7 @@
 import styles from '../App.module.css'
 import { getLoans, Loan } from '../dataLoan/Loan'
 import { onMount, createSignal, Show } from 'solid-js'
-import { Alert } from 'solid-bootstrap'
+import { Alert, Spinner } from 'solid-bootstrap'
 import { SearchField } from './Search'
 import { FullLoan } from '../dataLoan/FullLoan'
 import { FullInsurance } from '../dataLoan/FullInsurance'
@@ -13,11 +13,10 @@ import { ProcessBankMortgage } from './ProcessBankMortgage'
 export function Bank () {
   const [loans, setLoans] = createSignal([])
   const [selectedLoan, setSelectedLoan] = createSignal({})
+  const [searching, setSearching] = createSignal(false)
 
-  const searchLoans = async () => {
-    const params = {
-      status: 'Any'
-    }
+  const searchLoans = async params => {
+    setSearching(true)
     let res = getLoans('/bank/api/loans', params)
     res.then(data => {
       // data = []
@@ -29,11 +28,12 @@ export function Bank () {
       //   Status: 'OK',
       //   MortgageStatus: 'OK'
       // })
+      setSearching(false)
       setLoans(data)
     })
   }
 
-  onMount(searchLoans)
+  onMount(() => searchLoans({ status: 'Any' }))
 
   console.log('Bank Rendered')
   return (
@@ -48,10 +48,21 @@ export function Bank () {
           <SearchField getLoans={searchLoans} />
           <Alert variant='secondary'>
             <Show
-              when={loans().length != 0}
-              fallback={<div class={styles.bodyfont}>No Entries</div>}
+              when={!searching()}
+              fallback={
+                <div class={styles.bodyfont}>
+                  <Spinner animation='border' role='status'>
+                    <span class='visually-hidden'>Loading...</span>
+                  </Spinner>
+                </div>
+              }
             >
-              <Loan data={loans()} onClick={setSelectedLoan} />
+              <Show
+                when={loans().length != 0}
+                fallback={<div class={styles.bodyfont}>No Entries</div>}
+              >
+                <Loan data={loans()} onClick={setSelectedLoan} />
+              </Show>
             </Show>
           </Alert>
         </div>
