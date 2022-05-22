@@ -17,6 +17,7 @@ export function Registry () {
     setSearching(true)
     let res = getRecords('/registry/api/records', params)
     res.then(data => {
+      data = data.map(item => item.Record)
       setSearching(false)
       setRecords(data)
     })
