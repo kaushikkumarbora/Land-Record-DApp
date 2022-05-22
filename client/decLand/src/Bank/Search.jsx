@@ -16,7 +16,21 @@ export function SearchField (props) {
             <Form.Label>Status</Form.Label>
             <Form.Select>
               <option>Any</option>
+              <option>Pending</option>
+              <option>FicoSet</option>
               <option>InsuranceSet</option>
+              <option>Applied</option>
+              <option>Approved</option>
+              <option>Rejected</option>
+            </Form.Select>
+          </Form.Group>
+          <Form.Group as={Col}>
+            <Form.Label>Mortgage Status</Form.Label>
+            <Form.Select>
+              <option>Any</option>
+              <option>Pending</option>
+              <option>Inforced</option>
+              <option>Closed</option>
             </Form.Select>
           </Form.Group>
         </Row>
@@ -26,7 +40,8 @@ export function SearchField (props) {
           onClick={event => {
             props.getLoans({
               status: event.target.form[0].value,
-              CustID: event.target.form[1].value
+              CustID: event.target.form[1].value,
+              mortgagestatus: event.target.form[2].value
             })
           }}
         >
