@@ -35,11 +35,11 @@ export function ProcessRecords (props) {
       body: JSON.stringify({
         RealEstateID,
         Address,
-        Latitude,
-        Longitude,
-        Length,
-        Width,
-        TotalArea,
+        Latitude: parseFloat(Latitude),
+        Longitude: parseFloat(Longitude),
+        Length: parseFloat(Length),
+        Width: parseFloat(Width),
+        TotalArea: parseFloat(TotalArea),
         OwnerAadhar
       })
     }).then(response => {
@@ -73,7 +73,6 @@ export function ProcessRecords (props) {
     })
   }
 
-  console.log(props.item)
   return (
     <>
       <Modal
@@ -132,7 +131,7 @@ export function ProcessRecords (props) {
             </Form.Group>
           </Row>
           <Show
-            when={processing}
+            when={!processing()}
             fallback={
               <Button variant='primary' disabled>
                 <Spinner
@@ -196,7 +195,7 @@ export function ProcessRecords (props) {
             </Form.Group>
           </Row>
           <Show
-            when={processing}
+            when={!processing()}
             fallback={
               <Button variant='primary' disabled>
                 <Spinner

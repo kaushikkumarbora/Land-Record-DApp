@@ -34,9 +34,9 @@ export function ProcessInsurance (props) {
         CustID,
         RealEstateID,
         ProviderID,
-        Premium,
-        Summoned,
-        Period
+        Premium: parseFloat(Premium),
+        Summoned: parseFloat(Summoned),
+        Period: parseFloat(Period)
       })
     }).then(response => {
       if (response.status === 200) {
@@ -49,7 +49,6 @@ export function ProcessInsurance (props) {
     })
   }
 
-  console.log(props.item)
   return (
     <>
       <Modal
@@ -135,7 +134,7 @@ export function ProcessInsurance (props) {
             </Form.Group>
           </Row>
           <Show
-            when={processing}
+            when={!processing()}
             fallback={
               <Button variant='primary' disabled>
                 <Spinner
@@ -155,7 +154,10 @@ export function ProcessInsurance (props) {
                 insure(
                   props.item.CustID,
                   props.item.RealEstateID,
-                  event.target.form[0].value
+                  event.target.form[0].value,
+                  event.target.form[1].value,
+                  event.target.form[2].value,
+                  event.target.form[3].value
                 )
               }}
               disabled={props.item.Status != 'FicoSet'}

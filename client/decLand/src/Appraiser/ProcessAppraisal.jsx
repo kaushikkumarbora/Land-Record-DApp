@@ -23,7 +23,7 @@ export function ProcessAppraisal (props) {
     fetch('/appraiser/api/process-appraisal', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ CustID, RealEstateID, Amount })
+      body: JSON.stringify({ CustID, RealEstateID, Amount: parseFloat(Amount) })
     }).then(response => {
       if (response.status === 200) {
         setShowS(true)
@@ -35,7 +35,6 @@ export function ProcessAppraisal (props) {
     })
   }
 
-  console.log(props.item)
   return (
     <>
       <Modal
@@ -94,7 +93,7 @@ export function ProcessAppraisal (props) {
             </Form.Group>
           </Row>
           <Show
-            when={processing}
+            when={!processing()}
             fallback={
               <Button variant='primary' disabled>
                 <Spinner

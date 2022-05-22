@@ -21,9 +21,9 @@ export function ProcessBank (props) {
   async function initiateLoan (CustID, RealEstateID, LoanAmount) {
     setProcessing(true)
     fetch('/bank/api/initiate-loan', {
-      method: 'PUT',
+      method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ CustID, RealEstateID, LoanAmount })
+      body: JSON.stringify({ CustID, RealEstateID, LoanAmount: parseFloat(LoanAmount) })
     }).then(response => {
       if (response.status === 200) {
         setShowS(true)
@@ -35,12 +35,12 @@ export function ProcessBank (props) {
     })
   }
 
-  async function processLoan (CustID, RealEstateID, Amount) {
+  async function processLoan (CustID, RealEstateID, Approve) {
     setProcessing(true)
     fetch('/bank/api/process-loan', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ CustID, RealEstateID, Amount })
+      body: JSON.stringify({ CustID, RealEstateID, Approve: (Approve === 'true') })
     }).then(response => {
       if (response.status === 200) {
         setShowS(true)
@@ -52,7 +52,6 @@ export function ProcessBank (props) {
     })
   }
 
-  console.log(props.item)
   return (
     <>
       <Modal
@@ -90,7 +89,7 @@ export function ProcessBank (props) {
             </Form.Group>
           </Row>
           <Show
-            when={processing}
+            when={!processing()}
             fallback={
               <Button variant='primary' disabled>
                 <Spinner
@@ -156,7 +155,7 @@ export function ProcessBank (props) {
             </Form.Group>
           </Row>
           <Show
-            when={processing}
+            when={!processing()}
             fallback={
               <Button variant='primary' disabled>
                 <Spinner

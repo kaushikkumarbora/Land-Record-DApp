@@ -25,7 +25,7 @@ export function SearchField (props) {
           variant='primary'
           onClick={event => {
             props.getRegistrations({
-              permission: event.target.form[0].value,
+              permission: event.target.form[0].value === 'true',
               RealEstateID: event.target.form[1].value
             })
           }}

@@ -33,10 +33,10 @@ export function ProcessRegistration (props) {
       body: JSON.stringify({
         RealEstateID,
         StampID,
-        StampDuty,
-        StampCharges,
-        RegistrationFee,
-        UserFee
+        StampDuty: parseInt(StampDuty),
+        StampCharges: parseFloat(StampCharges),
+        RegistrationFee: parseFloat(RegistrationFee),
+        UserFee: parseFloat(UserFee)
       })
     }).then(response => {
       if (response.status === 200) {
@@ -175,7 +175,7 @@ export function ProcessRegistration (props) {
             </Form.Group>
           </Row>
           <Show
-            when={processing}
+            when={!processing()}
             fallback={
               <Button variant='primary' disabled>
                 <Spinner
@@ -231,7 +231,7 @@ export function ProcessRegistration (props) {
             </Form.Group>
           </Row>
           <Show
-            when={processing}
+            when={!processing()}
             fallback={
               <Button variant='primary' disabled>
                 <Spinner
@@ -280,7 +280,7 @@ export function ProcessRegistration (props) {
             </Form.Group>
           </Row>
           <Show
-            when={processing}
+            when={!processing()}
             fallback={
               <Button variant='primary' disabled>
                 <Spinner
@@ -345,7 +345,7 @@ export function ProcessRegistration (props) {
             </Form.Group>
           </Row>
           <Show
-            when={processing}
+            when={!processing()}
             fallback={
               <Button variant='primary' disabled>
                 <Spinner

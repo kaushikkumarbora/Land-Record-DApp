@@ -37,11 +37,17 @@ export function SearchField (props) {
         <Button
           variant='primary'
           onClick={event => {
-            props.getRegistrations({
-              satus: event.target.form[0].value,
-              permission: event.target.form[1].value,
-              RealEstateID: event.target.form[2].value
-            })
+            if (event.target.form[1].value === 'Any')
+              props.getRegistrations({
+                status: event.target.form[0].value,
+                RealEstateID: event.target.form[2].value
+              })
+            else
+              props.getRegistrations({
+                status: event.target.form[0].value,
+                permission: event.target.form[1].value === 'true',
+                RealEstateID: event.target.form[2].value
+              })
           }}
         >
           Search

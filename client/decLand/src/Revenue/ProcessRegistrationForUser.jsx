@@ -31,7 +31,7 @@ export function ProcessRegistrationForUser (props) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         RealEstateID,
-        Amount,
+        Amount: parseFloat(Amount),
         Covenants,
         BuyerAadhar,
         SellerAadhar
@@ -59,7 +59,7 @@ export function ProcessRegistrationForUser (props) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         RealEstateID,
-        Amount,
+        Amount: parseFloat(Amount),
         Covenants,
         BuyerAadhar
       })
@@ -196,7 +196,7 @@ export function ProcessRegistrationForUser (props) {
             </Form.Group>
           </Row>
           <Show
-            when={processing}
+            when={!processing()}
             fallback={
               <Button variant='primary' disabled>
                 <Spinner
@@ -261,7 +261,7 @@ export function ProcessRegistrationForUser (props) {
             </Form.Group>
           </Row>
           <Show
-            when={processing}
+            when={!processing()}
             fallback={
               <Button variant='primary' disabled>
                 <Spinner
@@ -315,7 +315,7 @@ export function ProcessRegistrationForUser (props) {
             </Form.Group>
           </Row>
           <Show
-            when={processing}
+            when={!processing()}
             fallback={
               <Button variant='primary' disabled>
                 <Spinner
@@ -376,7 +376,7 @@ export function ProcessRegistrationForUser (props) {
             </Form.Group>
           </Row>
           <Show
-            when={processing}
+            when={!processing()}
             fallback={
               <>
                 <Button variant='primary' disabled>
@@ -459,7 +459,7 @@ export function ProcessRegistrationForUser (props) {
             </Form.Group>
           </Row>
           <Show
-            when={processing}
+            when={!processing()}
             fallback={
               <Button variant='primary' disabled>
                 <Spinner
