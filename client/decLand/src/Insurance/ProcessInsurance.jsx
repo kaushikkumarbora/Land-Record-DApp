@@ -6,7 +6,8 @@ import {
   Button,
   Col,
   Spinner,
-  Modal
+  Modal,
+  InputGroup
 } from 'solid-bootstrap'
 import { createSignal } from 'solid-js'
 
@@ -17,17 +18,33 @@ export function ProcessInsurance (props) {
   const handleCloseSmS = () => setShowS(false)
   const handleCloseSmF = () => setShowF(false)
 
-  async function insure (CustID, RealEstateID, Amount) {
+  async function insure (
+    CustID,
+    RealEstateID,
+    ProviderID,
+    Premium,
+    Summoned,
+    Period
+  ) {
     setProcessing(true)
     fetch('/insurance/api/process-insurance', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ CustID, RealEstateID, Amount })
+      body: JSON.stringify({
+        CustID,
+        RealEstateID,
+        ProviderID,
+        Premium,
+        Summoned,
+        Period
+      })
     }).then(response => {
       if (response.status === 200) {
         setShowS(true)
+        setProcessing(false)
       } else {
         setShowF(true)
+        setProcessing(false)
       }
     })
   }
@@ -79,12 +96,42 @@ export function ProcessInsurance (props) {
                 </Form.Label>
               </Show>
               <br />
-              <Form.Label>Amount</Form.Label>
+              <Form.Label>ProviderID</Form.Label>
               <Form.Control
-                type='number'
-                placeholder='Enter Aadhar Number'
+                type='string'
+                placeholder='Enter ProviderID'
                 disabled={typeof props.item.CustID === 'undefined'}
               />
+              <br />
+              <Form.Label>Premium</Form.Label>
+              <InputGroup>
+                <InputGroup.Text>Rs.</InputGroup.Text>
+                <Form.Control
+                  type='number'
+                  placeholder='Enter Amount in Rs'
+                  disabled={typeof props.item.CustID === 'undefined'}
+                />
+              </InputGroup>
+              <br />
+              <Form.Label>Summoned</Form.Label>
+              <InputGroup>
+                <InputGroup.Text>Rs.</InputGroup.Text>
+                <Form.Control
+                  type='number'
+                  placeholder='Enter Amount in Rs'
+                  disabled={typeof props.item.CustID === 'undefined'}
+                />
+              </InputGroup>
+              <br />
+              <Form.Label>Period</Form.Label>
+              <InputGroup>
+                <Form.Control
+                  type='number'
+                  placeholder='Enter Period in Years'
+                  disabled={typeof props.item.CustID === 'undefined'}
+                />
+                <InputGroup.Text>Years</InputGroup.Text>
+              </InputGroup>
             </Form.Group>
           </Row>
           <Show
