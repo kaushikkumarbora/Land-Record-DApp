@@ -22,7 +22,12 @@ router.get('/', (req, res) => {
  *      - name: owner
  *        in: query
  *        description: The owner
- *        required: true
+ *        required: false
+ *        type: string
+ *      - name: RealEstateID
+ *        in: query
+ *        description: The Real Estate ID
+ *        required: false
  *        type: string
  *      responses:
  *        '200':
@@ -33,16 +38,14 @@ router.get('/', (req, res) => {
  *          description: Internal Error
  */
 router.get('/api/records', async (req, res) => {
-  let { owner } = req.query //Owned Currently
-  if (typeof owner != 'string') {
-    res.status(400).json({ error: 'Invalid request.' })
-    return
-  }
+  let { owner, RealEstateID } = req.query
 
   let query = {}
 
   query.selector = {}
-  query.selector.OwnerAadhar = owner
+  if (typeof RealEstateID === 'string')
+    query.selector.RealEstateID = RealEstateID
+  if (typeof owner === 'string') query.selector.OwnerAadhar = owner
 
   try {
     let records = await RegistryPeer.queryString(JSON.stringify(query))
