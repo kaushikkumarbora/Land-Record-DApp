@@ -55,6 +55,7 @@ router.get('/', (req, res) => {
  */
 router.get('/api/registrations', async (req, res) => {
   let { status, permission, RealEstateID } = req.query
+  console.log(typeof status)
   if (typeof status != 'string') {
     res.status(400).json({ error: 'Invalid request.' })
     return
@@ -72,7 +73,7 @@ router.get('/api/registrations', async (req, res) => {
     let deeds = await RevenuePeer.queryString(JSON.stringify(query))
     res.json(deeds)
   } catch (e) {
-    res.json({ error: 'Error accessing blockchain. ' + e })
+    res.status(500).json({ error: 'Error accessing blockchain. ' + e })
   }
 })
 

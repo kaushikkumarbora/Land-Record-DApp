@@ -1,6 +1,6 @@
 import express from 'express'
 
-import * as MinucipalPeer from '../blockchain/municipalPeer'
+import * as MunicipalPeer from '../blockchain/municipalPeer'
 
 const router = express.Router()
 
@@ -40,8 +40,7 @@ router.get('/', (req, res) => {
  */
 router.get('/api/registrations', async (req, res) => {
   let { permission, RealEstateID } = req.query
-  console.log(typeof permission)
-  if (typeof permission != 'boolean') {
+  if (permission != 'true' && permission != 'false') {
     res.status(400).json({ error: 'Invalid request.' })
     return
   }
@@ -49,15 +48,15 @@ router.get('/api/registrations', async (req, res) => {
   let query = {}
 
   query.selector = {}
-  query.selector.Permission = permission
+  query.selector.Permission = permission === 'true'
   if (typeof RealEstateID === 'string' && RealEstateID != '')
     query.selector.RealEstateID = RealEstateID
 
   try {
-    let deeds = await RevenuePeer.queryString(JSON.stringify(query))
+    let deeds = await MunicipalPeer.queryString(JSON.stringify(query))
     res.json(deeds)
   } catch (e) {
-    res.json({ error: 'Error accessing blockchain. ' + e })
+    res.status(500).json({ error: 'Error accessing blockchain. ' + e })
   }
 })
 
@@ -92,7 +91,7 @@ router.put('/api/set-permission', async (req, res) => {
   }
 
   try {
-    const success = await MinucipalPeer.setPermission(RealEstateID)
+    const success = await MunicipalPeer.setPermission(RealEstateID)
     res.json({ success })
   } catch (e) {
     res.status(500).json({ error: 'Error accessing blockchain. ' + e })
@@ -128,7 +127,7 @@ router.get('/api/blocks', async (req, res) => {
     res.status(400).json({ error: 'Invalid request' })
   }
   try {
-    // const blocks = await MinucipalPeer.getBlocks(noOfLastBlocks)
+    // const blocks = await MunicipalPeer.getBlocks(noOfLastBlocks)
     res.json()
   } catch (e) {
     res.status(500).json({ error: 'Error accessing blockchain. ' + e })

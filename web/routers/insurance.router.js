@@ -98,7 +98,7 @@ router.put('/api/process-insurance', async (req, res) => {
     typeof Summoned != 'number' ||
     typeof Period != 'number'
   ) {
-    res.json({ error: 'Invalid request.' })
+    res.status(400).json({ error: 'Invalid request.' })
     return
   }
 
@@ -111,9 +111,9 @@ router.put('/api/process-insurance', async (req, res) => {
       Summoned,
       Period
     )
-    res.json({ success })
+    res.status(200).json({ success })
   } catch (e) {
-    res.json({ error: 'Error accessing blockchain. ' + e })
+    res.status(500).json({ error: 'Error accessing blockchain. ' + e })
   }
 })
 

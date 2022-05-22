@@ -52,7 +52,7 @@ router.get('/api/records', async (req, res) => {
     let records = await RegistryPeer.queryString(JSON.stringify(query))
     res.json(records)
   } catch (e) {
-    res.json({ error: 'Error accessing blockchain. ' + e })
+    res.status(500).json({ error: 'Error accessing blockchain. ' + e })
   }
 })
 
