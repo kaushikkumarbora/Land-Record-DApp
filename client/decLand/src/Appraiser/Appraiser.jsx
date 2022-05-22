@@ -18,15 +18,7 @@ export function Appraiser () {
     setSearching(true)
     let res = getLoans('/appraiser/api/appraisals', params)
     res.then(data => {
-      // data = []
-      // data.push({
-      //   CustID: '123',
-      //   RealEstateID: 'asdasd',
-      //   LoanAmount: Math.random(),
-      //   Fico: Math.random(),
-      //   Status: 'OK',
-      //   MortgageStatus: 'OK'
-      // })
+      data = data.map(item => item.Record)
       setSearching(false)
       setLoans(data)
     })

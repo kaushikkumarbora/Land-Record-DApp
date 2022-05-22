@@ -21,15 +21,7 @@ export function Municipal () {
     setSearching(true)
     let res = getRegistrations('/municipal/api/registrations', params)
     res.then(data => {
-      // data = []
-      // data.push({
-      //   CustID: '123',
-      //   RealEstateID: 'asdasd',
-      //   LoanAmount: Math.random(),
-      //   Fico: Math.random(),
-      //   Status: 'OK',
-      //   MortgageStatus: 'OK'
-      // })
+      data = data.map(item => item.Record)
       setSearching(false)
       setRegistrations(data)
     })
@@ -49,7 +41,6 @@ export function Municipal () {
           <br />
           <SearchField getRegistrations={searchRegistrations} />
           <Alert variant='secondary' class={styles.searchflex}>
-            {console.log(searching())}
             <Show
               when={!searching()}
               fallback={

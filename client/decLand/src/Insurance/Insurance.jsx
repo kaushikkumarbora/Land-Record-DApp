@@ -18,15 +18,7 @@ export function Insurance () {
     setSearching(true)
     let res = getLoans('/insurance/api/insurances', params)
     res.then(data => {
-      // data = []
-      // data.push({
-      //   CustID: '123',
-      //   RealEstateID: 'asdasd',
-      //   LoanAmount: Math.random(),
-      //   Fico: Math.random(),
-      //   Status: 'OK',
-      //   MortgageStatus: 'OK'
-      // })
+      data = data.map(item => item.Record)
       setSearching(false)
       setLoans(data)
     })
@@ -46,7 +38,6 @@ export function Insurance () {
           <br />
           <SearchField getLoans={searchLoans} />
           <Alert variant='secondary' class={styles.searchflex}>
-            {console.log(searching())}
             <Show
               when={!searching()}
               fallback={

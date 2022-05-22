@@ -22,6 +22,7 @@ export function Revenue () {
     setSearching(true)
     let res = getRegistrations('/revenue/api/registrations', params)
     res.then(data => {
+      data = data.map(item => item.Record)
       setSearching(false)
       setRegistrations(data)
     })
@@ -41,7 +42,6 @@ export function Revenue () {
           <br />
           <SearchField getRegistrations={searchRegistrations} />
           <Alert variant='secondary' class={styles.searchflex}>
-            {console.log(searching())}
             <Show
               when={!searching()}
               fallback={
