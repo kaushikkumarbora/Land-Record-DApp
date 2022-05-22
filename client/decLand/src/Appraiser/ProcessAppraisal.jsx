@@ -6,7 +6,8 @@ import {
   Button,
   Col,
   Spinner,
-  Modal
+  Modal,
+  InputGroup
 } from 'solid-bootstrap'
 import { createSignal } from 'solid-js'
 
@@ -26,8 +27,10 @@ export function ProcessAppraisal (props) {
     }).then(response => {
       if (response.status === 200) {
         setShowS(true)
+        setProcessing(false)
       } else {
         setShowF(true)
+        setProcessing(false)
       }
     })
   }
@@ -80,11 +83,14 @@ export function ProcessAppraisal (props) {
               </Show>
               <br />
               <Form.Label>Amount</Form.Label>
-              <Form.Control
-                type='number'
-                placeholder='Enter Aadhar Number'
-                disabled={typeof props.item.CustID === 'undefined'}
-              />
+              <InputGroup>
+                <InputGroup.Text>Rs.</InputGroup.Text>
+                <Form.Control
+                  type='number'
+                  placeholder='Enter Amount in Rs.'
+                  disabled={typeof props.item.CustID === 'undefined'}
+                />
+              </InputGroup>
             </Form.Group>
           </Row>
           <Show
