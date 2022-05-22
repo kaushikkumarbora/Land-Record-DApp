@@ -24,6 +24,26 @@
   color: white;
 }
 
+.searchflex {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: normal;
+  align-items: normal;
+  align-content: normal;
+  row-gap: 1em;
+  column-gap: 1em;
+}
+
+.searchflexitems {
+  display: block;
+  flex-grow: 0;
+  flex-shrink: 1;
+  flex-basis: auto;
+  align-self: auto;
+  order: 0;
+}
+
 .other {
   background-color:#F7F7F7;
   min-height: 100vh;
