@@ -3,7 +3,6 @@ import { Routes, Route } from 'solid-app-router'
 import { Registry } from './Registry/Registry'
 import logo from './logo.svg'
 import { Appraiser } from './Appraiser/Appraiser'
-import { Audit } from './Audit/Audit'
 import { Bank } from './Bank/Bank'
 import { Fico } from './Fico/Fico'
 import { Insurance } from './Insurance/Insurance'
@@ -24,7 +23,6 @@ export function NavDecLand () {
           <Nav class='me-auto'>
             <Nav.Link href='registry'>Registry</Nav.Link>
             <Nav.Link href='appraiser'>Appraiser</Nav.Link>
-            <Nav.Link href='audit'>Audit</Nav.Link>
             <Nav.Link href='bank'>Bank</Nav.Link>
             <Nav.Link href='fico'>Fico</Nav.Link>
             <Nav.Link href='insurance'>Insurance</Nav.Link>
@@ -39,7 +37,6 @@ export function NavDecLand () {
       <Routes>
         <Route path='/' element={<Home />} />
         <Route path='/appraiser' element={<Appraiser />} />
-        <Route path='/audit' element={<Audit />} />
         <Route path='/bank' element={<Bank />} />
         <Route path='/fico' element={<Fico />} />
         <Route path='/insurance' element={<Insurance />} />
