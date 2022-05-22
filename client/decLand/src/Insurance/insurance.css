@@ -1,6 +1,6 @@
 .insurancewin {  display: grid;
     grid-template-columns: 1fr 1fr;
-    grid-template-rows: 1fr 1fr 1fr;
+    grid-template-rows: 1fr 1fr 1fr 1fr;
     gap: 0px 0px;
     height: fit-content;
     grid-auto-flow: row;
@@ -17,7 +17,7 @@
 
 .topup { grid-area: topup; height: fit-content; grid-row-start: 2; grid-row-end: 3;}
 
-.insurance-p { grid-area: insurance-p; height: fit-content; grid-row-start: 2; grid-row-end: 4;}
+.insurance-p { grid-area: insurance-p; height: fit-content; grid-row-start: 2; grid-row-end: 5;}
 
 .flex-container {
   display: flex;
