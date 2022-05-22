@@ -28,7 +28,7 @@ export function FullCovenants (props) {
           </Placeholder>
         }
       >
-        <Card.Body>Covenants: {props.item.Covenants}</Card.Body>
+        <Card.Body>Covenants: {props.item}</Card.Body>
       </Show>
     </Card>
   )

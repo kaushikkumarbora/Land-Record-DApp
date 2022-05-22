@@ -30,7 +30,7 @@ export function FullTopUp (props) {
         }
       >
         <Card.Body>
-          {props.items.map((item, index) => (
+          {props.item.map((item, index) => (
             <>
               {index + 1}. Rs. {item}
               <br />

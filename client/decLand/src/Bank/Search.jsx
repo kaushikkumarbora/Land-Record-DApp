@@ -39,8 +39,8 @@ export function SearchField (props) {
           variant='primary'
           onClick={event => {
             props.getLoans({
-              status: event.target.form[0].value,
-              CustID: event.target.form[1].value,
+              status: event.target.form[1].value,
+              CustID: event.target.form[0].value,
               mortgagestatus: event.target.form[2].value
             })
           }}

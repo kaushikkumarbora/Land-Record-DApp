@@ -46,7 +46,7 @@ export function FullInsurance (props) {
       >
         <Card.Footer>
           <p>
-            Status: {props.item.ProviderID != '' ? 'Provided' : 'Not Provided'}
+            Status: {props.item.ProviderID != '-' ? 'Provided' : 'Not Provided'}
           </p>
         </Card.Footer>
       </Show>

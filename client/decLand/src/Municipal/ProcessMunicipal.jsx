@@ -76,7 +76,7 @@ export function ProcessMunicipal (props) {
             </Form.Group>
           </Row>
           <Show
-            when={processing}
+            when={!processing()}
             fallback={
               <Button variant='primary' disabled>
                 <Spinner

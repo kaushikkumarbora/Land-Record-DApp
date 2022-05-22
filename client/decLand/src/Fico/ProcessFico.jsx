@@ -32,7 +32,6 @@ export function ProcessFico (props) {
     })
   }
 
-  console.log(props.item)
   return (
     <>
       <Modal
@@ -81,7 +80,7 @@ export function ProcessFico (props) {
             </Form.Group>
           </Row>
           <Show
-            when={processing}
+            when={!processing()}
             fallback={
               <Button variant='primary' disabled>
                 <Spinner
