@@ -1,4 +1,5 @@
 import { Button, Card } from 'solid-bootstrap'
+import styles from '../App.module.css'
 
 export async function getLoans (url, params) {
   url += '?' + new URLSearchParams(params).toString()
@@ -16,7 +17,7 @@ export function Loan (props) {
   return (
     <>
       {props.data.map((item, index) => (
-        <Card key={index} class='w-50'>
+        <Card key={index} class={styles.searchflexitems} style='width: 48%'>
           <Card.Header>
             CustID: <code>{item.CustID}</code>
             <br />

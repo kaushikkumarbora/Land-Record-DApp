@@ -1,4 +1,5 @@
 import { Button, Card } from 'solid-bootstrap'
+import styles from '../App.module.css'
 
 export async function getRecords (url, params) {
   url += '?' + new URLSearchParams(params).toString()
@@ -16,18 +17,16 @@ export function Record (props) {
   return (
     <>
       {props.data.map((item, index) => (
-        <Card key={index} class='w-50'>
+        <Card key={index} class={styles.searchflexitems} style='width: 48%'>
           <Card.Header>
             RealEstateID: <code>{item.RealEstateID}</code>
           </Card.Header>
 
-          <Card.Body>
-            Area Code: {item.AreaCode}
-          </Card.Body>
+          <Card.Body>Area Code: {item.AreaCode}</Card.Body>
 
           <Card.Footer>
             <p>
-            Owner: <code>{item.OwnerAadhar}</code>
+              Owner: <code>{item.OwnerAadhar}</code>
             </p>
             <Button onClick={() => props.onClick(item)}>Select</Button>
           </Card.Footer>

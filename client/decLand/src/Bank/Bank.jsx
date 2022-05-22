@@ -46,7 +46,7 @@ export function Bank () {
         >
           <br />
           <SearchField getLoans={searchLoans} />
-          <Alert variant='secondary'>
+          <Alert variant='secondary' class={styles.searchflex}>
             <Show
               when={!searching()}
               fallback={

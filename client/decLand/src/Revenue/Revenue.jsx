@@ -40,7 +40,7 @@ export function Revenue () {
         >
           <br />
           <SearchField getRegistrations={searchRegistrations} />
-          <Alert variant='secondary'>
+          <Alert variant='secondary' class={styles.searchflex}>
             {console.log(searching())}
             <Show
               when={!searching()}

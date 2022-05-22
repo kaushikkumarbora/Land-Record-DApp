@@ -36,7 +36,7 @@ export function Registry () {
         >
           <br />
           <SearchField getRecords={searchRecords} />
-          <Alert variant='secondary'>
+          <Alert variant='secondary' class={styles.searchflex}>
             {console.log(searching())}
             <Show
               when={!searching()}
