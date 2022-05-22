@@ -46,11 +46,8 @@ router.get('/', (req, res) => {
  *          enum:
  *          - "Any"
  *          - "Pending"
- *          - "FicoSet"
- *          - "InsuranceSet"
- *          - "Applied"
- *          - "Approved"
- *          - "Rejected"
+ *          - "Inforced"
+ *          - "Closed"
  *          default: "Any"
  *        collectionFormat: multi
  *      - name: CustID
