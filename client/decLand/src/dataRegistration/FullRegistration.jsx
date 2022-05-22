@@ -32,13 +32,13 @@ export function FullRegistration (props) {
         }
       >
         <Card.Body>
-          Stamp ID: {item.StampID}
+          Stamp ID: {props.item.StampID}
           <br />
-          Amount: {item.Amount}
+          Amount: {props.item.Amount}
           <br />
-          Seller: {item.SellerAadhar}
+          Seller: {props.item.SellerAadhar}
           <br />
-          Buyer: {item.BuyerAadhar}
+          Buyer: {props.item.BuyerAadhar}
         </Card.Body>
       </Show>
 
@@ -54,9 +54,9 @@ export function FullRegistration (props) {
       >
         <Card.Footer>
           <p>
-            Status: <code>{item.Status}</code>
+            Status: <code>{props.item.Status}</code>
             <br />
-            Permission: <code>{item.Permission}</code>
+            Permission: <code>{props.item.Permission}</code>
           </p>
         </Card.Footer>
       </Show>

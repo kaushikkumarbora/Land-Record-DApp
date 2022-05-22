@@ -29,7 +29,7 @@ export function FullRecord (props) {
           </Placeholder>
         }
       >
-        <Card.Body>Area Code: {item.AreaCode}</Card.Body>
+        <Card.Body>Area Code: {props.item.AreaCode}</Card.Body>
       </Show>
 
       <Show
@@ -44,7 +44,7 @@ export function FullRecord (props) {
       >
         <Card.Footer>
           <p>
-            Owner: <code>{item.OwnerAadhar}</code>
+            Owner: <code>{props.item.OwnerAadhar}</code>
           </p>
         </Card.Footer>
       </Show>
