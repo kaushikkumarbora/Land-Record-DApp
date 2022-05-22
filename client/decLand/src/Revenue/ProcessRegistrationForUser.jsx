@@ -405,6 +405,22 @@ export function ProcessRegistrationForUser (props) {
             <Button
               variant='primary'
               onClick={event => {
+                let data = props.item
+                delete data.BuyerSignature
+                delete data.SellerSignature
+
+                privateKey = crypto.createPrivateKey({
+                  key: Buffer.from(event.target.form[1].value, 'base64'),
+                  type: 'pkcs8',
+                  format: 'pem'
+                })
+
+                const sign = crypto.createSign('SHA256')
+                sign.update(data)
+                sign.end()
+
+                const signature = sign.sign(privateKey).toString('base64')
+
                 if (typeof event.target.form[0].value === 'boolean')
                   signDeed(
                     props.item.RealEstateID,
