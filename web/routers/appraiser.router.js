@@ -39,6 +39,8 @@ router.get('/', (req, res) => {
  *      responses:
  *        '200':
  *          description: Successfully queried appraisals
+ *        '400':
+ *          description: Bad Request
  *        '500':
  *          description: Internal Error
  */
