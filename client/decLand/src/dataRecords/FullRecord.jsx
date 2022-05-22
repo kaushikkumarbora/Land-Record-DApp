@@ -33,7 +33,7 @@ export function FullRecord (props) {
       </Show>
 
       <Show
-        when={typeof props.item.CustID != 'undefined'}
+        when={typeof props.item.RealEstateID != 'undefined'}
         fallback={
           <Placeholder as={Card.Footer} animation='wave'>
             <Placeholder xs={2} /> <Placeholder xs={2} />
