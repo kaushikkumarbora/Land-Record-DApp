@@ -1,4 +1,4 @@
-# project-8thsem
+# Land Record DApp
 
 ## Setup and Start Network:
 
